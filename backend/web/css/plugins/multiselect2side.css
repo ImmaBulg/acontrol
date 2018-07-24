@@ -1,0 +1,48 @@
+.ms2side__div{
+	width:100%;
+	overflow:hidden;
+}
+.ms2side__select {
+	float: left;
+}
+.ms2side__div select{
+	width:306px;
+	float:left;
+	border:1px solid #ccc;
+	min-height:159px;
+}
+.ms2side__div select option{
+	padding:5px 10px;
+	border-bottom:1px solid #eee;
+}
+.ms2side__div select option:hover{
+	cursor:pointer;
+	background:#08c;
+	color:#fff;
+}
+.ms2side__updown {
+	display:none;
+}
+.ms2side__options{
+	float: left;
+	padding:6px 15px;
+	text-align: center;
+	overflow: hidden;
+}
+.ms2side__options p{
+	font-size:12px;
+	line-height:20px;
+	font-weight:bold;
+	margin:0 0 5px;
+	padding:5px 10px;
+	border:1px solid #ccc;
+	background:#fff;
+	display:block;
+}
+.ms2side__options p:hover{
+	cursor:pointer;
+	border-color:#3fb618;
+}
+.ms2side__header{
+	margin-bottom: 5px;
+}
