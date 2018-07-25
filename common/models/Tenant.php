@@ -80,6 +80,7 @@ class Tenant extends ActiveRecord
             [['hide_drilldown', 'is_visible_on_dat_file'], 'boolean'],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => array_keys(self::getListStatuses()), 'skipOnEmpty' => true],
+            ['included_in_cop', 'boolean'],
         ];
     }
 
@@ -111,6 +112,7 @@ class Tenant extends ActiveRecord
             'site_name' => Yii::t('common.tenant', 'Site name'),
             'user_name' => Yii::t('common.tenant', 'Client name'),
             'site_footage' => Yii::t('common.tenant', 'Site footage'),
+            'included_in_cop' => Yii::t('common.tenant', 'Do not include this tenant in COP calculation for No main meters method'),
         ];
     }
 

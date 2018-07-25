@@ -213,6 +213,7 @@ if ($is_create) {
                                     <?php echo $form_active->field($form, 'id_with_client')->textInput(); ?>
                                     <?php echo $form_active->field($form, 'accounting_number')->textInput(); ?>
                                     <?php echo $form_active->field($form, 'billing_content')->textArea(); ?>
+                                    <?php echo $form_active->field($form, 'included_in_cop')->checkbox(); ?>
                                     <?php echo $form_active->field($form, 'included_reports')
                                         ->checkboxList(Report::getTenantListTypes()); ?>
                                     <?php echo $form_active->field($form, 'hide_drilldown')->checkbox(); ?>

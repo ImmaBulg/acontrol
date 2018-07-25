@@ -50,6 +50,7 @@ class FormTenant extends Model
     public $id_with_client;
     public $accounting_number;
     public $billing_content;
+    public $included_in_cop;
     public $included_reports;
     public $is_visible_on_dat_file = true;
 
@@ -110,6 +111,7 @@ class FormTenant extends Model
                 'message' => 'Error pattern!'],
             [['option_visible_barcode'], 'default', 'value' => Tenant::YES],
             [['option_visible_barcode'], 'boolean'],
+            ['included_in_cop', 'boolean'],
             ['irregular_additional_percent', 'number'],
             [['irregular_hours_from', 'irregular_hours_to'], 'string'],
         ];
@@ -207,6 +209,7 @@ class FormTenant extends Model
             'property_id' => Yii::t('backend.tenant', 'Property id'),
             'formatting' => Yii::t('backend.tenant', 'Formatting'),
             'option_visible_barcode' => Yii::t('backend.tenant', 'Display of barcode on the tenant bill'),
+            'included_in_cop' => Yii::t('backend.tenant', 'Do not include this tenant in COP calculation for No main meters method'),
         ];
     }
 
@@ -234,6 +237,7 @@ class FormTenant extends Model
                 $this->property_id = $model->property_id;
                 $this->formatting = $model->formatting;
                 $this->option_visible_barcode = $model->option_visible_barcode;
+                $this->included_in_cop = $model->included_in_cop;
                 if($model_billing instanceof TenantBillingSetting) {
                     $this->rate_type_id = $model_billing->rate_type_id;
                     if ($this->rate_type_id == null)
@@ -315,6 +319,7 @@ class FormTenant extends Model
         $model->property_id = $this->property_id;
         $model->formatting = $this->formatting;
         $model->option_visible_barcode = $this->option_visible_barcode;
+        $model->included_in_cop = $this->included_in_cop;
         if($is_create) {
             $event = new EventLogTenant();
             $event->model = $model;
