@@ -15,10 +15,14 @@ use common\models\MeterChannel;
 use common\models\MeterChannelGroupItem;
 use common\models\MeterSubchannel;
 use common\models\Rate;
+use common\models\RateType;
+use common\models\Report;
 use common\models\RuleGroupLoad;
 use common\models\RuleSingleChannel;
 use common\models\Site;
+use common\models\SiteBillingSetting;
 use common\models\Tenant;
+use common\models\TenantBillingSetting;
 use Yii;
 use yii\console\Request;
 use yii\db\Query;
@@ -92,7 +96,7 @@ class FormReportTenantValidator
                 list($meter_id, $meter_name) = $this->getMeterInfo($channel_id);
                 $subchannels = $this->getSubchannels($channel_id);
                 foreach($subchannels as $subchannel) {
-                    
+
                     $this->checkReadings($meter_id, $meter_name, $channel_id, $subchannel);
                 }
             }
@@ -106,9 +110,153 @@ class FormReportTenantValidator
             $this->form_report->addError('type', $message);
             throw new FormReportValidationInterruptException($message);
         }
+
+        if ($this->form_report->level == Report::LEVEL_SITE) {
+            switch($this->form_report->report_calculation_type)
+            {
+                case Report::TENANT_BILL_REPORT_BY_MANUAL_COP:
+                    $this->checkManualCop();
+                    break;
+                case Report::TENANT_BILL_REPORT_BY_MAIN_METERS:
+                    $this->checkMainChannels();
+                    break;
+                case Report::TENANT_BILL_REPORT_BY_FIRST_RULE:
+                    $this->checkElectricalMainChannels();
+                    break;
+            }
+        }
+        else {
+            if ($this->form_report->type == Report::TYPE_TENANT_BILLS) {
+                switch($this->form_report->report_calculation_type)
+                {
+                    case Report::TENANT_BILL_REPORT_BY_MANUAL_COP:
+                        $this->checkManualCop();
+                        break;
+                    case Report::TENANT_BILL_REPORT_BY_MAIN_METERS:
+                        $this->checkMainChannels();
+                        break;
+                    case Report::TENANT_BILL_REPORT_BY_FIRST_RULE:
+                        $this->checkElectricalMainChannels();
+                        break;
+                }
+            }
+        }
+
+
         return ['missing_date' => $this->missing_data, 'push_alerts' => $this->push_alerts];
     }
 
+    private function checkManualCop()
+    {
+        $rate_type_id = (new Query())
+            ->select('t.rate_type_id')
+            ->from(SiteBillingSetting::tableName() . ' t')
+            ->where(['=', 't.site_id', $this->form_report->site_id])
+            ->column();
+        $rate_name = (new Query())
+            ->select('t.name_en')
+            ->from(RateType::tableName() . ' t')
+            ->where(['=', 't.id', $rate_type_id])
+            ->column();
+        $site_cop = (new Query())
+            ->select('t.manual_cop, t.manual_cop_pisga, t.manual_cop_geva, t.manual_cop_shefel')
+            ->from(Site::tableName() . ' t')
+            ->where(['=', 't.id', $this->form_report->site_id])
+            ->one();
+
+        switch ($rate_name) {
+            case 'Home':
+            case 'General':
+                if ($site_cop['manual_cop'] === null) {
+                    $message = Yii::t('backend.report',
+                        'You are trying to issue report using Manual COP. Please make sure to enter the manual COP on Site.');
+                    $this->form_report->addError('type', $message);
+                    throw new FormReportValidationInterruptException($message);
+                }
+                break;
+            default:
+                if ($site_cop['manual_cop_pisga'] === null || $site_cop['manual_cop_geva'] === null || $site_cop['manual_cop_shefel'] === null) {
+                    $message = Yii::t('backend.report',
+                        'You are trying to issue report using Manual COP. Please make sure to enter the manual COP on Site.');
+                    $this->form_report->addError('type', $message);
+                    throw new FormReportValidationInterruptException($message);
+                }
+                break;
+        }
+    }
+
+    private function checkElectricalMainChannels()
+    {
+        $channels = (new Query())
+            ->select('t.channel_id')
+            ->from(RuleSingleChannel::tableName() . ' t')
+            ->where(['<=', 't.start_date', strtotime($this->from_date)])
+            ->andWhere([
+                't.tenant_id' => $this->tenant->id,
+                't.status' => RuleSingleChannel::STATUS_ACTIVE,
+            ])->column();
+        $main_channels = [];
+        foreach ($channels as $channel_id) {
+            $channel = (new Query())
+                ->select('t.meter_id')
+                ->from(MeterChannel::tableName() . ' t')
+                ->where(['=', 't.id', $channel_id])
+                ->andWhere([
+                    't.is_main' => (int)true,
+                ])
+                ->column();
+            $meter = (new Query())
+                ->select('t.id')
+                ->from(Meter::tableName() . ' t')
+                ->where(['=', 'type', 'electricity'])
+                ->column();
+            if ($channel)
+                $main_channels[] = $channel;
+        }
+        if ($main_channels === []) {
+            $message = Yii::t('backend.report',
+                'You are trying to issue report with COP calculation of type No main air meter which requires at least one IsMain electrical channel.', [
+                    'name' => $this->tenant->name,
+                ]);
+            $this->form_report->addError('type', $message);
+            throw new FormReportValidationInterruptException($message);
+        }
+    }
+
+    private function checkMainChannels()
+    {
+        $channels = (new Query())
+            ->select('t.channel_id')
+            ->from(RuleSingleChannel::tableName() . ' t')
+            ->where(['<=', 't.start_date', strtotime($this->from_date)])
+            ->andWhere([
+                't.tenant_id' => $this->tenant->id,
+                't.status' => RuleSingleChannel::STATUS_ACTIVE,
+            ])->column();
+        $main_channels = [];
+        foreach ($channels as $channel_id) {
+            $channel = (new Query())
+                ->select('t.meter_id')
+                ->from(MeterChannel::tableName() . ' t')
+                ->where(['=', 't.id', $channel_id])
+                ->andWhere([
+                    't.is_main' => (int)true,
+                ])
+                ->column();
+            if ($channel)
+                $main_channels[] = $channel;
+        }
+
+        if ($main_channels === []) {
+            $message = Yii::t('backend.report',
+                'You are trying to issue report using COP calculation that requires at leat one Electric IsMain channel and at least one Air IsMain channel. Currently there are no Electric / Air channels marked IsMain to tenant {name}', [
+                    'name' => $this->tenant->name,
+                ]);
+            $this->form_report->addError('type', $message);
+            throw new FormReportValidationInterruptException($message);
+        }
+
+    }
 
     private function checkReadings($meter_id, $meter_name, $channel_id, $subchannel) {
         $readings_from = $this->getReadings($meter_name, $subchannel['channel'], $this->from_date);
@@ -193,7 +341,6 @@ class FormReportTenantValidator
         ])->exists();
         return $model_rate_start || $model_rate_end;
     }
-
 
     private function getChannels() {
         $single_rule_channels = (new Query())
