@@ -26,6 +26,7 @@ class CopTenantCalculatorHourly {
   private $from_date;
   private $to_date;
   private $tenant;
+  private $report_type;
 
 
   /**
@@ -34,9 +35,10 @@ class CopTenantCalculatorHourly {
    * @param Carbon $from_date
    * @param Carbon $to_date
    */
-  public function __construct( Carbon $from_date, Carbon $to_date ) {
+  public function __construct( Carbon $from_date, Carbon $to_date, $report_type) {
     $this->from_date = clone $from_date;
     $this->to_date   = clone $to_date;
+    $this->report_type = $report_type;
     $this->normalizeDates();
   }
 
@@ -52,8 +54,12 @@ class CopTenantCalculatorHourly {
   public function calculate( Tenant $tenant ) {
     $this->tenant = $tenant;
 
-    $this->site_main_meters_data = new SiteMainMetersData( $this->tenant->relationSite->getMainSubChannels( Meter::TYPE_AIR ),
+    if ($this->report_type == 2)
+        $this->site_main_meters_data = new SiteMainMetersData( $this->tenant->relationSite->getMainSubChannelsNoMeters( Meter::TYPE_AIR ),
                                                            $this->tenant->relationSite->getMainSubChannels( Meter::TYPE_ELECTRICITY ) );
+    else
+        $this->site_main_meters_data = new SiteMainMetersData( $this->tenant->relationSite->getMainSubChannels( Meter::TYPE_AIR ),
+            $this->tenant->relationSite->getMainSubChannels( Meter::TYPE_ELECTRICITY ) );
 
     $date_range_query_single = new DateRangeQuerySingle(
       ( new Query() )->select( [ 'datetime', 'kilowatt_hour' ] )

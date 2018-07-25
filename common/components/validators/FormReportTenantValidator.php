@@ -120,9 +120,9 @@ class FormReportTenantValidator
                 case Report::TENANT_BILL_REPORT_BY_MAIN_METERS:
                     $this->checkMainChannels();
                     break;
-                case Report::TENANT_BILL_REPORT_BY_FIRST_RULE:
+                /*case Report::TENANT_BILL_REPORT_BY_FIRST_RULE:
                     $this->checkElectricalMainChannels();
-                    break;
+                    break;*/
             }
         }
         else {

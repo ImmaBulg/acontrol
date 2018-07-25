@@ -10,6 +10,7 @@ use yii\db\Query;
 use yii\helpers\Json;
 use yii\helpers\ArrayHelper;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\VarDumper;
 use yii\web\NotFoundHttpException;
 use common\components\rbac\Role;
 use common\components\db\ActiveRecord;
@@ -465,6 +466,28 @@ class Site extends ActiveRecord
         return $main_meter_data;
     }
 
+    public function getMainSubChannelsNoMeters($type) {
+        $subchannels = (new Query())->select('meter.name as meter_name,meter_subchannel.channel')
+            ->from('meter_subchannel')
+            ->innerJoin('meter_channel', 'meter_subchannel.channel_id = meter_channel.id')
+            ->innerJoin('meter', 'meter.id = meter_channel.meter_id')
+            ->innerJoin('rule_single_channel', 'rule_single_channel.channel_id = meter_channel.id')
+            ->innerJoin('tenant', 'tenant.id = rule_single_channel.tenant_id')
+            ->andWhere(['<>', 'tenant.included_in_cop', (int)true])
+            ->andWhere(['meter_channel.is_main' => (int)true])
+            //->andWhere(['meter.is_main' => (int)true])
+            ->andWhere(['meter.type' => $type])
+            ->andWhere(['meter.site_id' => $this->id]);
+        $subchannels = Yii::$app->db->cache(function () use ($subchannels) {
+            return $subchannels->all();
+        });
+        $main_meter_data = [];
+        foreach($subchannels as $subchannel) {
+            $main_meter_data[] = new MainMetersData($subchannel['meter_name'], $subchannel['channel']);
+        }
+        return $main_meter_data;
+    }
+
 
     public function getRuleSubChannels(RuleSingleChannel $rule) {
         $subchannels = (new Query())->select('meter.name as meter_name,meter_subchannel.channel')
@@ -481,6 +504,27 @@ class Site extends ActiveRecord
         foreach($subchannels as $subchannel) {
             $main_meter_data[] = new MainMetersData($subchannel['meter_name'], $subchannel['channel']);
         }
+        return $main_meter_data;
+    }
+
+    public function getRuleSubChannelsNoMeter(RuleSingleChannel $rule)
+    {
+        $subchannels = (new Query())->select('meter.name as meter_name, meter_subchannel.channel')
+            ->from('meter_subchannel')
+            ->innerJoin('meter_channel', 'meter_subchannel.channel_id = meter_channel.id')
+            ->innerJoin('meter', 'meter.id = meter_channel.meter_id')
+            ->innerJoin('rule_single_channel', 'rule_single_channel.channel_id = meter_channel.id')
+            ->innerJoin('tenant', 'tenant.id = rule_single_channel.tenant_id')
+            ->andWhere(['<>', 'tenant.included_in_cop', (int)true])
+            ->andWhere(['meter.type' => Meter::TYPE_AIR])
+            //->andWhere(['meter.id' => $rule->relationMeterChannel->meter_id])
+            ->andWhere(['meter.site_id' => $this->id])->all();
+        //VarDumper::dump($subchannels, 100, true);
+        $main_meter_data = [];
+        foreach($subchannels as $subchannel) {
+            $main_meter_data[] = new MainMetersData($subchannel['meter_name'], $subchannel['channel']);
+        }
+
         return $main_meter_data;
     }
 }

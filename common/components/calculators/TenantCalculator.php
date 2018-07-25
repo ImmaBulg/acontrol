@@ -14,6 +14,7 @@ use common\models\Rate;
 use common\models\RuleSingleChannel;
 use common\models\Tenant;
 use Yii;
+use yii\helpers\VarDumper;
 
 /**
  * Created by PhpStorm.
@@ -81,7 +82,7 @@ class TenantCalculator {
       $rule_data = $rule_calculator->calculate( $this->tenant, $report_type);
       $tenant_data->add( $rule_data );
 
-      $tenant_data->setHourlyCop( $cop_calculator->calculate( $this->tenant ), $rule_data->reading_data );
+      $tenant_data->setHourlyCop( $cop_calculator->calculate( $this->tenant, $report_type ), $rule_data->reading_data );
       $tenant_data->setYearly( YearlyCalculator::instance( $this->from_date, $this->to_date, $this->tenant )
                                                ->calculate() );
     }

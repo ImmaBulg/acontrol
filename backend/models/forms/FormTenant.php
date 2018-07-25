@@ -111,7 +111,7 @@ class FormTenant extends Model
                 'message' => 'Error pattern!'],
             [['option_visible_barcode'], 'default', 'value' => Tenant::YES],
             [['option_visible_barcode'], 'boolean'],
-            ['included_in_cop', 'boolean'],
+            ['included_in_cop', 'integer'],
             ['irregular_additional_percent', 'number'],
             [['irregular_hours_from', 'irregular_hours_to'], 'string'],
         ];

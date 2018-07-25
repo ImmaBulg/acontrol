@@ -80,7 +80,7 @@ class Tenant extends ActiveRecord
             [['hide_drilldown', 'is_visible_on_dat_file'], 'boolean'],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => array_keys(self::getListStatuses()), 'skipOnEmpty' => true],
-            ['included_in_cop', 'boolean'],
+            ['included_in_cop', 'integer'],
         ];
     }
 

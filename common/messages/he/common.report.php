@@ -61,4 +61,7 @@ return [
     'To date' => 'עד תאריך',
     'Type' => 'סוג',
     'Yearly report' => 'דוח שנתי',
+    'Manual COP' => 'COP ידני',
+    'Main meters (electric + air)' => 'חישוב ממונים ראשיים (חשמל +מיזוג)',
+    'No main air meter (calculated from sum of tenants)' => 'חישוב ללא מונה מיזוג אויר ראשי (חישוב מסה״כ צריכת דיירים)',
 ];

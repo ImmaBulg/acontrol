@@ -229,8 +229,8 @@ class Report extends ActiveRecord
     public static function getTenantBillReportTypes()
     {
         return [
-            self::TENANT_BILL_REPORT_BY_MAIN_METERS => Yii::t('common.report', 'All main meters'),
-            self::TENANT_BILL_REPORT_BY_FIRST_RULE => Yii::t('common.report', 'Main electric meters and fist tenant rule'),
+            self::TENANT_BILL_REPORT_BY_MAIN_METERS => Yii::t('common.report', 'Main meters (electric+air)'),
+            self::TENANT_BILL_REPORT_BY_FIRST_RULE => Yii::t('common.report', 'No main air meter (calculated from sum of tenants)'),
             self::TENANT_BILL_REPORT_BY_MANUAL_COP => Yii::t('common.report','Manual COP')
         ];
     }

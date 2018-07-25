@@ -307,7 +307,7 @@ class ReportGeneratorNis extends ReportGenerator implements IReportGenerator
                 $cop = $tenant->relationSite->manual_cop;
                 break;
             case Report::TENANT_BILL_REPORT_BY_FIRST_RULE:
-                $air_rule_meter_data = new SiteMainMetersData($tenant->relationSite->getRuleSubChannels($this->first_rule), $electricity_main_sub_channels);
+                $air_rule_meter_data = new SiteMainMetersData($tenant->relationSite->getRuleSubChannelsNoMeter($this->first_rule), $electricity_main_sub_channels);
                 $cop = (new CopCalculator($air_rule_meter_data, $this->from_date, $this->to_date))->calculate();
                 break;
             default:
