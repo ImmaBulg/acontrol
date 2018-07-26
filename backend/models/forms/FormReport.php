@@ -243,11 +243,11 @@ class FormReport extends Model
                 /**
                  * Is tenant have readings for his rules
                  */
-                if($missing_data != null) {
+                /*if($missing_data != null) {
                     $this->processMissingData($missing_data);
                     $this->sendPushAlerts($push_alerts);
                     return false;
-                }
+                }*/
                 /**
                  * Is tenants list are not empty
                  */
@@ -298,7 +298,8 @@ class FormReport extends Model
                         'column_total_pay_single_channel_rules' => $this->column_total_pay_single_channel_rules,
                         'column_total_pay_group_load_rules' => $this->column_total_pay_group_load_rules,
                         'column_total_pay_fixed_load_rules' => $this->column_total_pay_fixed_load_rules,
-                        'electric_company_price' => $this->electric_company_price
+                        'electric_company_price' => $this->electric_company_price,
+                        'report_calculation_type' => $this->report_calculation_type,
                     ]
                 );
                 $this->_data = $report_generator->calculate();

@@ -120,9 +120,9 @@ class FormReportTenantValidator
                 case Report::TENANT_BILL_REPORT_BY_MAIN_METERS:
                     $this->checkMainChannels();
                     break;
-                /*case Report::TENANT_BILL_REPORT_BY_FIRST_RULE:
+                case Report::TENANT_BILL_REPORT_BY_FIRST_RULE:
                     $this->checkElectricalMainChannels();
-                    break;*/
+                    break;
             }
         }
         else {
@@ -249,7 +249,7 @@ class FormReportTenantValidator
 
         if ($main_channels === []) {
             $message = Yii::t('backend.report',
-                'You are trying to issue report using COP calculation that requires at leat one Electric IsMain channel and at least one Air IsMain channel. Currently there are no Electric / Air channels marked IsMain to tenant {name}', [
+                'You are trying to issue report using COP calculation that requires at least one Electric IsMain channel and at least one Air IsMain channel. Currently there are no Electric / Air channels marked IsMain to tenant {name}', [
                     'name' => $this->tenant->name,
                 ]);
             $this->form_report->addError('type', $message);

@@ -247,7 +247,7 @@ class ReportGeneratorNis extends ReportGenerator implements IReportGenerator
                 $this->data['tenants'][$tenant->id]['total_pay'] += ($this->data['tenants'][$tenant->id]['total']['total_pay'] * ((int)$rule['value'] / 100));
                 break;
             case RuleFixedLoad::USE_TYPE_MONEY:
-                $this->data['tenants'][$tenant->id]['total_fixed_rules'] = ($this->data['tenants'][$tenant->id]['total_single_rules'] + (int)$rule['value']);
+                $this->data['tenants'][$tenant->id]['total_fixed_rules'] = (int)$rule['value'];
                 $this->data['tenants'][$tenant->id]['total_pay'] += (int)$rule['value'];
                 break;
             case RuleFixedLoad::USE_TYPE_KWH_FIXED:
@@ -263,8 +263,8 @@ class ReportGeneratorNis extends ReportGenerator implements IReportGenerator
                 $pisga_value = $rule['value'] * $pisga_cof * $rate['fixed_payment'];
                 $geva_value = $rule['value'] * $geva_cof * $rate['fixed_payment'];
                 $shefel_value = $rule['value'] * $shefel_cof * $rate['fixed_payment'];
-                $this->data['tenants'][$tenant->id]['total_fixed_rules'] = $this->data['tenants'][$tenant->id]['total_pay'] + $pisga_value + $geva_value + $shefel_value;
-                $this->data['tenants'][$tenant->id]['total_pay'] += (int)$this->data['tenants'][$tenant->id]['total_fixed_rules'];
+                $this->data['tenants'][$tenant->id]['total_fixed_rules'] = $pisga_value + $geva_value + $shefel_value;
+                $this->data['tenants'][$tenant->id]['total_pay'] += ($this->data['tenants'][$tenant->id]['total_pay'] + (int)$this->data['tenants'][$tenant->id]['total_fixed_rules']);
                 break;
             case RuleFixedLoad::USE_TYPE_FLAT_ADDITION_TOTAL_USAGE:
                 $rate = AirRates::getActiveWithinRangeByTypeId(
