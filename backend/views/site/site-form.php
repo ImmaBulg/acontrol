@@ -18,6 +18,7 @@ use common\widgets\Select2;
 use dezmont765\yii2bundle\widgets\AutoRegistrableScriptBlock;
 use kartik\widgets\TimePicker;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 use yii\helpers\Url;
 
 $is_create = !isset($model);
@@ -66,15 +67,22 @@ endif;
                     <?php echo $form_active->field($form, 'rate_type_id')->widget(Select2::classname(), [
                         'data' => Rate::getListRateTypes(),
                     ]); ?>
+                    <?php echo $form_active->field($form, 'report_calculation_type')->dropDownList(Report::getTenantBillReportTypes()); ?>
                     <?php echo $form_active->field($form, 'billing_day')->widget(Select2::classname(), [
                         'data' => SiteBillingSetting::getListBillingDays(),
                     ]); ?>
                     <?php echo $form_active->field($form, 'include_vat')->checkbox(); ?>
                     <?php echo $form_active->field($form, 'comment')->textArea(); ?>
-                    <?php echo $form_active->field($form, 'manual_cop')->textInput(); ?>
-                    <?php echo $form_active->field($form, 'manual_cop_shefel')->textInput(); ?>
-                    <?php echo $form_active->field($form, 'manual_cop_geva')->textInput(); ?>
-                    <?php echo $form_active->field($form, 'manual_cop_pisga')->textInput(); ?>
+                    <div style="display:none;" data-type="<?php echo Json::encode([Report::TENANT_BILL_REPORT_BY_MANUAL_COP]); ?>">
+                        <div style="display:none;" class="manual" data-type="<?php echo Json::encode([Rate::HOME, Rate::GENERAL]); ?>">
+                            <?php echo $form_active->field($form, 'manual_cop')->textInput(); ?>
+                        </div>
+                        <div stlye="display: none;" class="taoz" data-type="<?php echo Json::encode([Rate::NAMUCH, Rate::NAMUCH_BYTE, Rate::NAMUCH_KLALI, Rate::BYTE, Rate::KAVUAA, Rate::REHOV, Rate::GAVOGA, Rate::ELYON, Rate::MAOR, Rate::MEMUTZA, Rate::NAYAD, Rate::INHERIT]); ?>">
+                            <?php echo $form_active->field($form, 'manual_cop_shefel')->textInput(); ?>
+                            <?php echo $form_active->field($form, 'manual_cop_geva')->textInput(); ?>
+                            <?php echo $form_active->field($form, 'manual_cop_pisga')->textInput(); ?>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-lg-6">
                     <?php echo $form_active->field($form, 'fixed_payment')
@@ -131,6 +139,85 @@ endif;
         </fieldset>
         <?php ActiveForm::end(); ?>
     </div>
+
+<?php
+$field_type = Html::getInputId($form, 'report_calculation_type');
+$field_rate = Html::getInputId($form, 'rate_type_id');
+
+$script = <<< JS
+$('#$field_rate').on('change', function(){
+	var value = this.value;
+	var form = $(this).parents('form');
+	var fields = form.find('.manual');
+	var taoz = form.find('.taoz');
+
+	fields.hide();
+	taoz.hide();
+	taoz.each(function() {
+	    var field = jQuery(this);
+	    if (jQuery.inArray(parseInt(value), field.data('type')) > -1) {
+	        taoz.show();
+	    }
+	});
+	fields.each(function(){
+		var field = jQuery(this);
+		if (jQuery.inArray(parseInt(value), field.data('type')) > -1) {
+			field.show();
+		}
+	});
+});
+$('#$field_rate').each(function(){
+	var value = this.value;
+	var form = $(this).parents('form');
+	var fields = form.find('.manual');
+	var taoz = form.find('.taoz');
+
+	fields.hide();
+	taoz.hide();
+	taoz.each(function() {
+	   var field = jQuery(this);
+	   if (jQuery.inArray(parseInt(value), field.data('type')) > -1) {
+	       field.show();
+	   }
+	});
+	fields.each(function(){
+		var field = jQuery(this);
+		if (jQuery.inArray(parseInt(value), field.data('type')) > -1) {
+			field.show();
+		}
+	});
+});
+
+$('#$field_type').on('change', function(){
+	var value = this.value;
+	var form = $(this).parents('form');
+	var fields = form.find('div[data-type]');
+
+	fields.hide();
+	fields.each(function(){
+		var field = jQuery(this);
+		if (jQuery.inArray(parseInt(value), field.data('type')) > -1) {
+			field.show();
+		}
+	});
+});
+$('#$field_type').each(function(){
+	var value = this.value;
+	var form = $(this).parents('form');
+	var fields = form.find('div[data-type]');
+
+	fields.hide();
+	fields.each(function(){
+		var field = jQuery(this);
+		if (jQuery.inArray(parseInt(value), field.data('type')) > -1) {
+			field.show();
+		}
+	});
+});
+JS;
+$this->registerJs($script);
+?>
+
 <?php $field_rate = Html::getInputId($form, 'rate_type_id');
 $field_fixed_payment = Html::getInputId($form, 'fixed_payment');
 $rate_fixed_payments_url = Url::to(['/json-search/rate-fixed-payment']);
@@ -165,6 +252,8 @@ AutoRegistrableScriptBlock::begin();
         <?php endif ?>
     </script>
 <?php AutoRegistrableScriptBlock::end();
+
+
 
 
 

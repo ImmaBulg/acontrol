@@ -38,6 +38,21 @@ class Rate extends ActiveRecord
     const STATUS_ACTIVE = 1;
     const STATUS_DELETED = 2;
 
+    const BYTE = 1;
+    const KAVUAA = 2;
+    const REHOV = 3;
+    const NAMUCH = 4;
+    const GAVOGA = 5;
+    const ELYON = 6;
+    const MEMUTZA = 7;
+    const NAYAD = 8;
+    const NAMUCH_KLALI = 9;
+    const NAMUCH_BYTE = 10;
+    const MAOR = 11;
+    const INHERIT = 12;
+    const HOME = 15;
+    const GENERAL = 16;
+
 
     public static function tableName() {
         return 'rate';

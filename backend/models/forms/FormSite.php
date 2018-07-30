@@ -34,6 +34,7 @@ class FormSite extends Model
     public $to_issue;
 
     public $rate_type_id;
+    public $report_calculation_type;
     public $fixed_payment;
     public $billing_day;
     public $include_vat;
@@ -92,7 +93,8 @@ class FormSite extends Model
             [['irregular_hours_from', 'irregular_hours_to'], 'string'],
             ['irregular_additional_percent', 'number'],
             [['manual_cop', 'manual_cop_geva', 'manual_cop_pisga', 'manual_cop_shefel'], 'number'],
-            ['irregular_hours_data', 'safe']
+            ['irregular_hours_data', 'safe'],
+            ['report_calculation_type', 'number'],
         ];
     }
 
@@ -113,6 +115,7 @@ class FormSite extends Model
             'fixed_addition_load' => Yii::t('backend.site', 'Load as'),
             'fixed_addition_value' => Yii::t('backend.site', 'Value (money, kwh or percentage)'),
             'fixed_addition_comment' => Yii::t('backend.site', 'Comment for fixed addition'),
+            'report_calculation_type' => Yii::t('backend.site', 'Report calculation type'),
         ];
     }
 
@@ -131,6 +134,7 @@ class FormSite extends Model
                 $this->manual_cop_shefel = $model->manual_cop_shefel;
                 $this->manual_cop_pisga = $model->manual_cop_pisga;
                 $this->manual_cop_geva = $model->manual_cop_geva;
+                $this->report_calculation_type = $model->report_calculation_type;
 
                 $model_billing = $model->relationSiteBillingSetting;
                 $this->rate_type_id = $model_billing->rate_type_id;
@@ -195,7 +199,7 @@ class FormSite extends Model
         $model->manual_cop_geva = $this->manual_cop_geva;
         $model->manual_cop_pisga = $this->manual_cop_pisga;
         $model->manual_cop_shefel = $this->manual_cop_shefel;
-
+        $model->report_calculation_type = $this->report_calculation_type;
         $model->setAutoIssueReports($this->auto_issue_reports);
         if($is_create) {
             $event = new EventLogSite();

@@ -157,7 +157,6 @@ $this->params['breadcrumbs'][] = Yii::t('backend.view', 'Reports');
 					</div>
 					<div class="col-lg-3">
                         <div style="display:none;" data-type="<?php echo Json::encode([Report::TYPE_TENANT_BILLS, Report::TYPE_NIS, Report::TYPE_KWH, Report::TYPE_NIS_KWH]); ?>">
-                            <?php echo $form_active->field($form, 'report_calculation_type')->dropDownList(Report::getTenantBillReportTypes())->label(false); ?>
                             <?php echo $form_active->field($form, 'is_vat_included')->checkbox()->error(false); ?>
                             <?php /*echo $form_active->field($form, 'is_import_export_separatly')->checkbox()->error(false);*/ ?>
                             

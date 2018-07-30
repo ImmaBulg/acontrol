@@ -75,7 +75,8 @@ class Site extends ActiveRecord
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => array_keys(self::getListStatuses()), 'skipOnEmpty' => true],
             ['power_factor_visibility', 'in', 'range' => array_keys(Site::getListPowerFactors())],
-            [['manual_cop', 'manual_cop_geva', 'manual_cop_pisga', 'manual_cop_shefel'], 'number']
+            [['manual_cop', 'manual_cop_geva', 'manual_cop_pisga', 'manual_cop_shefel'], 'number'],
+            ['report_calculation_type', 'number']
         ];
     }
 
@@ -114,6 +115,7 @@ class Site extends ActiveRecord
             'manual_cop_shefel' => Yii::t('common.site', 'Manual COP Shefel'),
             'manual_cop_geva' => Yii::t('common.site', 'Manual COP Geva'),
             'manual_cop_pisga' => Yii::t('common.site', 'Manual COP Pisga'),
+            'report_calculation_type' => Yii::t('common.site', 'Report calculation type'),
         ];
     }
 

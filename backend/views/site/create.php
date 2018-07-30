@@ -60,6 +60,7 @@ $this->params['breadcrumbs'][] = Yii::t('backend.view', 'Create a new site');
 					<?php echo $form_active->field($form, 'fixed_addition_comment')->textArea(); ?>
 					<?php echo $form_active->field($form, 'auto_issue_reports')->checkboxList(Report::getAutoIssueListTypes()); ?>
                     <?php echo $form_active->field($form, 'power_factor_visibility')->inline()->radioList(Site::getListPowerFactors())->error(false); ?>
+                    <?php echo $form_active->field($form, 'report_calculation_type')->dropDownList(Report::getTenantBillReportTypes())->label(false); ?>
 				</div>
 			</div>
 			<div class="form-group">
@@ -72,6 +73,7 @@ $this->params['breadcrumbs'][] = Yii::t('backend.view', 'Create a new site');
 $field_rate = Html::getInputId($form, 'rate_type_id');
 $field_fixed_payment = Html::getInputId($form, 'fixed_payment');
 $rate_fixed_payments_url = Url::to(['/json-search/rate-fixed-payment']);
+
 
 $script = <<< JS
 $('#$field_rate').on('change', function(){
@@ -98,5 +100,6 @@ $('#$field_rate').each(function(){
 		}
 	})
 });
+
 JS;
 $this->registerJs($script);

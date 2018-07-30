@@ -47,6 +47,7 @@ use yii\web\BadRequestHttpException;
 
 /**
  * FormReport is the class for report create/edit.
+ * @property mixed report_calculation_type
  */
 class FormReport extends Model
 {
@@ -269,6 +270,7 @@ class FormReport extends Model
 //        $parameters = [
 //            'power_factor_visibility' => $power_factor_visibility,
 //        ];
+        $this->report_calculation_type = $site->report_calculation_type;
         switch($this->type) {
             case Report::TYPE_TENANT_BILLS:
                 if (!array_key_exists($this->report_calculation_type,Report::getTenantBillReportTypes())) {

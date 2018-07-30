@@ -31,6 +31,7 @@ class RateType extends ActiveRecord
     const STATUS_DELETED = 2;
 
 
+
     public static function tableName() {
         return 'rate_type';
     }
