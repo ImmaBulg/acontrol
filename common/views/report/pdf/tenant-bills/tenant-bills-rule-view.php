@@ -47,7 +47,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                cellpadding="0" cellspacing="0">
             <thead>
             <?php if(array_key_exists('irregular_data', $rule->getData())): ?>
-                <?php if ($rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getPisgaConsumption() != 0 and $rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getGevaConsumption() != 0 and $rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getShefelConsumption() != 0): ?>
+                <?php if ($rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getPisgaConsumption() != 0 || $rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getGevaConsumption() != 0 || $rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getShefelConsumption() != 0): ?>
                     <tr>
                         <td style="padding:5px;" colspan="7">
                             <strong>
