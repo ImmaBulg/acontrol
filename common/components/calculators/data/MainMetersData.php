@@ -11,6 +11,7 @@ namespace common\components\calculators\data;
 use common\components\calculators\DateRangeQueryPair;
 use common\components\calculators\DateRangeQuerySingle;
 use yii\db\Query;
+use yii\helpers\VarDumper;
 
 class MainMetersData {
   private $meter_name = null;
@@ -29,7 +30,7 @@ class MainMetersData {
   }
 
 
-  public function getConsumption( DateRangeQueryPair $date_range_query_pair ) {
+  public function getConsumption( DateRangeQueryPair $date_range_query_pair ) : int {
     $reading_from =
       (float) ( clone $date_range_query_pair->getFromQuery() )->andWhere( [ 'meter_id' => $this->getMeterName() ] )
                                                               ->andWhere( [ 'channel_id' => $this->getChannel() ] )
@@ -37,9 +38,7 @@ class MainMetersData {
     $reading_to   = (float) ( clone $date_range_query_pair->getToQuery() )->andWhere( [ 'meter_id' => $this->getMeterName() ] )
                                                                           ->andWhere( [ 'channel_id' => $this->getChannel() ] )
                                                                           ->scalar();
-    $consumption  = $reading_to - $reading_from;
-
-    return $consumption;
+    return (int)$reading_to - (int)$reading_from;
   }
 
   public function getAirConsumptionHourly( DateRangeQuerySingle $date_range_query_single ) {

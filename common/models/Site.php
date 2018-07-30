@@ -518,6 +518,7 @@ class Site extends ActiveRecord
             ->innerJoin('rule_single_channel', 'rule_single_channel.channel_id = meter_channel.id')
             ->innerJoin('tenant', 'tenant.id = rule_single_channel.tenant_id')
             ->andWhere(['<>', 'tenant.included_in_cop', (int)true])
+            //->andWhere(['<>', 'meter_channel.is_main', (int)true])
             ->andWhere(['meter.type' => Meter::TYPE_AIR])
             //->andWhere(['meter.id' => $rule->relationMeterChannel->meter_id])
             ->andWhere(['meter.site_id' => $this->id])->all();

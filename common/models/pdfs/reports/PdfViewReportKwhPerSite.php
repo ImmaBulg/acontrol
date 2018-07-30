@@ -49,7 +49,7 @@ class PdfViewReportKwhPerSite extends PdfView
 			],
 			'cssInline' => '@page{
 				footer: html_HTMLFooter;
-				background-image:url("' .Yii::$app->urlManagerBackend->createAbsoluteUrl(['images/pdf/report/bg.jpg']). '");
+				background-image:url("' .Yii::$app->urlManagerBackend->createAbsoluteUrl(['images/pdf/report/air-bg.jpg']). '");
 				background-image-resize:6;
 			}', 
 		];

@@ -251,10 +251,13 @@ class ReportGeneratorKwh extends ReportGenerator implements IReportGenerator
                 break;
             case Report::TENANT_BILL_REPORT_BY_FIRST_RULE:
                 $air_rule_meter_data = new SiteMainMetersData($tenant->relationSite->getRuleSubChannelsNoMeter($this->first_rule), $electricity_main_sub_channels);
+                //VarDumper::dump($air_rule_meter_data, 100, true);
+
                 $cop = (new CopCalculator($air_rule_meter_data, $this->from_date, $this->to_date))->calculate();
                 break;
             default:
                 $cop = (new CopCalculator($site_main_meters_data, $this->from_date, $this->to_date))->calculate();
+
                 break;
         }
 

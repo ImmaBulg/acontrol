@@ -21,6 +21,7 @@ use common\models\RateType;
 use common\models\Site;
 use common\models\Tenant;
 use yii\db\Query;
+use yii\helpers\VarDumper;
 
 class CopCalculator
 {
@@ -88,6 +89,8 @@ class CopCalculator
             default:
                 $electrical_sum = $this->calculateElectricalSum();
                 $air_sum = $this->calculateAirSum();
+                VarDumper::dump($electrical_sum, 1, true);
+                VarDumper::dump($air_sum, 1, true);
                 $cop = $electrical_sum / $air_sum;
                 break;
         }
@@ -135,11 +138,9 @@ class CopCalculator
             $consumption = $electrical_main_channel->getConsumption($date_range_query_pair);
             $sum += $consumption;
         }
-
         if (count($channels) > 0) {
             return $sum/count($channels);
         }
-
         return $sum;
     }
 
