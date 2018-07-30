@@ -3,7 +3,10 @@
 namespace common\components\calculators\data;
 
 use Carbon\Carbon;
+use common\models\AirRates;
+use common\models\RuleFixedLoad;
 use common\models\Tenant;
+use yii\helpers\VarDumper;
 
 /**
  * Created by PhpStorm.
@@ -184,6 +187,60 @@ class TenantData extends TaozRawData {
         }
     }*/
 //    echo '<pre>', print_r(['shefel' => $shefel, 'geva' => $geva, 'pisga' => $pisga, 'general' =>$reading_data ], true), '</pre>';
+  }
+
+  public function calculateFixedRules() {
+      $fixed_rules = $this->tenant->getFixedRules()->all();
+      $tenant = $this->tenant;
+      foreach ($this->rule_data as &$rule_data) {
+          foreach ($rule_data->getData() as $type => &$data) {
+              $single_rule = $data[0]->getPisgaPay() + $data[0]->getShefelPay() + $data[0]->getGevaPay();
+              $reading_summ = $data[0]->getPisgaConsumption() + $data[0]->getGevaConsumption() + $data[0]->getShefelConsumption();
+              foreach ($fixed_rules as $rule) {
+                  switch($rule['use_type'])
+                  {
+                      case RuleFixedLoad::USE_TYPE_FLAT_ADDITION_TOTAL_BILL_AMOUNT:
+                          $fixed_rule = ($single_rule * ((int)$rule['value'] / 100 + 1));
+                          $data[0]->setPisgaFixedRule($data[0]->getPisgaPay() * ((int)$rule['value'] / 100 + 1));
+                          $data[0]->setGevaFixedRule($data[0]->getGevaPay() * ((int)$rule['value'] / 100 + 1));
+                          $data[0]->setShefelFixedRule($data[0]->getShefelPay() * ((int)$rule['value'] / 100 + 1));
+                          $data[0]->setFixedRule($fixed_rule);
+                          break;
+                      case RuleFixedLoad::USE_TYPE_MONEY:
+                          $data[0]->setFixedRule((int)$rule['value']);
+                          break;
+                      case RuleFixedLoad::USE_TYPE_KWH_FIXED:
+                          $rate = AirRates::getActiveWithinRangeByTypeId(
+                              $this->start_date,
+                              $this->end_date,
+                              $rule['rate_type_id']
+                          )->one();
+                          $pisga_cof = $data[0]->getPisgaConsumption() / $reading_summ;
+                          $geva_cof = $data[0]->getGevaConsumption() / $reading_summ;
+                          $shefel_cof = $data[0]->getShefelConsumption() / $reading_summ;
+                          $pisga_value = $rule['value'] * $pisga_cof * $rate['fixed_payment'];
+                          $geva_value = $rule['value'] * $geva_cof * $rate['fixed_payment'];
+                          $shefel_value = $rule['value'] * $shefel_cof * $rate['fixed_payment'];
+                          $data[0]->setPisgaFixedRule($pisga_value);
+                          $data[0]->setShefelFixedRule($shefel_value);
+                          $data[0]->setGevaFixedRule($geva_value);
+                          $data[0]->setFixedRule($pisga_value + $geva_value + $shefel_value);
+                          break;
+                      case RuleFixedLoad::USE_TYPE_FLAT_ADDITION_TOTAL_USAGE:
+                          $rate = AirRates::getActiveWithinRangeByTypeId(
+                              $this->start_date,
+                              $this->end_date,
+                              $rule['rate_type_id']
+                          )->one();
+                          $data[0]->setPisgaFixedRule($data[0]->getPisgaConsumption() * ($rule['value']/100 + 1));
+                          $data[0]->setGevaFixedRule($data[0]->getGevaConsumption() * ($rule['value']/100 + 1));
+                          $data[0]->setShefelFixedRule($data[0]->getShefelConsumption() * ($rule['value']/100 + 1));
+                          $data[0]->setFixedRule($reading_summ * ($rule['value']/100 + 1));
+                          break;
+                  }
+              }
+          }
+      }
   }
 
 }

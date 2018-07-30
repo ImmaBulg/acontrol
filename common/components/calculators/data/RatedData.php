@@ -94,6 +94,18 @@ class RatedData extends TaozRawData
      */
     private $geva_price = 0;
 
+    private $geva_fixed_rule = 0;
+    private $shefel_fixed_rule = 0;
+    private $pisga_fixed_rule = 0;
+    private $fixed_rule = 0;
+
+    public function setFixedRule($fixed_rule) {
+        $this->fixed_rule = $fixed_rule;
+    }
+
+    public function getFixedRule() : float {
+        return $this->fixed_rule;
+    }
 
     /**
      * @return float
@@ -144,5 +156,53 @@ class RatedData extends TaozRawData
         $this->geva_pay += $data->getGevaPay();
         $this->shefel_pay += $data->getShefelPay();
         $this->reading_data = $data->reading_data;
+    }
+
+    /**
+     * @return int
+     */
+    public function getGevaFixedRule()
+    {
+        return $this->geva_fixed_rule;
+    }
+
+    /**
+     * @param int $geva_fixed_rule
+     */
+    public function setGevaFixedRule($geva_fixed_rule)
+    {
+        $this->geva_fixed_rule = $geva_fixed_rule;
+    }
+
+    /**
+     * @return int
+     */
+    public function getShefelFixedRule()
+    {
+        return $this->shefel_fixed_rule;
+    }
+
+    /**
+     * @param int $shefel_fixed_rule
+     */
+    public function setShefelFixedRule($shefel_fixed_rule)
+    {
+        $this->shefel_fixed_rule = $shefel_fixed_rule;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPisgaFixedRule()
+    {
+        return $this->pisga_fixed_rule;
+    }
+
+    /**
+     * @param int $pisga_fixed_rule
+     */
+    public function setPisgaFixedRule($pisga_fixed_rule)
+    {
+        $this->pisga_fixed_rule = $pisga_fixed_rule;
     }
 }

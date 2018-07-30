@@ -181,6 +181,7 @@ class ExcelViewReportNisPerSite extends ExcelView
                 //$rows[] = $tenant['fixed_payment'];
                 //$rows[] = $tenant['total'];
                 if (!empty($additional_parameters['column_total_pay_single_channel_rules'])) {
+                    $tenant_total_to_pay += $tenant['total_single_rules'];
                     $rows[] = Yii::$app->formatter->asRound($tenant['total_single_rules']);
                 }
                 if (!empty($additional_parameters['column_total_pay_group_load_rules'])) {
@@ -188,7 +189,7 @@ class ExcelViewReportNisPerSite extends ExcelView
                     $rows[] = Yii::$app->formatter->asRound($tenant['total_group_rules']);
                 }
                 if (!empty($additional_parameters['column_total_pay_fixed_load_rules'])) {
-                    $tenant_total_to_pay += $tenant['total_fixed_rules'];
+                    $tenant_total_to_pay += (int)$tenant['total_fixed_rules'];
                     $rows[] = Yii::$app->formatter->asRound($tenant['total_fixed_rules']);
                 }
                 if (in_array($power_factor_visibility,

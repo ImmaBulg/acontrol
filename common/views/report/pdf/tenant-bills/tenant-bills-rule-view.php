@@ -75,6 +75,12 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                     <?= Yii::t('common.view', 'Total consumption in Kwh'); ?>
                 </th>
                 <th style="width:15%;color:#fff;padding:5px;font-weight:normal;border:1px solid #000;" align="center">
+                    <?= Yii::t('common.view', 'Group load'); ?>
+                </th>
+                <th style="width:15%;color:#fff;padding:5px;font-weight:normal;border:1px solid #000;" align="center">
+                    <?= Yii::t('common.view', 'Money addition'); ?>
+                </th>
+                <th style="width:15%;color:#fff;padding:5px;font-weight:normal;border:1px solid #000;" align="center">
                     <?= Yii::t('common.view', 'Price per 1 Kwh in Agorot'); ?>
                 </th>
                 <th style="width:15%;color:#fff;padding:5px;font-weight:normal;border:1px solid #000;" align="center">
@@ -124,6 +130,11 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                                 <?= $formatter->asNumberFormat($multiplied_data->getAirPisgaConsumption()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
+                            </td>
+                            <td style="padding:5px;border:1px solid #000;" align="center">
+                                <?= $formatter->asNumberFormat($data[0]->getPisgaFixedRule()) ?>
+                            </td>
+                            <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($data_block->getPisgaPrice()) ?>
                             </td>
 
@@ -144,6 +155,11 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($multiplied_data->getAirGevaConsumption()) ?>
+                            </td>
+                            <td style="padding:5px;border:1px solid #000;" align="center">
+                            </td>
+                            <td style="padding:5px;border:1px solid #000;" align="center">
+                                <?= $formatter->asNumberFormat($data_block->getGevaFixedRule()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($data_block->getGevaPrice()) ?>
@@ -167,6 +183,11 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                                 <?= $formatter->asNumberFormat($multiplied_data->getAirShefelConsumption()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
+                            </td>
+                            <td style="padding:5px;border:1px solid #000;" align="center">
+                                <?= $formatter->asNumberFormat($data_block->getShefelFixedRule()) ?>
+                            </td>
+                            <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($data_block->getShefelPrice()) ?>
                             </td>
 
@@ -188,7 +209,12 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                                 <?= $formatter->asNumberFormat($multiplied_data->getAirPisgaConsumption() + $multiplied_data->getAirGevaConsumption() + $multiplied_data->getAirShefelConsumption()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                
+
+                            </td>
+                            <td style="padding:5px;border:1px solid #000;" align="center">
+                                <?= $formatter->asNumberFormat($data[0]->getFixedRule()) ?>
+                            </td>
+                            <td style="padding:5px;border:1px solid #000;" align="center">
                             </td>
 
                             <td style="padding:5px;border:1px solid #000;" align="center">

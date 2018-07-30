@@ -81,11 +81,11 @@ class TenantCalculator {
       $rule_calculator = new RuleCalculator( $rule, $this->from_date, $this->to_date, $rules[0]);
       $rule_data = $rule_calculator->calculate( $this->tenant, $report_type);
       $tenant_data->add( $rule_data );
-
       $tenant_data->setHourlyCop( $cop_calculator->calculate( $this->tenant, $report_type ), $rule_data->reading_data );
       $tenant_data->setYearly( YearlyCalculator::instance( $this->from_date, $this->to_date, $this->tenant )
                                                ->calculate() );
     }
+    $tenant_data->calculateFixedRules();
     return $tenant_data;
   }
 

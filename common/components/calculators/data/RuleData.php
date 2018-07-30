@@ -208,6 +208,8 @@ class RuleData extends TaozRawData {
 
   public $reading_data = array();
 
+  public $fixed_rules = 0;
+
   public function setElectricityData(ElectricalConsumptionCalculator $calculator)
   {
       $this->electricity_geva_readings = $calculator->getGevaConsumption();
@@ -258,5 +260,9 @@ class RuleData extends TaozRawData {
       $this->cop_shefel = (float)$cop->shefel;
       $this->cop_geva = (float)$cop->geva;
       $this->cop_pisga = (float)$cop->pisga;
+  }
+
+  public function setFixedRules($fixed_rule) {
+      $this->fixed_rules = $fixed_rule;
   }
 }
