@@ -163,11 +163,11 @@ $this->params['breadcrumbs'][] = Yii::t('backend.view', 'Reports');
 							<?php echo $form_active->field($form, 'is_import_export_separatly')->checkbox()->error(false); ?>
 						</div>
 					</div>
-                    <div class="col-lg-3">
-                        <div style="display:none;" data-type="<?php echo Json::encode([Report::TYPE_TENANT_BILLS]); ?>">
-                            <?php echo $form_active->field($form, 'report_calculation_type')->dropDownList(Report::getTenantBillReportTypes())->label(false); ?>
+                    <!--<div class="col-lg-3">
+                        <div style="display:none;" data-type="<?php /*echo Json::encode([Report::TYPE_TENANT_BILLS]); */?>">
+                            <?php /*echo $form_active->field($form, 'report_calculation_type')->dropDownList(Report::getTenantBillReportTypes())->label(false); */?>
                         </div>
-                    </div>
+                    </div>-->
 				</div>
 			</fieldset>
 		<?php ActiveForm::end(); ?>

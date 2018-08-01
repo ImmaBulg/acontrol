@@ -88,7 +88,6 @@ class ReportGeneratorTenantBills extends ReportGenerator implements IReportGener
         foreach($this->tenants as $tenant) {
             $tenant_calculator = new TenantCalculator($tenant, $this->from_date, $this->to_date);
             $tenant_data = $tenant_calculator->calculate($this->report_type);
-            //VarDumper::dump('test', 100, true);
             $data->add($tenant_data);
         }
 

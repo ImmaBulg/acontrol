@@ -9,6 +9,7 @@ use common\components\calculators\exceptions\InvalidRateDateException;
 use common\helpers\TimeManipulator;
 use common\models\AirRates;
 use common\models\MeterChannelMultiplier;
+use yii\helpers\VarDumper;
 
 /**
  * Created by PhpStorm.

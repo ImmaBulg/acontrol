@@ -7,6 +7,7 @@ use common\components\TimeRange;
 use common\constants\DataCategories;
 use common\models\SubAirRatesTaoz;
 use yii\db\Query;
+use yii\helpers\VarDumper;
 
 /**
  * Created by PhpStorm.
@@ -111,6 +112,7 @@ class TaozDataQueryGenerator
                      * @var Carbon[] $dates
                      */
                     $dates = $this->day_to_dates_map[$day] ?? [];
+
                     foreach($dates as $date) {
                         foreach($time_ranges as $time_range) {
                             if ($time_range->getDay() && $time_range->getDay() != $day) {
@@ -125,14 +127,15 @@ class TaozDataQueryGenerator
                                 $date_time_to->addDay()->startOfDay();
                             }
                             else {
-                                $date_time_to->setTime($time_range->getEndTime()->hour,
+                                $date_time_to->setTime($time_range->getEndTime()->hour + 1,
                                                        $time_range->getEndTime()->minute);
+
                             }
+
                             $date_time_to = $date_time_to->format(self::DATE_TIME_FORMAT);
                             $query_from = (clone $query)->andWhere([$attribute => $date_time_from]);
                             $query_to = (clone $query)->andWhere([$attribute => $date_time_to]);
                             $this->queries[$taoz_part->type][] = new DateRangeQueryPair($query_from, $query_to);
-                            //$this->queries[$taoz_part->type.'_reading'][] = (clone $query)->andWhere([$attribute => $this->from_date]);
                             $this->queries[$taoz_part->type.'_reading'][] = new DateRangeQueryPair($query_from, $query_to);
                         }
                     }
@@ -141,7 +144,7 @@ class TaozDataQueryGenerator
         }
         $this->queries[DataCategories::READING_FROM] = (clone $query)->andWhere([$attribute => $this->from_date]);
         $this->queries[DataCategories::READING_TO] =
-            (clone $query)->andWhere([$attribute => $this->to_date->copy()->addDay(1)->startOfDay()]);
+            (clone $query)->andWhere([$attribute => $this->to_date->copy()->addDay(1)->startOfDay()->subHour(1)]);
         return $this->queries;
     }
 
@@ -152,6 +155,7 @@ class TaozDataQueryGenerator
      */
     public function getTimeRanges(SubAirRatesTaoz $taoz_part) {
         $time_ranges = [];
+
         foreach($this->time_boundaries as $time_boundary) {
             foreach($taoz_part->getTimeRanges() as $time_range) {
                 $start_time = $time_range->getStartTime();

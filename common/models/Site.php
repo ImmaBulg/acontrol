@@ -457,6 +457,8 @@ class Site extends ActiveRecord
                                     ->andWhere(['meter_channel.is_main' => (int)true])
                                     //->andWhere(['meter.is_main' => (int)true])
                                     ->andWhere(['meter.type' => $type])
+                                    ->andWhere(['meter_subchannel.channel' => 1])
+
                                     ->andWhere(['meter.site_id' => $this->id]);
         $subchannels = Yii::$app->db->cache(function () use ($subchannels) {
             return $subchannels->all();

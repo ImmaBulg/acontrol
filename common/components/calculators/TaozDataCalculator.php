@@ -73,7 +73,8 @@ class TaozDataCalculator {
             $this->calculateQueriesReadings( $queries );
           break;*/
         default:
-          $this->data[ $type ] = $this->calculateQueries( $queries, $type ) * $voltage_multiplier * $current_multiplier * $channel_percent / 100;
+            $result = $this->calculateQueries( $queries, $type );
+            $this->data[ $type ] = $result;
       }
     }
     return $this;
@@ -101,6 +102,7 @@ class TaozDataCalculator {
             if ( $to_part > $from_part ) {
               $result = $to_part - $from_part;
               $sum    += $result;
+
               if ($type && isset($result)) {
                   $this->data_by_time[$type][strtotime($query->getFromQuery()->where[3]['datetime'])] = $result;
               }

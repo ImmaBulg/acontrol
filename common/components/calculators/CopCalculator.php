@@ -89,8 +89,7 @@ class CopCalculator
             default:
                 $electrical_sum = $this->calculateElectricalSum();
                 $air_sum = $this->calculateAirSum();
-                VarDumper::dump($electrical_sum, 1, true);
-                VarDumper::dump($air_sum, 1, true);
+
                 $cop = $electrical_sum / $air_sum;
                 break;
         }
@@ -148,8 +147,9 @@ class CopCalculator
     {
         $this->calculateAirConsumptions();
         $this->calculateElectricalConsumptions();
+
         return (object)[
-            'shefel' => ($this->electrical_cn_shefel/$this->cn_shefel)*100,
+            'shefel' => $this->electrical_cn_shefel/$this->cn_shefel,
             'pisga' => $this->electrical_cn_pisga/$this->cn_pisga,
             'geva' => $this->electrical_cn_geva/$this->cn_geva,
         ];
@@ -182,9 +182,9 @@ class CopCalculator
                         $queries_generator = new TaozDataQueryGenerator($this->from_date, $this->to_date, $rate->subAirRatesTaoz, $this->tenant->getRegularTimeRanges());
                         $taoz_queries = $queries_generator->generate('datetime', $air_reading_base_query);
                         $taoz_consumption = (new TaozDataCalculator($this->from_date, $this->to_date, $taoz_queries))->calculate(1, 1, 100)->getData();
-                        $this->cn_geva += $taoz_consumption->getGevaReading();
-                        $this->cn_pisga += $taoz_consumption->getPisgaReading();
-                        $this->cn_shefel += $taoz_consumption->getShefelReading();
+                        $this->cn_geva += $taoz_consumption->getGevaConsumption();
+                        $this->cn_pisga += $taoz_consumption->getPisgaConsumption();
+                        $this->cn_shefel += $taoz_consumption->getShefelConsumption();
                         break;
                 }
             }

@@ -210,11 +210,20 @@ class TenantData extends TaozRawData {
                           $data[0]->setFixedRule((int)$rule['value']);
                           break;
                       case RuleFixedLoad::USE_TYPE_KWH_FIXED:
-                          $rate = AirRates::getActiveWithinRangeByTypeId(
-                              $this->start_date,
-                              $this->end_date,
-                              $rule['rate_type_id']
-                          )->one();
+                          if ($rule['rate_type_id'] == 12) {
+                              $rate = AirRates::getActiveWithinRangeByTypeId(
+                                  $this->start_date,
+                                  $this->end_date,
+                                  $tenant->getRateType()
+                              )->one();
+                          }
+                          else {
+                              $rate = AirRates::getActiveWithinRangeByTypeId(
+                                  $this->start_date,
+                                  $this->end_date,
+                                  $rule['rate_type_id']
+                              )->one();
+                          }
                           $pisga_cof = $data[0]->getPisgaConsumption() / $reading_summ;
                           $geva_cof = $data[0]->getGevaConsumption() / $reading_summ;
                           $shefel_cof = $data[0]->getShefelConsumption() / $reading_summ;

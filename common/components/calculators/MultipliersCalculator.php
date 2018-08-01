@@ -101,6 +101,7 @@ class MultipliersCalculator
                 switch($rate->rateType->type) {
                     case RateType::TYPE_TAOZ :
                     case RateType::TYPE_FIXED :
+                        //VarDumper::dump('before query generator');
                         $queries_generator =
                             new TaozDataQueryGenerator($this->from_date, $this->to_date, $rate->subAirRatesTaoz,
                                                        $time_ranges);
@@ -122,6 +123,7 @@ class MultipliersCalculator
                 }
             }
         }
+        //VarDumper::dump($multiplied_data, 100, true);
         return $multiplied_data;
     }
 }

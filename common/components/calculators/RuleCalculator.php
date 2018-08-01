@@ -54,13 +54,14 @@ class RuleCalculator
     public function calculate(Tenant $tenant, $report_type, $cops = null) {
         $rule_data = new RuleData($this->from_date, $this->to_date, $this->rule, $tenant->getRegularTimeString(),
                                   $tenant->getIrregularTimeString());
-
         $electricity_main_sub_channels = $tenant->relationSite->getMainSubChannels(Meter::TYPE_ELECTRICITY);
 
-        if ($report_type == 2)
+        if ($report_type == 2) {
             $air_main_sub_channels = $tenant->relationSite->getRuleSubChannelsNoMeter($this->first_rule);
-        else
+        }
+        else {
             $air_main_sub_channels = $tenant->relationSite->getMainSubChannels(Meter::TYPE_AIR);
+        }
 
 
         $site_main_meters_data = new SiteMainMetersData($air_main_sub_channels, $electricity_main_sub_channels);
@@ -72,7 +73,6 @@ class RuleCalculator
         $rates = AirRates::getActiveWithinRangeByTypeId($this->from_date, $this->to_date,
             $rate_type_id)
             ->all();
-        //VarDumper::dump($rates, 100, true);
         switch ($report_type) {
             case Report::TENANT_BILL_REPORT_BY_MANUAL_COP:
                 $cop = $tenant->relationSite->manual_cop;
@@ -83,7 +83,7 @@ class RuleCalculator
                 ];
                 break;
             case Report::TENANT_BILL_REPORT_BY_FIRST_RULE:
-                $air_rule_meter_data = new SiteMainMetersData($tenant->relationSite->getRuleSubChannelsNoMeter($this->first_rule), $electricity_main_sub_channels);
+                $air_rule_meter_data = new SiteMainMetersData($tenant->relationSite->getRuleSubChannels($this->first_rule), $electricity_main_sub_channels);
                 $cop = (new CopCalculator($air_rule_meter_data, $this->from_date, $this->to_date))->calculate();
                 $consumption_cop = (new CopCalculator($site_main_meters_data, $this->from_date, $this->to_date, CopCalculator::CONSUMPTION_COP, $tenant))->calculate();
                 break;
@@ -93,7 +93,6 @@ class RuleCalculator
                 break;
         }
 
-        //VarDumper::dump($air_main_sub_channels, 100, true);
 
         $rule_data->setCoops($consumption_cop);
         $rule_data->setCop($cop);

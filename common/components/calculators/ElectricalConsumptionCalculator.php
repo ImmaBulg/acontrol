@@ -7,6 +7,7 @@ use yii\db\Query;
 use Carbon\Carbon;
 use common\models\ElectricityMeterRawData;
 use common\components\calculators\data\SiteMainMetersData;
+use yii\helpers\VarDumper;
 
 class ElectricalConsumptionCalculator
 {
@@ -69,7 +70,6 @@ class ElectricalConsumptionCalculator
     public function calculate()
     {
         $channels = $this->site_main_meter_data->getElectricalMainChannels();
-
         foreach ($channels as $channel) {
             foreach (self::getDataTypes() as $type) {
                 $this->getDataByType($type, $channel);
@@ -82,8 +82,7 @@ class ElectricalConsumptionCalculator
     private function getDataByType(string $type, $channel)
     {
 
-        $query = (new Query())->select($type . ' as ' . $type)->from(ElectricityMeterRawData::tableName());
-
+        $query = (new Query())->select('reading_' . $type . ' as ' . $type)->from(ElectricityMeterRawData::tableName());
         $override_data_end = (clone $query)
                 ->andWhere(['date' => $this->to_date->getTimestamp()])
                 ->andWhere(['meter_id' => $channel->getMeterName()])
@@ -97,7 +96,7 @@ class ElectricalConsumptionCalculator
                 ->scalar();
 
         if ($override_data_end && false) {
-            $this->{$type . '_consumption'} += ($override_data_end - $override_data_start)*16;
+            $this->{$type . '_consumption'} += ($override_data_end - $override_data_start) * 16;
         } else {
             $query = (new Query())->select(['reading_' . $type . ' as ' . $type ])
                 ->from(ElectricityMeterRawData::tableName());
@@ -106,8 +105,7 @@ class ElectricalConsumptionCalculator
                 (clone $query)->andWhere(['date' => $this->from_date->getTimestamp()]),
                 (clone $query)->andWhere(['date' => $this->to_date->getTimestamp()])
             );
-
-            $this->{$type . '_consumption'} += $channel->getConsumption($date_range_query_pair);
+            $this->{$type . '_consumption'} += $channel->getConsumption($date_range_query_pair) * 16;
         }
 
     }
