@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = Yii::t('backend.view', 'Create a new site');
 						'data' => Site::getListToIssues(),
 					]); ?>
 					<?php echo $form_active->field($form, 'rate_type_id')->widget(Select2::classname(), [
-						'data' => Rate::getListRateTypes(),
+						'data' => Rate::getListRate(),
 					]); ?>
 					<?php echo $form_active->field($form, 'billing_day')->widget(Select2::classname(), [
 						'data' => SiteBillingSetting::getListBillingDays(),

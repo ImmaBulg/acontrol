@@ -39,6 +39,11 @@ class SiteBillingSetting extends ActiveRecord
 		return 'site_billing_setting';
 	}
 
+    public static function primaryKey()
+    {
+        return ['site_id'];
+    }
+
 	public function rules()
 	{
 		return [
@@ -130,7 +135,7 @@ class SiteBillingSetting extends ActiveRecord
 
 	public function getRelationRateType()
 	{
-		return $this->hasOne(RateType::className(), ['id' => 'rate_type_id']);
+		return $this->hasOne(RateName::className(), ['id' => 'rate_type_id']);
 	}
 
 	public function getAliasRateType()

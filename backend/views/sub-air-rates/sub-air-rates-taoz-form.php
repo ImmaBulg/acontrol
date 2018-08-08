@@ -15,9 +15,13 @@ use yii\helpers\Url;
 <div style="position:relative" class="mini-stat-type-2 shadow border-primary">
     <div class="row">
         <div class="col-md-6">
-            <?= $form->field($model, "[$key]type")->dropDownList(\common\models\SubAirRatesTaoz::types()); ?>
+            <?= $form->field($model, "[$key]type")->dropDownList(\common\models\SubAirRatesTaoz::types(), [
+                    'prompt' => 'Select type...',
+            ]); ?>
             <?= $form->field($model, "[$key]week_part")
-                     ->dropDownList(\common\models\SubAirRatesTaoz::week_parts()); ?>
+                     ->dropDownList(\common\models\SubAirRatesTaoz::week_parts(), [
+                             'prompt' => 'Select week part ...',
+                     ]); ?>
         </div>
     </div>
     <div class="row">
@@ -56,10 +60,10 @@ use yii\helpers\Url;
                       ['class' => ' control-label text-left']); ?>
         </div>
         <div class="col-md-4">
-            <?= $form->field($model, "[$key]rate")->textInput(); ?>
+            <?= $form->field($model, "[$key]rate")->textInput()->label('Rate in Agorot ₪'); ?>
         </div>
     </div>
-    <?= $form->field($model, "[$key]identifier")->textInput(); ?>
+    <?= $form->field($model, "[$key]identifier")->textInput()->label('Note'); ?>
 
     <a id="sub-air-rate-remove-btn-<?= $key ?>" href="#" class="btn btn-danger sub-air-rate-remove-btn"
        style="position:absolute">

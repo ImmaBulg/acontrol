@@ -29,8 +29,8 @@ class Role extends \yii\rbac\Role
 	{
 		return [
 			self::ROLE_ADMIN => [
+                self::ROLE_CLIENT => Yii::t('common.common', 'Client'),
 				self::ROLE_TECHNICIAN => Yii::t('common.common', 'Technician'),
-				self::ROLE_CLIENT => Yii::t('common.common', 'Client'),
 				self::ROLE_ADMIN => Yii::t('common.common', 'Administrator'),
 				self::ROLE_SITE => Yii::t('common.common', 'Site'),
 				self::ROLE_TENANT => Yii::t('common.common', 'Tenant'),

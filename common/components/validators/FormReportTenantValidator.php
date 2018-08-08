@@ -15,6 +15,7 @@ use common\models\MeterChannel;
 use common\models\MeterChannelGroupItem;
 use common\models\MeterSubchannel;
 use common\models\Rate;
+use common\models\RateName;
 use common\models\RateType;
 use common\models\Report;
 use common\models\RuleGroupLoad;
@@ -327,15 +328,16 @@ class FormReportTenantValidator
 
 
     private function isAnyRatesAvailableWithinDateRange() {
+        $rate_name = RateName::find($this->tenant->getRateType())->one();
         $model_rate_start = AirRates::find()->where([
-                                                        'rate_type_id' => $this->tenant->getRateType(),
+                                                        'rate_name' => $rate_name->name,
                                                         'status' => Rate::STATUS_ACTIVE,
                                                     ])->andWhere('start_date <= :start_date', [
             'start_date' => $this->to_date->format('Y-m-d'),
         ])->exists();
         $model_rate_end = AirRates::find()->where([
-                                                      'rate_type_id' => $this->tenant->getRateType(),
-                                                      'status' => Rate::STATUS_ACTIVE,
+            'rate_name' => $rate_name->name,
+            'status' => Rate::STATUS_ACTIVE,
                                                   ])->andWhere('end_date >= :end_date', [
             'end_date' => $this->from_date->format('Y-m-d'),
         ])->exists();

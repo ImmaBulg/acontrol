@@ -158,8 +158,8 @@ class RuleGroupLoad extends ActiveRecord
 	{
 		return [
 			self::USE_TYPE_SINGLE_METER_LOAD => Yii::t('common.rule', 'Single meter load'),
-			self::USE_TYPE_SINGLE_METER_GROUP_LOAD => Yii::t('common.rule', 'Single meter group load'),
-			self::USE_TYPE_SINGLE_TENANT_GROUP_LOAD => Yii::t('common.rule', 'Single tenant group load'),
+			self::USE_TYPE_SINGLE_METER_GROUP_LOAD => Yii::t('common.rule', 'Channel group load'),
+			self::USE_TYPE_SINGLE_TENANT_GROUP_LOAD => Yii::t('common.rule', 'Tenant group load'),
 		];
 	}
 

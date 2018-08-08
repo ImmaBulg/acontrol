@@ -46,8 +46,8 @@ class SubAirRates extends AParentActiveRecord
             'id' => 'ID',
             'rate_id' => 'Rate ID',
             'category' => 'Category',
-            'rate' => 'Rate',
-            'identifier' => 'Identifier',
+            'rate' => 'Rate in Agorot',
+            'identifier' => 'Note',
         ];
     }
 

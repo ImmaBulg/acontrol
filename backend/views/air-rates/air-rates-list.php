@@ -49,9 +49,8 @@ $this->params['breadcrumbs'][] = Yii::t('backend.view', 'Air Rates');
 
             'id',
             [
-                'attribute' => 'rate_type_id',
+                'attribute' => 'rate_name',
                 'value' => 'rateTypeName',
-                'filter' => Rate::getListRateTypes(),
             ],
             [
                 'attribute' => 'start_date',

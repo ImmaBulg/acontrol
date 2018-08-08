@@ -73,10 +73,14 @@ class TaozDataCalculator {
             $this->calculateQueriesReadings( $queries );
           break;*/
         default:
+            //VarDumper::dump('type: ' . $type . "\n", 100, true);
             $result = $this->calculateQueries( $queries, $type );
             $this->data[ $type ] = $result;
       }
     }
+   /* VarDumper::dump('this: ', 100, true);
+    VarDumper::dump( $this->data, 100, true);
+    VarDumper::dump( "\n", 100, true);*/
     return $this;
   }
 
@@ -105,6 +109,7 @@ class TaozDataCalculator {
 
               if ($type && isset($result)) {
                   $this->data_by_time[$type][strtotime($query->getFromQuery()->where[3]['datetime'])] = $result;
+                  //VarDumper::dump('from ' . $query->getFromQuery()->where[3]['datetime'] . ' to ' . $query->getToQuery()->where[3]['datetime'] . ' = ' . $result . "\n", 100, true);
               }
             }
           }

@@ -79,13 +79,13 @@ $this->title = Yii::t('backend.view', 'Rule - {name}', [
 					</div>
 					<div style="display:none;" data-rate-type="<?php echo FormRuleFixedLoad::RATE_TYPE_FLAT_AMOUNT; ?>">
 						<?php echo $form_active->field($form, 'rate_type_flat_id')->widget(Select2::classname(), [
-							'data' => Rate::getListRateTypes(['type' => RateType::TYPE_FLAT]),
+							'data' => Rate::getListRate(['is_taoz' => 0]),
 							'options' => ['prompt' => Yii::t('backend.views', 'Select an option')],
 						]); ?>
 					</div>
 					<div style="display:none;" data-rate-type="<?php echo FormRuleFixedLoad::RATE_TYPE_PERCENT_AMOUNT; ?>">
 						<?php echo $form_active->field($form, 'rate_type_fixed_id')->widget(Select2::classname(), [
-							'data' => Rate::getListRateTypes(['type' => RateType::TYPE_PERCENT]),
+							'data' => Rate::getListRate(['is_taoz' => 0]),
 							'options' => ['prompt' => Yii::t('backend.views', 'Select an option')],
 						]); ?>
 					</div>

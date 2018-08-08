@@ -16,8 +16,8 @@ use yii\behaviors\TimestampBehavior;
  */
 class RateType extends ActiveRecord
 {
-    const TYPE_FIXED = 1;
-    const TYPE_TAOZ = 2;
+    const TYPE_FIXED = 0;
+    const TYPE_TAOZ = 1;
     const TYPE_FLAT = 3;
     const TYPE_PERCENT = 3;
 

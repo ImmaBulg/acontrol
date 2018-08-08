@@ -8,5 +8,5 @@
  */
 use dezmont765\yii2bundle\widgets\PartialActiveForm; ?>
 
-<?= $form->field($model, "[$key]rate")->textInput(); ?>
-<?= $form->field($model, "[$key]identifier")->textInput(); ?>
+<?= $form->field($model, "[$key]rate")->textInput(['placeholder' => '00.00'])->label('Rate in Agorot ₪'); ?>
+<?= $form->field($model, "[$key]identifier")->textInput()->label('Note'); ?>

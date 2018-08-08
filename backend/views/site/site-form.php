@@ -13,6 +13,7 @@ use common\models\Report;
 use common\models\Site;
 use common\models\SiteBillingSetting;
 use common\models\User;
+use common\models\RateName;
 use common\widgets\ActiveForm;
 use common\widgets\Select2;
 use dezmont765\yii2bundle\widgets\AutoRegistrableScriptBlock;
@@ -65,7 +66,7 @@ endif;
                         'data' => Site::getListToIssues(),
                     ]); ?>
                     <?php echo $form_active->field($form, 'rate_type_id')->widget(Select2::classname(), [
-                        'data' => Rate::getListRateTypes(),
+                        'data' => RateName::getListName(),
                     ]); ?>
                     <?php echo $form_active->field($form, 'report_calculation_type')->dropDownList(Report::getTenantBillReportTypes()); ?>
                     <?php echo $form_active->field($form, 'billing_day')->widget(Select2::classname(), [
@@ -73,11 +74,11 @@ endif;
                     ]); ?>
                     <?php echo $form_active->field($form, 'include_vat')->checkbox(); ?>
                     <?php echo $form_active->field($form, 'comment')->textArea(); ?>
-                    <div style="display:none;" data-type="<?php echo Json::encode([Report::TENANT_BILL_REPORT_BY_MANUAL_COP]); ?>">
-                        <div style="display:none;" class="manual" data-type="<?php echo Json::encode([Rate::HOME, Rate::GENERAL]); ?>">
+                    <div style="display:none;" class="manual-cop" data-type="<?php echo Json::encode([Report::TENANT_BILL_REPORT_BY_MANUAL_COP]); ?>">
+                        <div style="display:none;" class="manual" data-type="<?php echo Json::encode([RateName::HOME, RateName::GENERAL]); ?>">
                             <?php echo $form_active->field($form, 'manual_cop')->textInput(); ?>
                         </div>
-                        <div stlye="display: none;" class="taoz" data-type="<?php echo Json::encode([Rate::NAMUCH, Rate::NAMUCH_BYTE, Rate::NAMUCH_KLALI, Rate::BYTE, Rate::KAVUAA, Rate::REHOV, Rate::GAVOGA, Rate::ELYON, Rate::MAOR, Rate::MEMUTZA, Rate::NAYAD, Rate::INHERIT]); ?>">
+                        <div stlye="display: none;" class="taoz" data-type="<?php echo Json::encode([RateName::LOW, RateName::HIGH]); ?>">
                             <?php echo $form_active->field($form, 'manual_cop_shefel')->textInput(); ?>
                             <?php echo $form_active->field($form, 'manual_cop_geva')->textInput(); ?>
                             <?php echo $form_active->field($form, 'manual_cop_pisga')->textInput(); ?>
@@ -191,8 +192,7 @@ $('#$field_rate').each(function(){
 $('#$field_type').on('change', function(){
 	var value = this.value;
 	var form = $(this).parents('form');
-	var fields = form.find('div[data-type]');
-
+	var fields = form.find('.manual-cop');
 	fields.hide();
 	fields.each(function(){
 		var field = jQuery(this);
@@ -204,7 +204,7 @@ $('#$field_type').on('change', function(){
 $('#$field_type').each(function(){
 	var value = this.value;
 	var form = $(this).parents('form');
-	var fields = form.find('div[data-type]');
+	var fields = form.find('.manual-cop');
 
 	fields.hide();
 	fields.each(function(){

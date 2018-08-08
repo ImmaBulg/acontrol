@@ -5,12 +5,14 @@ namespace common\components\calculators;
 use Carbon\Carbon;
 use common\components\calculators\data\SiteMainMetersData;
 use common\components\calculators\data\TenantData;
+use common\components\calculators\single_data\SingleTenantData;
 use common\exceptions\FormReportValidationContinueException;
 use common\helpers\TimeManipulator;
 use common\models\AirRates;
 use common\models\helpers\reports\ReportGenerator;
 use common\models\Meter;
 use common\models\Rate;
+use common\models\RateName;
 use common\models\RuleSingleChannel;
 use common\models\Tenant;
 use Yii;
@@ -74,18 +76,34 @@ class TenantCalculator {
 
 
   public function calculate($report_type) {
-    $tenant_data = new TenantData( $this->from_date, $this->to_date, $this->tenant );
     $rules       = $this->getRules();
-    foreach ( $rules as $rule ) {
-      $cop_calculator = new CopTenantCalculatorHourly( $this->from_date, $this->to_date );
-      $rule_calculator = new RuleCalculator( $rule, $this->from_date, $this->to_date, $rules[0]);
-      $rule_data = $rule_calculator->calculate( $this->tenant, $report_type);
-      $tenant_data->add( $rule_data );
-      $tenant_data->setHourlyCop( $cop_calculator->calculate( $this->tenant, $report_type ), $rule_data->reading_data );
-      $tenant_data->setYearly( YearlyCalculator::instance( $this->from_date, $this->to_date, $this->tenant )
-                                               ->calculate() );
+    $site_rate_id = $this->tenant->relationSite->relationSiteBillingSetting->rate_type_id;
+    $is_taoz = RateName::find()->andWhere(['id' => $site_rate_id])->one()->is_taoz;
+    if ($is_taoz) {
+        $tenant_data = new TenantData( $this->from_date, $this->to_date, $this->tenant );
+        foreach ( $rules as $rule ) {
+            $cop_calculator = new CopTenantCalculatorHourly( $this->from_date, $this->to_date, $report_type);
+            $rule_calculator = new RuleCalculator( $rule, $this->from_date, $this->to_date, $rules[0]);
+            $rule_data = $rule_calculator->calculate( $this->tenant, $report_type);
+            $tenant_data->add( $rule_data );
+            $tenant_data->setHourlyCop( $cop_calculator->calculate( $this->tenant, $report_type ), $rule_data->reading_data );
+            $tenant_data->setYearly( YearlyCalculator::instance( $this->from_date, $this->to_date, $this->tenant )
+                ->calculate());
+        }
+        $tenant_data->calculateFixedRules();
+    } else {
+        $tenant_data = new SingleTenantData( $this->from_date, $this->to_date, $this->tenant );
+        foreach ($rules as $rule) {
+            $cop_calculator = new CopTenantCalculatorHourly( $this->from_date, $this->to_date, $report_type);
+            $rule_calculator = new SingleRuleCalculator($rule, $this->from_date, $this->to_date, $rules[0]);
+            $rule_data = $rule_calculator->calculate($this->tenant, $report_type);
+            $tenant_data->add($rule_data);
+            $tenant_data->setYearly( YearlyCalculator::instance( $this->from_date, $this->to_date, $this->tenant )
+                ->calculate());
+        }
+        $tenant_data->calculateFixedRules();
     }
-    $tenant_data->calculateFixedRules();
+    //VarDumper::dump($tenant_data);
     return $tenant_data;
   }
 

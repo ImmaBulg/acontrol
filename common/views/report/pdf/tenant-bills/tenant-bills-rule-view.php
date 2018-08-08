@@ -32,29 +32,47 @@ $direction = LanguageSelector::getAliasLanguageDirection();
     <? if(!empty($data)): ?>
     <?
     if($type == 'irregular_data') {
-      if ( $data[0]->getMultipliedData()[0]->getPisgaConsumption() == 0
-           and
-           $data[0]->getMultipliedData()[0]->getGevaConsumption() == 0
-           and
-           $data[0]->getMultipliedData()[0]->getShefelConsumption() == 0 ) {
-        // Skip empty Irregular hours
-        continue;
-      }
+        if (get_class($rule->getData()['irregular_data'][0]->getMultipliedData()[0]) != "common\components\calculators\single_data\SingleMultipliedData") {
+            if ( $data[0]->getMultipliedData()[0]->getPisgaConsumption() == 0
+                and
+                $data[0]->getMultipliedData()[0]->getGevaConsumption() == 0
+                and
+                $data[0]->getMultipliedData()[0]->getShefelConsumption() == 0 ) {
+                // Skip empty Irregular hours
+                continue;
+            }
+        } else {
+            if ( $data[0]->getMultipliedData()[0]->getConsumption() == 0) continue;
+        }
+
     }
     ?>
         <table dir="<?= $direction; ?>"
                style="border-collapse:collapse;width:100%;font-size:11px;color:#000;vertical-align:top;margin-bottom:15px;"
                cellpadding="0" cellspacing="0">
             <thead>
+            <?php echo get_class($rule->getData()); ?>
             <?php if(array_key_exists('irregular_data', $rule->getData())): ?>
-                <?php if ($rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getPisgaConsumption() != 0 || $rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getGevaConsumption() != 0 || $rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getShefelConsumption() != 0): ?>
-                    <tr>
-                        <td style="padding:5px;" colspan="7">
-                            <strong>
-                                <?= RuleData::getDataLabel($type) . ' ' . $rule->getTimeRange($type) . '' ?>
-                            </strong>
-                        </td>
-                    </tr>
+                <?php if (get_class($rule->getData()['irregular_data'][0]->getMultipliedData()[0]) != "common\components\calculators\single_data\SingleMultipliedData"): ?>
+                    <?php if ($rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getPisgaConsumption() != 0 || $rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getGevaConsumption() != 0 || $rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getShefelConsumption() != 0): ?>
+                        <tr>
+                            <td style="padding:5px;" colspan="7">
+                                <strong>
+                                    <?= RuleData::getDataLabel($type) . ' ' . $rule->getTimeRange($type) . '' ?>
+                                </strong>
+                            </td>
+                        </tr>
+                     <?php endif; ?>
+                <?php else: ?>
+                    <?php if ($rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getConsumption() != 0): ?>
+                        <tr>
+                            <td style="padding:5px;" colspan="7">
+                                <strong>
+                                    <?= RuleData::getDataLabel($type) . ' ' . $rule->getTimeRange($type) . '' ?>
+                                </strong>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
                  <?php endif; ?>
             <?php endif; ?>
             <tr bgcolor="#7e7e7e">
@@ -100,18 +118,16 @@ $direction = LanguageSelector::getAliasLanguageDirection();
              */
             foreach($data as $data_block): ?>
                 <?php foreach($data_block->getMultipliedData() as $multiplied_data) : ?>
-
-                    <tr>
-                        <td style="padding:10px 5px 5px;border:1px solid #000;" align="center">
-                            <?= $multiplied_data->getStartDate()->format('d-m-Y') ?>
-                        </td>
-                        <td style="padding:10px 5px 5px;border:1px solid #000;" align="center">
-                            <?= $multiplied_data->getEndDate()->format('d-m-Y') ?>
-                        </td>
-                        <td style="padding:5px;border:1px solid #000;" colspan="3"></td>
-                    </tr>
-
-                    <?php if($data_block->getRate()->rateType->type == RateType::TYPE_TAOZ): ?>
+                    <?php if($data_block->getRate()->is_taoz): ?>
+                        <tr>
+                            <td style="padding:10px 5px 5px;border:1px solid #000;" align="center">
+                                <?= $multiplied_data->getStartDate()->format('d-m-Y') ?>
+                            </td>
+                            <td style="padding:10px 5px 5px;border:1px solid #000;" align="center">
+                                <?= $multiplied_data->getEndDate()->format('d-m-Y') ?>
+                            </td>
+                            <td style="padding:5px;border:1px solid #000;" colspan="3"></td>
+                        </tr>
                         <tr>
                             <td style="padding:5px;border:1px solid #000;vertical-align: middle" align="center"
                                 rowspan="3">
@@ -139,7 +155,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                             </td>
 
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $formatter->asPrice($multiplied_data->getPisgaPay()) ?>
+                                <?= $formatter->asPrice($multiplied_data->getPisgaPay() + $data[0]->getPisgaFixedRule()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;vertical-align: middle" align="center">
                                 <?= $formatter->asNumberFormat($rule->cop_pisga); ?>
@@ -165,7 +181,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                                 <?= $formatter->asNumberFormat($data_block->getGevaPrice()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $formatter->asPrice($multiplied_data->getGevaPay()) ?>
+                                <?= $formatter->asPrice($multiplied_data->getGevaPay() + $data[0]->getGevaFixedRule()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($rule->cop_geva); ?>
@@ -192,7 +208,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                             </td>
 
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $formatter->asPrice($multiplied_data->getShefelPay()) ?>
+                                <?= $formatter->asPrice($multiplied_data->getShefelPay() + $data[0]->getShefelFixedRule()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($rule->cop_shefel); ?>
@@ -218,9 +234,52 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                             </td>
 
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $formatter->asPrice($multiplied_data->getPisgaPay() + $multiplied_data->getGevaPay() + $multiplied_data->getShefelPay()) ?>
+                                <?= $formatter->asPrice($multiplied_data->getPisgaPay() + $multiplied_data->getGevaPay() + $multiplied_data->getShefelPay() + $data[0]->getFixedRule()) ?>
                             </td>
                         </tr>
+                    <?php else: ?>
+                    <tr>
+                        <td style="padding:10px 5px 5px;border:1px solid #000;" align="center">
+                            <?= $multiplied_data->getStartDate()->format('d-m-Y') ?>
+                        </td>
+                        <td style="padding:10px 5px 5px;border:1px solid #000;" align="center">
+                            <?= $multiplied_data->getEndDate()->format('d-m-Y') ?>
+                        </td>
+                        <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
+                            <?php echo Yii::t('common.view', 'All'); ?>
+                        </td>
+                        <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
+                            <?= $formatter->asNumberFormat($multiplied_data->getConsumption()) ?>
+                        </td>
+                        <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
+                            <?= $formatter->asNumberFormat($multiplied_data->getAirConsumption()) ?>
+                        </td>
+                        <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
+
+                        </td>
+                        <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
+                            <?= $formatter->asNumberFormat($data[0]->getFixedRule()) ?>
+                        </td>
+                        <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
+                            <?= $formatter->asNumberFormat($data_block->getPrice()) ?>
+                        </td>
+
+                        <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
+                            <?= $formatter->asPrice($multiplied_data->getPay() + $data[0]->getFixedRule()) ?>
+                        </td>
+
+                        <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
+                            <?= $formatter->asNumberFormat($rule->getCop()); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;border:1px solid #000;vertical-align: middle" align="center">
+                            <?= $formatter->asNumberFormat($multiplied_data->getReadingFrom()) ?>
+                        </td>
+                        <td style="padding:5px;border:1px solid #000;vertical-align: middle" align="center">
+                            <?= $formatter->asNumberFormat($multiplied_data->getReadingTo()) ?>
+                        </td>
+                    </tr>
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php endforeach; ?>

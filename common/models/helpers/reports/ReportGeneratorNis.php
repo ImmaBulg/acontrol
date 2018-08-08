@@ -260,7 +260,7 @@ class ReportGeneratorNis extends ReportGenerator implements IReportGenerator
                     $this->to_date,
                     $rule['rate_type_id']
                 )->one();
-                $summ = $this->data['tenants'][$tenant->id]['total_Geva'] + $this->data['tenants'][$tenant->id]['total_Pisga'] + $this->data['tenants'][$tenant->id]['shefel_reading'];
+                $summ = $this->data['tenants'][$tenant->id]['total_Geva'] + $this->data['tenants'][$tenant->id]['total_Pisga'] + $this->data['tenants'][$tenant->id]['total_Shefel'];
                 $pisga_cof = $this->data['tenants'][$tenant->id]['total_Pisga'] / $summ;
                 $geva_cof = $this->data['tenants'][$tenant->id]['total_Geva'] / $summ;
                 $shefel_cof = $this->data['tenants'][$tenant->id]['total_Shefel'] / $summ;
@@ -273,11 +273,20 @@ class ReportGeneratorNis extends ReportGenerator implements IReportGenerator
                 $this->data['site_total'] += ($this->data['tenants'][$tenant->id]['total'] + (int)$this->data['tenants'][$tenant->id]['total_fixed_rules']);
                 break;
             case RuleFixedLoad::USE_TYPE_FLAT_ADDITION_TOTAL_USAGE:
-                $rate = AirRates::getActiveWithinRangeByTypeId(
-                    $this->from_date,
-                    $this->to_date,
-                    $rule['rate_type_id']
-                )->one();
+                if ($rule['rate_type_id'] == 12) {
+                    $rate = AirRates::getActiveWithinRangeByTypeId(
+                        $this->from_date,
+                        $this->to_date,
+                        $tenant->getRateType()
+                    )->one();
+                }
+                else {
+                    $rate = AirRates::getActiveWithinRangeByTypeId(
+                        $this->from_date,
+                        $this->to_date,
+                        $rule['rate_type_id']
+                    )->one();
+                }
                 $reading_summ = $this->data['tenants'][$tenant->id]['total_Pisga'] + $this->data['tenants'][$tenant->id]['total']['total_Geva'] + $this->data['tenants'][$tenant->id]['total_Shefel'];
                 $this->data['tenants'][$tenant->id]['total_fixed_rules'] = $reading_summ * ($rule['value']/100 + 1);
                 $this->data['tenants'][$tenant->id]['total_pay'] += (int)$this->data['tenants'][$tenant->id]['total_fixed_rules'];

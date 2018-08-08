@@ -70,8 +70,14 @@ return [
 	],
 	'params' => $params,
 	'bootstrap' => [
+        'debug',
 		[
 			'class' => 'common\components\i18n\LanguageSelector',
 		],
 	],
+    'modules' => [
+        'debug' => [
+            'class' => 'yii\debug\Module',
+        ],
+    ]
 ];

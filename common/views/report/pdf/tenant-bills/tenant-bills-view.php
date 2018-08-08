@@ -85,5 +85,9 @@ $first_tenant_key = key($data->getTenantData());
     <?php foreach($tenant_data->getRuleData() as $rule_data) : ?>
         <?= $this->render('tenant-bills-rule-view', ['rule' => $rule_data]); ?>
     <? endforeach; ?>
-    <?= $this->render('tenant-bills-total-tenant-view',['tenant_data'=>$tenant_data]) ?>
+    <?php if ($tenant_data->getTenant()->relationRateType->is_taoz): ?>
+        <?= $this->render('tenant-bills-total-tenant-view',['tenant_data'=>$tenant_data]) ?>
+    <?php else: ?>
+        <?= $this->render('tenant-bills-total-tenant-view-single',['tenant_data'=>$tenant_data]) ?>
+    <?php endif;?>
 <?php endforeach; ?>

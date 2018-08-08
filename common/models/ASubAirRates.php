@@ -34,14 +34,10 @@ abstract class ASubAirRates extends ASubActiveRecord
 
 
     public static function getCategoryByRateTypeId($rate_type_id) {
-        $rate_type = RateType::findOne($rate_type_id);
-        if(!$rate_type instanceof RateType)
-            return null;
-        $rate_types = self::rateTypesToCategories();
-        if(isset($rate_types[$rate_type->type])) {
-            return $rate_types[$rate_type->type];
-        }
-        else return null;
+        if ($rate_type_id == 0)
+            return self::FIXED;
+        else
+            return self::TAOZ;
     }
 
 

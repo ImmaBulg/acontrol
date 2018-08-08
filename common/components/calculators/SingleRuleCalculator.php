@@ -1,4 +1,10 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: admin
+ * Date: 06.08.2018
+ * Time: 10:30
+ */
 
 namespace common\components\calculators;
 
@@ -6,6 +12,7 @@ use Carbon\Carbon;
 use common\components\calculators\data\RuleData;
 use common\components\calculators\data\SiteMainMetersData;
 use common\components\calculators\data\TenantData;
+use common\components\calculators\single_data\SingleRuleData;
 use common\exceptions\FormReportValidationContinueException;
 use common\helpers\TimeManipulator;
 use common\models\AirRates;
@@ -18,17 +25,10 @@ use common\models\Site;
 use common\models\Tenant;
 use Yii;
 use yii\helpers\VarDumper;
-/**
- * Created by PhpStorm.
- * User: Dezmont
- * Date: 24.07.2017
- * Time: 15:05
- */
-class RuleCalculator
+
+
+class SingleRuleCalculator
 {
-    /**
-     * @var RuleSingleChannel
-     */
     private $rule = null;
 
     private $from_date = null;
@@ -52,8 +52,8 @@ class RuleCalculator
 
 
     public function calculate(Tenant $tenant, $report_type, $cops = null) {
-        $rule_data = new RuleData($this->from_date, $this->to_date, $this->rule, $tenant->getRegularTimeString(),
-                                  $tenant->getIrregularTimeString());
+        $rule_data = new SingleRuleData($this->from_date, $this->to_date, $this->rule, $tenant->getRegularTimeString(),
+            $tenant->getIrregularTimeString());
         $electricity_main_sub_channels = $tenant->relationSite->getMainSubChannels(Meter::TYPE_ELECTRICITY);
 
         if ($report_type == 2) {
@@ -76,25 +76,17 @@ class RuleCalculator
         switch ($report_type) {
             case Report::TENANT_BILL_REPORT_BY_MANUAL_COP:
                 $cop = $tenant->relationSite->manual_cop;
-                $consumption_cop = (object) [
-                    'shefel' => $tenant->relationSite->manual_cop_shefel,
-                    'pisga' => $tenant->relationSite->manual_cop_pisga,
-                    'geva' => $tenant->relationSite->manual_cop_geva
-                ];
                 break;
             case Report::TENANT_BILL_REPORT_BY_FIRST_RULE:
                 $air_rule_meter_data = new SiteMainMetersData($tenant->relationSite->getRuleSubChannels($this->first_rule), $electricity_main_sub_channels);
                 $cop = (new CopCalculator($air_rule_meter_data, $this->from_date, $this->to_date))->calculate();
-                $consumption_cop = (new CopCalculator($site_main_meters_data, $this->from_date, $this->to_date, CopCalculator::CONSUMPTION_COP, $tenant))->calculate();
                 break;
             default:
                 $cop = (new CopCalculator($site_main_meters_data, $this->from_date, $this->to_date))->calculate();
-                $consumption_cop = (new CopCalculator($site_main_meters_data, $this->from_date, $this->to_date, CopCalculator::CONSUMPTION_COP, $tenant))->calculate();
                 break;
         }
 
 
-        $rule_data->setCoops($consumption_cop);
         $rule_data->setCop($cop);
 
         $weighted_channels = $tenant->getWeightedChannels($this->rule);
@@ -102,7 +94,7 @@ class RuleCalculator
         foreach($weighted_channels as $weighted_channel) {
 
             foreach($rates as $rate) {
-                $rate_calculator = new RateCalculator($rate, $weighted_channel, $this->from_date, $this->to_date);
+                $rate_calculator = new SingleRateCalculator($rate, $weighted_channel, $this->from_date, $this->to_date);
                 $rule_data->addRegularData($rate_calculator->calculate($tenant->getRegularTimeRanges(),$rule_data->getCop()));
 //                $rule_data->addIrregularData($rate_calculator->calculate($tenant->getIrregularTimeRanges(),$rule_data->getCop()));
                 $rule_data->addIrregularData($rate_calculator->calculate($tenant->getIrregularHoursTimeRanges(),$rule_data->getCop()));
@@ -111,6 +103,4 @@ class RuleCalculator
         }
         return $rule_data;
     }
-
-
 }

@@ -28,23 +28,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
         </td>
     </tr>
     <tr>
-            <th style="padding:5px;"></th>
-
-            <th bgcolor="#7e7e7e"
-                style="width:15%;color:#fff;padding:5px;font-weight:normal;border:1px solid #000;"
-                align="center">
-                <?php echo Yii::t('common.view', 'Total Pisga in Kwh'); ?>
-            </th>
-            <th bgcolor="#7e7e7e"
-                style="width:15%;color:#fff;padding:5px;font-weight:normal;border:1px solid #000;"
-                align="center">
-                <?php echo Yii::t('common.view', 'Total Geva in Kwh'); ?>
-            </th>
-            <th bgcolor="#7e7e7e"
-                style="width:15%;color:#fff;padding:5px;font-weight:normal;border:1px solid #000;"
-                align="center">
-                <?php echo Yii::t('common.view', 'Total Shefel in Kwh'); ?>
-            </th>
+        <th style="padding:5px;" colspan="4"></th>
 
         <th bgcolor="#7e7e7e" style="width:15%;color:#fff;padding:5px;font-weight:normal;border:1px solid #000;"
             align="center">
@@ -58,22 +42,13 @@ $direction = LanguageSelector::getAliasLanguageDirection();
     </thead>
     <tbody>
     <tr>
-            <th style="padding:5px;"></th>
+            <th style="padding:5px;" colspan="4"></th>
 
             <td style="padding:5px;border:1px solid #000;" align="center">
-                <?= $formatter->asNumberFormat($tenant_data->getAirPisgaConsumption()); ?>
+                <?= $formatter->asNumberFormat($tenant_data->getConsumptionInKwh()); ?>
             </td>
             <td style="padding:5px;border:1px solid #000;" align="center">
-                <?= $formatter->asNumberFormat($tenant_data->getAirGevaConsumption()); ?>
-            </td>
-            <td style="padding:5px;border:1px solid #000;" align="center">
-                <?= $formatter->asNumberFormat($tenant_data->getAirShefelConsumption()); ?>
-            </td>
-            <td style="padding:5px;border:1px solid #000;" align="center">
-                <?= $formatter->asNumberFormat($tenant_data->getAirPisgaConsumption() + $tenant_data->getAirGevaConsumption() + $tenant_data->getAirShefelConsumption()); ?>
-            </td>
-            <td style="padding:5px;border:1px solid #000;" align="center">
-                <?= $formatter->asPrice($tenant_data->getTotalPay() + $tenant_data->getMoneyAddition()); ?>
+                <?= $formatter->asPrice($tenant_data->getPay() + $tenant_data->getMoneyAddition()); ?>
             </td>
     </tr>
     </tbody>
@@ -124,8 +99,5 @@ $direction = LanguageSelector::getAliasLanguageDirection();
     </tr>
     </tbody>
 </table>
-<?php if(Yii::$app->params['is_add_graph']): ?>
-    <?= $this->render('tenant-bills-graph',
-                      ['tenant_data' => $tenant_data, 'direction' => $direction, 'formatter' => $formatter]) ?>
-<?php endif; ?>
+
 

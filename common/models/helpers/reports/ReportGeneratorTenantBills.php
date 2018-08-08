@@ -5,10 +5,12 @@ namespace common\models\helpers\reports;
 use Carbon\Carbon;
 use common\components\calculators\data\SiteData;
 use common\components\calculators\data\TenantData;
+use common\components\calculators\single_data\SingleSiteData;
 use common\components\calculators\TenantCalculator;
 use common\helpers\KwhCalculator;
 use common\helpers\TimeManipulator;
 use common\models\Rate;
+use common\models\RateName;
 use common\models\RuleSingleChannel;
 use common\models\Site;
 use common\models\Tenant;
@@ -83,14 +85,18 @@ class ReportGeneratorTenantBills extends ReportGenerator implements IReportGener
 
 
     public function calculate() {
-        $data = new SiteData($this->from_date, $this->to_date, $this->site);
+        $is_taoz = RateName::find()->andWhere(['id' => $this->site->relationSiteBillingSetting->rate_type_id])->one()->is_taoz;
+        if ($is_taoz)
+            $data = new SiteData($this->from_date, $this->to_date, $this->site);
+        else
+            $data = new SingleSiteData($this->from_date, $this->to_date, $this->site);
 
         foreach($this->tenants as $tenant) {
             $tenant_calculator = new TenantCalculator($tenant, $this->from_date, $this->to_date);
             $tenant_data = $tenant_calculator->calculate($this->report_type);
             $data->add($tenant_data);
         }
-
+        //VarDumper::dump($data, 100, true);
         return $data;
     }
 }

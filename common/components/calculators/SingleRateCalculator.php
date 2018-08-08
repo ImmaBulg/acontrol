@@ -1,4 +1,10 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: admin
+ * Date: 06.08.2018
+ * Time: 10:32
+ */
 
 namespace common\components\calculators;
 
@@ -6,18 +12,14 @@ use Carbon\Carbon;
 use common\components\calculators\data\RatedData;
 use common\components\calculators\data\WeightedChannel;
 use common\components\calculators\exceptions\InvalidRateDateException;
+use common\components\calculators\MultipliersCalculator;
+use common\components\calculators\single_data\SingleRatedData;
 use common\helpers\TimeManipulator;
 use common\models\AirRates;
 use common\models\MeterChannelMultiplier;
 use yii\helpers\VarDumper;
 
-/**
- * Created by PhpStorm.
- * User: Dezmont
- * Date: 24.07.2017
- * Time: 15:25
- */
-class RateCalculator
+class SingleRateCalculator
 {
     /**
      * @var Carbon|null
@@ -83,17 +85,15 @@ class RateCalculator
      */
     public function calculate(array $time_ranges = [], float $cop = 0) {
         $multipliers = MeterChannelMultiplier::getMultipliers($this->weighted_channel->getChannelId(), $this->from_date,
-                                                              $this->to_date);
-        $rated_data = new RatedData($this->from_date, $this->to_date, $this->rate);
+            $this->to_date);
+        $rated_data = new SingleRatedData($this->from_date, $this->to_date, $this->rate);
         foreach($multipliers as $multiplier) {
             $multiplier_calculator =
                 new MultipliersCalculator($this->from_date, $this->to_date, $this->weighted_channel, $multiplier);
             $data = $multiplier_calculator->calculate($this->rate, $time_ranges, $cop);
+            //VarDumper::dump($data, 100, true);
             $rated_data->add($data);
         }
-        //VarDumper::dump($rated_data, 100, true);
         return $rated_data;
     }
-
-
 }

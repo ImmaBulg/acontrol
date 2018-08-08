@@ -176,9 +176,9 @@ class CopCalculator
                 ->where(['meter_id' => $channel->getMeterName()])
                 ->andWhere(['channel_id' => $channel->getChannel()]);
             foreach ($rates as $rate) {
-                switch ($rate->rateType->type) {
-                    case RateType::TYPE_FIXED:
-                    case RateType::TYPE_TAOZ:
+                switch ($rate->is_taoz) {
+                    case false:
+                    case true:
                         $queries_generator = new TaozDataQueryGenerator($this->from_date, $this->to_date, $rate->subAirRatesTaoz, $this->tenant->getRegularTimeRanges());
                         $taoz_queries = $queries_generator->generate('datetime', $air_reading_base_query);
                         $taoz_consumption = (new TaozDataCalculator($this->from_date, $this->to_date, $taoz_queries))->calculate(1, 1, 100)->getData();

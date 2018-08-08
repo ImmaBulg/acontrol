@@ -313,11 +313,20 @@ class ReportGeneratorNisKwh extends ReportGenerator implements IReportGenerator
                 $this->data['tenants'][$tenant->id]['total']['total_pay'] += (int)$rule['value'];
                 break;
             case RuleFixedLoad::USE_TYPE_KWH_FIXED:
-                $rate = AirRates::getActiveWithinRangeByTypeId(
-                    $this->from_date,
-                    $this->to_date,
-                    $rule['rate_type_id']
-                )->one();
+                if ($rule['rate_type_id'] == 12) {
+                    $rate = AirRates::getActiveWithinRangeByTypeId(
+                        $this->from_date,
+                        $this->to_date,
+                        $tenant->getRateType()
+                    )->one();
+                }
+                else {
+                    $rate = AirRates::getActiveWithinRangeByTypeId(
+                        $this->from_date,
+                        $this->to_date,
+                        $rule['rate_type_id']
+                    )->one();
+                }
                 $summ = $this->data['tenants'][$tenant->id]['total']['geva_reading'] + $this->data['tenants'][$tenant->id]['total']['pisga_reading'] + $this->data['tenants'][$tenant->id]['total']['shefel_reading'];
                 $pisga_cof = $this->data['tenants'][$tenant->id]['total']['pisga_reading'] / $summ;
                 $geva_cof = $this->data['tenants'][$tenant->id]['total']['geva_reading'] / $summ;
@@ -329,11 +338,20 @@ class ReportGeneratorNisKwh extends ReportGenerator implements IReportGenerator
                 $this->data['tenants'][$tenant->id]['total']['total_pay'] += ($this->data['tenants'][$tenant->id]['total']['total_pay'] + (int)$this->data['tenants'][$tenant->id]['total']['total_fixed_rules']);
                 break;
             case RuleFixedLoad::USE_TYPE_FLAT_ADDITION_TOTAL_USAGE:
-                $rate = AirRates::getActiveWithinRangeByTypeId(
-                    $this->from_date,
-                    $this->to_date,
-                    $rule['rate_type_id']
-                )->one();
+                if ($rule['rate_type_id'] == 12) {
+                    $rate = AirRates::getActiveWithinRangeByTypeId(
+                        $this->from_date,
+                        $this->to_date,
+                        $tenant->getRateType()
+                    )->one();
+                }
+                else {
+                    $rate = AirRates::getActiveWithinRangeByTypeId(
+                        $this->from_date,
+                        $this->to_date,
+                        $rule['rate_type_id']
+                    )->one();
+                }
                 $reading_summ = $this->data['tenants'][$tenant->id]['total']['pisga_reading'] + $this->data['tenants'][$tenant->id]['total']['geva_reading'] + $this->data['tenants'][$tenant->id]['total']['shefel_reading'];
                 $this->data['tenants'][$tenant->id]['total']['total_fixed_rules'] = $reading_summ * ($rule['value']/100) + $reading_summ;
                 $this->data['tenants'][$tenant->id]['total']['total_pay'] += (int)$this->data['tenants'][$tenant->id]['total']['total_fixed_rules'];

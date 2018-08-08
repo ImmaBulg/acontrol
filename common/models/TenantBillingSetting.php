@@ -91,7 +91,7 @@ class TenantBillingSetting extends ActiveRecord
 
 
     public function getRelationRateType() {
-        return $this->hasOne(RateType::className(), ['id' => 'rate_type_id']);
+        return $this->hasOne(RateName::className(), ['id' => 'rate_type_id']);
     }
 
 

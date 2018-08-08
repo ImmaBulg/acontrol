@@ -34,19 +34,16 @@ $model_id = $model->id ?? 'new';
     <fieldset>
         <div class="row">
             <div class="col-lg-6">
-                <?php echo $form->field($model, 'rate_type_id', ['selectors' => ['input' => '#sib-air-rates-category']])
-                                ->widget(Select2::classname(), [
-                                    'data' => Rate::getListRateTypes(),
-                                    'options' => [
-                                        'options' => FormRate::getListRateTypeAttributes(),
-                                        'id' => 'sub-air-rates-category',
-                                    ],
-                                ]); ?>
+                <?php echo $form->field($model, 'is_taoz')->checkbox(); ?>
+                <?php echo $form->field($model, 'rate_name')->textInput(); ?>
                 <?php echo $form->field($model, 'season')->widget(Select2::classname(), [
                     'data' => Rate::getListSeasons(),
+                    'options' => [
+                        'placeholder' => '',
+                    ]
                 ]); ?>
                 <?= Html::hiddenInput(\common\models\SubAirRates::_formName() . '[type]',
-                                      $model->rate_type_id,
+                                      $model->is_taoz,
                                       ['id' => 'sub-air-rates-category-hidden']); ?>
                 <?= $form->field($model, 'startDate')->dateInput() ?>
                 <?php echo $form->field($model, 'endDate')->dateInput() ?>
@@ -71,10 +68,15 @@ $model_id = $model->id ?? 'new';
 </div>
 <?php Block::begin() ?>
 <script>
-
+    $(document).ready(function () {
+        if ($('#airrates-is_taoz').prop('checked'))
+            $('.field-airrates-season').css('display', 'block');
+        else
+            $('.field-airrates-season').css('display', 'none');
+    });
 
     var conditionFields = new DynamicFields(
-        '#sub-air-rates-category',
+        '#airrates-is_taoz',
         "<?=Url::to(['sub-air-rates/get-fields', 'id' => $model_id])?>",
         '#additional-fields',
         "<?= $model_id?>",
@@ -86,6 +88,12 @@ $model_id = $model->id ?? 'new';
         e.preventDefault();
         conditionFields.getFields("<?=Url::to(['sub-air-rates/add-fields',
                                                'id' => $model_id])?>", '#child-place-position', true);
+    });
+    $(document).on('change', '#airrates-is_taoz', function(e) {
+        if ($('#airrates-is_taoz').prop('checked'))
+            $('.field-airrates-season').css('display', 'block');
+        else
+            $('.field-airrates-season').css('display', 'none');
     });
 
 </script>

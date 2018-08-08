@@ -6,6 +6,7 @@ use Exception;
 use Yii;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
+use yii\helpers\VarDumper;
 use yii\web\BadRequestHttpException;
 use common\models\User;
 use common\models\Site;
@@ -74,11 +75,8 @@ class FormSite extends Model
             ['billing_day', 'in', 'range' => array_keys(SiteBillingSetting::getListBillingDays()),
                 'skipOnEmpty' => false],
             ['rate_type_id', '\common\components\validators\ModelExistsValidator',
-                'modelClass' => '\common\models\RateType', 'modelAttribute' => 'id', 'filter' => function ($model) {
-                return $model->andWhere(['in', 'status', [
-                    RateType::STATUS_INACTIVE,
-                    RateType::STATUS_ACTIVE,
-                ]]);
+                'modelClass' => '\common\models\RateName', 'modelAttribute' => 'id', 'filter' => function ($model) {
+                return $model;
             }],
             ['fixed_addition_type', 'in', 'range' => array_keys(SiteBillingSetting::getListFixedAdditionTypes()),
                 'skipOnEmpty' => true],
@@ -252,6 +250,7 @@ class FormSite extends Model
         if(!$is_create) {
             $updated_attributes = ArrayHelper::merge($model_billing->getUpdatedAttributes(), $updated_attributes);
         }
+
         if(!$model_billing->save()) {
             throw new BadRequestHttpException(implode(' ', $model_billing->getFirstErrors()));
         }

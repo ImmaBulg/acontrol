@@ -3,7 +3,7 @@ function DynamicFields(categoryInputId, fieldsUrl, fieldsContainer, id, formId, 
     this._fieldsContainer = fieldsContainer;
     this._id = id;
     this._formId = formId;
-    this._category = $(categoryInputId).val();
+    this._category = $(categoryInputId).prop('checked') ? 1 : 0;
     this._categoryHiddenInput = categoryHiddenInput;
     this._categoryPostParam = categoryPostParam;
 
@@ -14,7 +14,7 @@ function DynamicFields(categoryInputId, fieldsUrl, fieldsContainer, id, formId, 
     });
     $(document).on('change', categoryInputId, function () {
 //        old_type = type;
-        self._category = $(this).val();
+        self._category = $(this).prop('checked') ? 1 : 0;
         self.getFields();
     });
 }

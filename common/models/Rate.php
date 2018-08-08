@@ -76,10 +76,10 @@ class Rate extends ActiveRecord
     public function attributeLabels() {
         return [
             'id' => Yii::t('common.rate', 'ID'),
-            'identifier' => Yii::t('common.rate', 'Rate identifier'),
+            'identifier' => Yii::t('common.rate', 'Note'),
             'season' => Yii::t('common.rate', 'Season'),
             'fixed_payment' => Yii::t('common.rate', 'Fixed payment for monthly billed clients'),
-            'rate' => Yii::t('common.rate', 'Basic rate in Agorot'),
+            'rate' => Yii::t('common.rate', 'Rate in Agorot'),
             'shefel' => Yii::t('common.rate', 'Shefel'),
             'geva' => Yii::t('common.rate', 'Geva'),
             'pisga' => Yii::t('common.rate', 'Pisga'),
@@ -138,15 +138,20 @@ class Rate extends ActiveRecord
 
 
     public static function getListRateTypes($criteria = []) {
-        $query = RateType::find()->andWhere(['in', 'status', [
+        $query = AirRates::find()->andWhere(['in', 'status', [
             RateType::STATUS_ACTIVE,
-        ]]);
-        if($criteria != null) {
-            $query->andWhere($criteria);
-        }
+        ]])->andWhere(['<>', 'is_taoz', 1]);
         $rows = $query->all();
         return ArrayHelper::map($rows, 'id', function ($model) {
-            return $model->getName();
+            return $model->rate_name;
+        });
+    }
+
+    public static function getListRate($criteria = []) {
+        $query = RateName::find()->andWhere($criteria);
+        $rows = $query->all();
+        return ArrayHelper::map($rows, 'id', function ($model) {
+            return $model->name;
         });
     }
 

@@ -12,8 +12,12 @@ return [
 	'basePath' => dirname(__DIR__),
 	'defaultRoute' => 'dashboard/index',
 	'controllerNamespace' => 'frontend\controllers',
-	'bootstrap' => ['log'],
-	'modules' => [],
+	'bootstrap' => ['log', 'debug'],
+    'modules' => [
+        'debug' => [
+            'class' => 'yii\debug\Module',
+        ],
+    ],
 	'components' => [
 		'user' => [
 			'class' => 'common\components\User',

@@ -51,7 +51,7 @@ class AirMeterRawDataController extends Controller
 
 	/**
 	 * @SWG\Post(
-	 *     path="/meter-raw-data",
+	 *     path="/air-meter-raw-data",
 	 *     summary="Create new meter raw data",
 	 *     operationId="MeterRawDataCreate",
 	 *     tags={"meter-raw-data"},
@@ -84,12 +84,17 @@ class AirMeterRawDataController extends Controller
 	{
 		$request = Yii::$app->request;
 		$form = new FormAirMeterRawData();
-		$form->attributes = $request->bodyParams;
-		
+		if ($request->bodyParams['data']) {
+            $form->data = $request->bodyParams['data'];
+        }
+		else {
+            $form->data = $request->bodyParams;
+        }
+
 		if ($models = $form->save()) {
 			return $models;
 		} else {
-			throw new BadRequestHttpException(implode(' ', $form->getErrors()));
+			return $form->getErrors();
 		}
 	}
 

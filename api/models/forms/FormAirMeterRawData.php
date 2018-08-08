@@ -1,6 +1,7 @@
 <?php namespace api\models\forms;
 
 use common\models\AirMeterRawData;
+use DateTime;
 use Yii;
 use yii\web\BadRequestHttpException;
 use common\components\i18n\Formatter;
@@ -18,12 +19,12 @@ class FormAirMeterRawData extends \yii\base\Model
 	public function rules()
 	{
 		return [
-			[['data'], 'required'],
+			//[['data'], 'required'],
 			[['data'], 'validateData'],
 		];
 	}
 
-	public function validateData($attribute, $params)
+	public function validateData($attribute)
 	{
 		$values = [];
 
@@ -46,9 +47,10 @@ class FormAirMeterRawData extends \yii\base\Model
 			if (!$form->validate()) {
 				throw new BadRequestHttpException(implode(' ', $form->getFirstErrors()));
 			}
-
 			$data = $form->attributes;
 		}
+
+		return $this->$attribute;
 	}
 
 	public function attributeLabels()
@@ -69,6 +71,9 @@ class FormAirMeterRawData extends \yii\base\Model
 			$models = [];
 
 			foreach ($this->data as $data) {
+			    $date = new DateTime($data['datetime']);
+			    $date = $date->setTime((int)$date->format('H') + 1, 0, 0);
+			    $data['datetime'] = $date->format('Y-m-d H:i:s');
 				$model = AirMeterRawData::find()
 				->andWhere([
 					'meter_id' => $data['meter_id'],
@@ -96,7 +101,7 @@ class FormAirMeterRawData extends \yii\base\Model
 			}
 
 			$transaction->commit();
-			return $models;
+			return $this->data;
 		} catch(\Exception $e) {
 			$transaction->rollback();
 			throw new BadRequestHttpException($e->getMessage());

@@ -19,7 +19,8 @@ class AirRatesSearch extends AirRates
     public function rules()
     {
         return [
-            [['id', 'rate_type_id', 'season', 'status', 'created_by', 'modified_by'], 'integer'],
+            [['id', 'season', 'status', 'created_by', 'modified_by'], 'integer'],
+            ['rate_name', 'string'],
             [['start_date', 'end_date', 'create_at', 'modified_at','startDate','endDate','fixed_payment'], 'safe'],
         ];
     }
@@ -37,7 +38,7 @@ class AirRatesSearch extends AirRates
         $query = AirRates::find();
         $query->andFilterWhere([
             'id' => $this->id,
-            'rate_type_id' => $this->rate_type_id,
+            'rate_name' => $this->rate_name,
             'season' => $this->season,
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,

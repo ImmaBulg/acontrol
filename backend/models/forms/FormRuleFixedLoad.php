@@ -112,11 +112,6 @@ class FormRuleFixedLoad extends \yii\base\Model
                     ]));
                 }
 
-                if ($this->rate_type_fixed_id == null) {
-                    $this->addError('rate_type_fixed_id', Yii::t('backend.rule', '{attribute} is required.', [
-                        'attribute' => $this->getAttributeLabel('rate_type_fixed_id'),
-                    ]));
-                }
                 break;
             case RuleFixedLoad::USE_TYPE_FLAT_ADDITION_TOTAL_BILL_AMOUNT:
 			case RuleFixedLoad::USE_TYPE_MONEY:
@@ -166,7 +161,6 @@ class FormRuleFixedLoad extends \yii\base\Model
 			],
 			RuleFixedLoad::USE_TYPE_FLAT_ADDITION_TOTAL_USAGE => [
 				'data-use-type' => self::USE_TYPE_VALUE,
-                'data-rate-type' => self::RATE_TYPE_PERCENT_AMOUNT,
 			],
 		];
 	}

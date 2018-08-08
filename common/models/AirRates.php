@@ -10,12 +10,13 @@ use DateTime;
 use dezmont765\yii2bundle\models\MainActiveRecord;
 use Yii;
 use yii\db\ActiveQuery;
+use yii\helpers\VarDumper;
 
 /**
  * This is the model class for table "air_rates".
  *
  * @property integer $id
- * @property integer $rate_type_id
+ * @property string $rate_name
  * @property integer $season
  * @property string $start_date
  * @property string $end_date
@@ -46,8 +47,10 @@ class AirRates extends MainActiveRecord
      */
     public function rules() {
         return [
-            [['rate_type_id', 'startDate', 'endDate', 'start_date', 'end_date', 'fixed_payment'], 'required'],
-            [['rate_type_id', 'season', 'status', 'created_by', 'modified_by'], 'integer'],
+            [['rate_name', 'startDate', 'endDate', 'start_date', 'end_date', 'fixed_payment'], 'required'],
+            [['season', 'status', 'created_by', 'modified_by'], 'integer'],
+            ['rate_name', 'string'],
+            ['is_taoz', 'boolean'],
             [['start_date', 'end_date', 'create_at', 'modified_at'], 'safe'],
             ['status', 'default', 'value' => Rate::STATUS_ACTIVE],
         ];
@@ -83,6 +86,10 @@ class AirRates extends MainActiveRecord
                     ->scalar();
     }
 
+    public function getPrice() {
+        return $this->getSubAirRates()->select('rate')->scalar();
+    }
+
 //    public function behaviors() {
 //            return [
 //                [
@@ -100,7 +107,8 @@ class AirRates extends MainActiveRecord
     public function attributeLabels() {
         return [
             'id' => 'ID',
-            'rate_type_id' => 'Rate Type ID',
+            'rate_name' => 'Rate name',
+            'is_taoz' => 'Is TAOZ',
             'season' => 'Season',
             'start_date' => 'Start Date',
             'end_date' => 'End Date',
@@ -126,14 +134,6 @@ class AirRates extends MainActiveRecord
      */
     public function getModifiedBy() {
         return $this->hasOne(User::className(), ['id' => 'modified_by']);
-    }
-
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getRateType() {
-        return $this->hasOne(RateType::className(), ['id' => 'rate_type_id']);
     }
 
 
@@ -171,12 +171,7 @@ class AirRates extends MainActiveRecord
 
 
     public function getRateTypeName() {
-        if($this->rate_type_name == null) {
-            if($this->rateType instanceof RateType) {
-                $this->rate_type_name = $this->rateType->getName();
-            }
-        }
-        return $this->rate_type_name;
+        return $this->rate_name;
     }
 
 
@@ -210,15 +205,18 @@ class AirRates extends MainActiveRecord
      * @param $rate_type_id
      * @return ActiveQuery
      */
-    public static function getActiveWithinRangeByTypeId(Carbon $start_date, Carbon $end_date, $rate_type_id) {
+    public static function getActiveWithinRangeByTypeId(Carbon $start_date, Carbon $end_date, $rate_name_id) {
+        $rate_name = RateName::find()->andWhere(['id' => $rate_name_id])->one();
         $rates_query = self::find()
-                           ->andwhere([
-                                          'and',
-                                          ['rate_type_id' => $rate_type_id],
-                                          ['status' => Rate::STATUS_ACTIVE],
-                                      ])->andWhere(['AND', ['<', 'start_date', $end_date->format('Y-m-d')],
-                                                    ['>', 'end_date', $start_date->format('Y-m-d')]])
-                           ->orderBy(['start_date' => SORT_ASC]);
+            ->andWhere([
+                'rate_name' => $rate_name->name,
+            ])
+            ->andwhere([
+                      'and',
+                      ['status' => Rate::STATUS_ACTIVE],
+                  ])->andWhere(['AND', ['<', 'start_date', $end_date->format('Y-m-d')],
+                                ['>', 'end_date', $start_date->format('Y-m-d')]])
+            ->orderBy(['start_date' => SORT_ASC]);
         return $rates_query;
     }
 }

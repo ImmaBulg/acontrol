@@ -20,6 +20,8 @@ class TenantData extends TaozRawData {
   private $fixed_price = 0;
   private $hourly_cop = null;
 
+  private $money_addition = 0;
+
 
   /**
    * @return int
@@ -193,63 +195,76 @@ class TenantData extends TaozRawData {
       $fixed_rules = $this->tenant->getFixedRules()->all();
       $tenant = $this->tenant;
       foreach ($this->rule_data as &$rule_data) {
+          $money_addition = 0;
           foreach ($rule_data->getData() as $type => &$data) {
               $single_rule = $data[0]->getPisgaPay() + $data[0]->getShefelPay() + $data[0]->getGevaPay();
-              $reading_summ = $data[0]->getPisgaConsumption() + $data[0]->getGevaConsumption() + $data[0]->getShefelConsumption();
-              foreach ($fixed_rules as $rule) {
-                  switch($rule['use_type'])
-                  {
-                      case RuleFixedLoad::USE_TYPE_FLAT_ADDITION_TOTAL_BILL_AMOUNT:
-                          $fixed_rule = ($single_rule * ((int)$rule['value'] / 100 + 1));
-                          $data[0]->setPisgaFixedRule($data[0]->getPisgaPay() * ((int)$rule['value'] / 100 + 1));
-                          $data[0]->setGevaFixedRule($data[0]->getGevaPay() * ((int)$rule['value'] / 100 + 1));
-                          $data[0]->setShefelFixedRule($data[0]->getShefelPay() * ((int)$rule['value'] / 100 + 1));
-                          $data[0]->setFixedRule($fixed_rule);
-                          break;
-                      case RuleFixedLoad::USE_TYPE_MONEY:
-                          $data[0]->setFixedRule((int)$rule['value']);
-                          break;
-                      case RuleFixedLoad::USE_TYPE_KWH_FIXED:
-                          if ($rule['rate_type_id'] == 12) {
-                              $rate = AirRates::getActiveWithinRangeByTypeId(
-                                  $this->start_date,
-                                  $this->end_date,
-                                  $tenant->getRateType()
-                              )->one();
-                          }
-                          else {
-                              $rate = AirRates::getActiveWithinRangeByTypeId(
-                                  $this->start_date,
-                                  $this->end_date,
-                                  $rule['rate_type_id']
-                              )->one();
-                          }
-                          $pisga_cof = $data[0]->getPisgaConsumption() / $reading_summ;
-                          $geva_cof = $data[0]->getGevaConsumption() / $reading_summ;
-                          $shefel_cof = $data[0]->getShefelConsumption() / $reading_summ;
-                          $pisga_value = $rule['value'] * $pisga_cof * $rate['fixed_payment'];
-                          $geva_value = $rule['value'] * $geva_cof * $rate['fixed_payment'];
-                          $shefel_value = $rule['value'] * $shefel_cof * $rate['fixed_payment'];
-                          $data[0]->setPisgaFixedRule($pisga_value);
-                          $data[0]->setShefelFixedRule($shefel_value);
-                          $data[0]->setGevaFixedRule($geva_value);
-                          $data[0]->setFixedRule($pisga_value + $geva_value + $shefel_value);
-                          break;
-                      case RuleFixedLoad::USE_TYPE_FLAT_ADDITION_TOTAL_USAGE:
-                          $rate = AirRates::getActiveWithinRangeByTypeId(
-                              $this->start_date,
-                              $this->end_date,
-                              $rule['rate_type_id']
-                          )->one();
-                          $data[0]->setPisgaFixedRule($data[0]->getPisgaConsumption() * ($rule['value']/100 + 1));
-                          $data[0]->setGevaFixedRule($data[0]->getGevaConsumption() * ($rule['value']/100 + 1));
-                          $data[0]->setShefelFixedRule($data[0]->getShefelConsumption() * ($rule['value']/100 + 1));
-                          $data[0]->setFixedRule($reading_summ * ($rule['value']/100 + 1));
-                          break;
+              $reading_summ = $data[0]->getPisgaConsumption() * $this->cop + $data[0]->getGevaConsumption() * $this->cop + $data[0]->getShefelConsumption() * $this->cop;
+              if ($reading_summ != 0)
+                  foreach ($fixed_rules as $rule) {
+                      switch($rule['use_type'])
+                      {
+                          case RuleFixedLoad::USE_TYPE_FLAT_ADDITION_TOTAL_BILL_AMOUNT:
+                              $fixed_rule = ($single_rule * ((int)$rule['value'] / 100 + 1));
+                              $data[0]->setPisgaFixedRule($data[0]->getPisgaPay() * ((int)$rule['value'] / 100));
+                              $data[0]->setGevaFixedRule($data[0]->getGevaPay() * ((int)$rule['value'] / 100));
+                              $data[0]->setShefelFixedRule($data[0]->getShefelPay() * ((int)$rule['value'] / 100));
+                              $data[0]->setFixedRule($single_rule * ((int)$rule['value'] / 100));
+                              $money_addition = $fixed_rule;
+                              break;
+                          case RuleFixedLoad::USE_TYPE_MONEY:
+                              $data[0]->setFixedRule((int)$rule['value']);
+                              $money_addition = (int)$rule['value'];
+                              break;
+                          case RuleFixedLoad::USE_TYPE_KWH_FIXED:
+                              if ($rule['rate_type_id'] == 12) {
+                                  $rate = AirRates::getActiveWithinRangeByTypeId(
+                                      $this->start_date,
+                                      $this->end_date,
+                                      $tenant->getRateType()
+                                  )->one();
+                              }
+                              else {
+                                  $rate = AirRates::getActiveWithinRangeByTypeId(
+                                      $this->start_date,
+                                      $this->end_date,
+                                      $rule['rate_type_id']
+                                  )->one();
+                              }
+                              $pisga_cof = $data[0]->getPisgaConsumption() * $this->cop / $reading_summ;
+                              $geva_cof = $data[0]->getGevaConsumption() * $this->cop / $reading_summ;
+                              $shefel_cof = $data[0]->getShefelConsumption() * $this->cop / $reading_summ;
+                              $pisga_value = $rule['value'] * $pisga_cof * $rate['fixed_payment'];
+                              $geva_value = $rule['value'] * $geva_cof * $rate['fixed_payment'];
+                              $shefel_value = $rule['value'] * $shefel_cof * $rate['fixed_payment'];
+                              $data[0]->setPisgaFixedRule($pisga_value);
+                              $data[0]->setShefelFixedRule($shefel_value);
+                              $data[0]->setGevaFixedRule($geva_value);
+                              $data[0]->setFixedRule($pisga_value + $geva_value + $shefel_value);
+                              $money_addition = $pisga_value + $geva_value + $shefel_value;
+                              break;
+                          case RuleFixedLoad::USE_TYPE_FLAT_ADDITION_TOTAL_USAGE:
+                              $data[0]->setPisgaFixedRule($data[0]->getPisgaConsumption() * $this->cop * ($rule['value']/100));
+                              $data[0]->setGevaFixedRule($data[0]->getGevaConsumption() * $this->cop * ($rule['value']/100));
+                              $data[0]->setShefelFixedRule($data[0]->getShefelConsumption() * $this->cop * ($rule['value']/100));
+                              $data[0]->setFixedRule($reading_summ * ($rule['value']/100));
+                              $money_addition = $reading_summ * ($rule['value']/100);
+                              break;
+                      }
                   }
-              }
           }
+          if (!is_nan($money_addition)) {
+              $this->money_addition += $money_addition;
+          }
+
       }
   }
+
+    public function setMoneyAddition($money_addition) : float {
+        $this->money_addition = $money_addition;
+    }
+
+    public function getMoneyAddition() : float {
+        return $this->money_addition;
+    }
 
 }

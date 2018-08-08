@@ -19,9 +19,14 @@ return [
 //	'bootstrap' => ['log'],
     'bootstrap' => [
         'log',
+        'debug',
         'userBootstrap' => 'backend\components\UserBootstrap',
     ],
-	'modules' => [],
+	'modules' => [
+        'debug' => [
+            'class' => 'yii\debug\Module',
+        ],
+    ],
 	'components' => [
         'view' => [
             'class' => MainView::className(),
@@ -80,6 +85,7 @@ return [
 		'errorHandler' => [
 			'errorAction' => 'dashboard/error',
 		],
+
 	],
 	'params' => $params,
 
