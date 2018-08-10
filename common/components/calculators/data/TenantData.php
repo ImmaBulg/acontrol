@@ -26,7 +26,7 @@ class TenantData extends TaozRawData {
   /**
    * @return int
    */
-  public function getFixedPrice(): int {
+  public function getFixedPrice(): float {
     return $this->fixed_price;
   }
 
@@ -243,10 +243,10 @@ class TenantData extends TaozRawData {
                               $money_addition = $pisga_value + $geva_value + $shefel_value;
                               break;
                           case RuleFixedLoad::USE_TYPE_FLAT_ADDITION_TOTAL_USAGE:
-                              $data[0]->setPisgaFixedRule($data[0]->getPisgaConsumption() * $this->cop * ($rule['value']/100));
-                              $data[0]->setGevaFixedRule($data[0]->getGevaConsumption() * $this->cop * ($rule['value']/100));
-                              $data[0]->setShefelFixedRule($data[0]->getShefelConsumption() * $this->cop * ($rule['value']/100));
-                              $data[0]->setFixedRule($reading_summ * ($rule['value']/100));
+                              $data[0]->setPisgaFixedRule($data[0]->getPisgaConsumption() * $this->cop * ($rule['value']/100) * $data[0]->getPisgaPrice() / 100);
+                              $data[0]->setGevaFixedRule($data[0]->getGevaConsumption() * $this->cop * ($rule['value']/100) * $data[0]->getGevaPrice() / 100);
+                              $data[0]->setShefelFixedRule($data[0]->getShefelConsumption() * $this->cop * ($rule['value']/100) * $data[0]->getShefelPrice() / 100);
+                              $data[0]->setFixedRule($data[0]->getPisgaFixedRule() + $data[0]->getGevaFixedRule() + $data[0]->getShefelFixedRule());
                               $money_addition = $reading_summ * ($rule['value']/100);
                               break;
                       }

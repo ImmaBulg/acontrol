@@ -40,7 +40,7 @@ class SingleTenantData extends SingleData
         return $this->tenant;
     }
 
-    public function getFixedPrice() : int {
+    public function getFixedPrice() : float {
         return $this->fixed_price;
     }
 
@@ -57,6 +57,7 @@ class SingleTenantData extends SingleData
         $this->pay += $data->getPay();
         $this->consumtion += $data->getConsumption();
         $this->cop = $data->getCop();
+        $this->fixed_price = $data->getFixedPrice();
     }
 
     public function getConsumptionInKwh() : float {
@@ -112,13 +113,13 @@ class SingleTenantData extends SingleData
                                         $rule['rate_type_id']
                                     )->one();
                                 $cof = $data[0]->getMultipliedData()[0]->getConsumption() / $reading_summ;
-                                $value = $rule['value'] * $cof * $rate['fixed_payment'];
+                                $value = $rule['value'] * $rate->getPrice();
                                 $data[0]->setFixedRule($value);
                                 $temp = $value;
                                 break;
                             case RuleFixedLoad::USE_TYPE_FLAT_ADDITION_TOTAL_USAGE:
-                                $temp = $reading_summ * ((int)$rule['value'] / 100);
-                                $data[0]->setFixedRule($reading_summ * ((int)$rule['value'] / 100));
+                                $temp = $reading_summ * ((int)$rule['value'] / 100) * $data[0]->getPrice() / 100;
+                                $data[0]->setFixedRule($temp);
                                 break;
 
                         }

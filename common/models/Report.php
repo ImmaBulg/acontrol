@@ -273,6 +273,7 @@ class Report extends ActiveRecord
 
 
     public static function setReportLanguage($language) {
+        Yii::$app->cache->delete('report_language');
         return Yii::$app->cache->set('report_language', $language, 0);
     }
 

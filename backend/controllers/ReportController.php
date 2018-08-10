@@ -5,6 +5,7 @@ use Yii;
 use yii\helpers\ArrayHelper;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\helpers\VarDumper;
 use yii\web\NotFoundHttpException;
 use yii\web\BadRequestHttpException;
 
@@ -155,7 +156,7 @@ class ReportController extends \backend\components\Controller
 	public function actionToggleLanguage($value)
 	{
 		Report::setReportLanguage($value);
-		return $this->goBackReferrer();
+        return $this->goBackReferrer();
 	}
 
 	public function actionList()

@@ -118,7 +118,7 @@ class SingleRuleData extends SingleData
         $this->fixed_price = $fixed_payment;
     }
 
-    public function getFixedPrice() : int {
+    public function getFixedPrice() : float {
         return $this->fixed_price;
     }
 

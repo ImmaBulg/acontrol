@@ -177,7 +177,7 @@ if ($is_create) {
 
                                     <?php echo $form_active->field($form, 'rate_type_id')->widget(Select2::classname(), [
                                         'data' => ArrayHelper::merge(['' => Yii::t('backend.view', 'Not set')],
-                                            Rate::getListRateTypes()),
+                                            Rate::getListRate()),
                                     ]); ?>
                                     <!--                            --><?php //echo $form_active->field($form, 'site_rate')->widget(DepDrop::classname(), [
                                     //                                'type' => DepDrop::TYPE_SELECT2,

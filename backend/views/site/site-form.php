@@ -218,40 +218,40 @@ JS;
 $this->registerJs($script);
 ?>
 
-<?php $field_rate = Html::getInputId($form, 'rate_type_id');
+<?php /*$field_rate = Html::getInputId($form, 'rate_type_id');
 $field_fixed_payment = Html::getInputId($form, 'fixed_payment');
 $rate_fixed_payments_url = Url::to(['/json-search/rate-fixed-payment']);
 AutoRegistrableScriptBlock::begin();
-?>
+*/?><!--
     <script>
-        $('#<?=$field_rate?>').on('change', function () {
+        $('#<?/*=$field_rate*/?>').on('change', function () {
             var element = $(this);
-            $.getJSON('<?=$rate_fixed_payments_url?>', {
+            $.getJSON('<?/*=$rate_fixed_payments_url*/?>', {
                 id: element.val()
             }, function (data) {
                 if (!$.isEmptyObject(data)) {
-                    $('#<?=$field_fixed_payment?>').val(data['fixed_payment']);
+                    $('#<?/*=$field_fixed_payment*/?>').val(data['fixed_payment']);
                 } else {
-                    $('#<?=$field_fixed_payment?>').val('');
+                    $('#<?/*=$field_fixed_payment*/?>').val('');
                 }
             })
         });
-        <?php if($is_create) : ?>
-        $('#<?=$field_rate?>').each(function () {
+        <?php /*if($is_create) : */?>
+        $('#<?/*=$field_rate*/?>').each(function () {
             var element = $(this);
-            $.getJSON('<?=$rate_fixed_payments_url?>', {
+            $.getJSON('<?/*=$rate_fixed_payments_url*/?>', {
                 id: element.val()
             }, function (data) {
                 if (!$.isEmptyObject(data)) {
-                    $('#<?=$field_fixed_payment?>').val(data['fixed_payment']);
+                    $('#<?/*=$field_fixed_payment*/?>').val(data['fixed_payment']);
                 } else {
-                    $('#<?=$field_fixed_payment?>').val('');
+                    $('#<?/*=$field_fixed_payment*/?>').val('');
                 }
             })
         });
-        <?php endif ?>
+        <?php /*endif */?>
     </script>
-<?php AutoRegistrableScriptBlock::end();
+--><?php /*AutoRegistrableScriptBlock::end();*/
 
 
 

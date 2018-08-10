@@ -88,11 +88,8 @@ class FormTenant extends Model
             [['comment', 'billing_content'], 'string'],
             [['id_with_client', 'accounting_number'], 'string', 'max' => 255],
             ['rate_type_id', '\common\components\validators\ModelExistsValidator',
-                'modelClass' => '\common\models\RateType', 'modelAttribute' => 'id', 'filter' => function ($model) {
-                return $model->andWhere(['in', 'status', [
-                    RateType::STATUS_INACTIVE,
-                    RateType::STATUS_ACTIVE,
-                ]]);
+                'modelClass' => '\common\models\RateName', 'modelAttribute' => 'id', 'filter' => function ($model) {
+                return $model;
             }],
             ['included_reports', 'each',
                 'rule' => ['in', 'range' => array_keys(Report::getListTypes()), 'skipOnEmpty' => true]],
@@ -240,8 +237,6 @@ class FormTenant extends Model
                 $this->included_in_cop = $model->included_in_cop;
                 if($model_billing instanceof TenantBillingSetting) {
                     $this->rate_type_id = $model_billing->rate_type_id;
-                    if ($this->rate_type_id == null)
-                        $this->rate_type_id = $model->relationSite->relationSiteBillingSetting->rate_type_id;
                     $this->comment = $model_billing->comment;
                     $this->fixed_payment = $model_billing->fixed_payment;
                     $this->irregular_hours_from = $model_billing->irregular_hours_from;
@@ -337,10 +332,7 @@ class FormTenant extends Model
             $model_billing->tenant_id = $model->id;
         }
         $model_billing->site_id = $model_site->id;
-        if ($this->rate_type_id == null)
-            $model_billing->rate_type_id = $model->relationSite->relationSiteBillingSetting->rate_type_id;
-        else
-            $model_billing->rate_type_id = $this->rate_type_id;
+        $model_billing->rate_type_id = $this->rate_type_id;
         $model_billing->comment = $this->comment;
         $model_billing->fixed_payment = $this->fixed_payment;
         $model_billing->irregular_hours_from = $this->irregular_hours_from;
