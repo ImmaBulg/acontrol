@@ -56,7 +56,7 @@ angular.module('smartTime.directive', [])
                 var ptrn24 = /([01]\d|2[0-3]):([0-5]\d)/;
                 var match = null;
                 var timerPromise = null;
-                var suggestionInterval = 15;
+                var suggestionInterval = 60;
 
                 scope.currentIndex = 0;
 
@@ -87,11 +87,13 @@ angular.module('smartTime.directive', [])
                 };
 
                 scope.focus = function() {
+                    console.log('focus');
                     showSuggestions();
                 };
 
                 scope.change = function() {
                     showSuggestions();
+
                 };
 
                 scope.keyPress = function(event) {
@@ -128,11 +130,11 @@ angular.module('smartTime.directive', [])
                 function showSuggestions() {
                     scope.suggestions = []; // empty suggestions
                     scope.currentIndex = 0;
-
                     if (typeof scope.data.raw !== 'undefined') {
-                        match = scope.data.raw.match(ptrn24);
+                        //scope.data.raw = scope.data.raw === '' ? new Date().getHours().toString() : scope.data.raw;
+                        match = scope.data.raw === '' ? '0'.match(ptrn24) : scope.data.raw.match(ptrn24);
                         var timeHelper = new Date();
-
+                        console.log((scope.data.raw.length > 0 && match == null) || (scope.data.raw.length === 0 && match == null));
                         if (scope.data.raw.length > 0 && match == null) {
                             var dataSplit = scope.data.raw.split(':');
 
@@ -205,6 +207,79 @@ angular.module('smartTime.directive', [])
                                 }
                             }
 
+                        }
+                        if (scope.data.raw.length === 0) {
+                            var input = '0';
+                            var dataSplit = input.split(':');
+
+                            // More than 2 characters/number and no colon
+                            if (input.indexOf(':') < 0) {
+                                if (input.length == 4) {
+                                    dataSplit = [
+                                        scope.data.raw.slice(0,2),
+                                        scope.data.raw.slice(2)
+                                    ];
+                                } else if (input.length == 3) {
+                                    dataSplit = [
+                                        scope.data.raw.slice(0,1),
+                                        scope.data.raw.slice(1)
+                                    ];
+                                }
+                            }
+                            var dataHInt = parseInt(dataSplit[0]);
+                            var dataMInt = (typeof dataSplit[1] !== 'undefined' && dataSplit[1].length > 0 ? parseInt(dataSplit[1]) : 0);
+                            var hasMins = (typeof dataSplit[1] !== 'undefined' && dataSplit[1].length > 0);
+                            var i = 0,
+                                minutesHelper = 0,
+                                hasSuggestion = false;
+
+                            if (!isNaN(dataHInt) && !isNaN(dataMInt)
+                                && dataHInt >= 0 && dataHInt <= 24
+                                && dataMInt >= 0 && dataMInt < 60) {
+
+                                if ( [1,3,4,5].indexOf(dataHInt) > -1 && dataSplit[0].length==1) {
+                                    timeHelper.setHours(dataHInt + 12, 0);
+                                } else if (dataHInt == 2 && dataSplit[0].length==1) {
+                                    timeHelper.setHours(dataHInt + 18, 0);
+                                } else if ( [6,7,8,9].indexOf(dataHInt) > -1 && dataSplit[0].length==1) {
+                                    timeHelper.setHours(dataHInt + 12, 0);
+                                } else {
+                                    timeHelper.setHours(dataHInt, 0);
+                                }
+                                for (i=0; i<10; i++) {
+                                    if (hasMins) {
+                                        if (dataMInt<6) {
+                                            minutesHelper = dataMInt*10 + i*suggestionInterval;
+                                            if (minutesHelper < dataMInt*10+10) {
+                                                timeHelper.setMinutes(minutesHelper);
+                                                hasSuggestion = true;
+                                            } else {
+                                                hasSuggestion = false;
+                                            }
+                                        }
+                                    } else {
+                                        timeHelper.setMinutes(i*suggestionInterval);
+                                        hasSuggestion = true;
+                                    }
+                                    if (hasSuggestion) {
+                                        scope.suggestions.push({
+                                            val: padString( timeHelper.getHours(), 2, '0')
+                                                + ':' + padString( timeHelper.getMinutes(), 2, '0'),
+                                            selected: false
+                                        });
+                                    }
+                                }
+                                if (dataMInt > 9 && dataMInt < 60) {
+                                    timeHelper.setMinutes(dataMInt);
+                                    console.log(dataMInt, timeHelper);
+
+                                    scope.suggestions.push({
+                                        val: padString( timeHelper.getHours(), 2, '0')
+                                            + ':' + padString( timeHelper.getMinutes(), 2, '0'),
+                                        selected: false
+                                    });
+                                }
+                            }
                         }
                     }
 

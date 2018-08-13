@@ -233,9 +233,9 @@ class TenantData extends TaozRawData {
                               $pisga_cof = $data[0]->getPisgaConsumption() * $this->cop / $reading_summ;
                               $geva_cof = $data[0]->getGevaConsumption() * $this->cop / $reading_summ;
                               $shefel_cof = $data[0]->getShefelConsumption() * $this->cop / $reading_summ;
-                              $pisga_value = $rule['value'] * $pisga_cof * $rate['fixed_payment'];
-                              $geva_value = $rule['value'] * $geva_cof * $rate['fixed_payment'];
-                              $shefel_value = $rule['value'] * $shefel_cof * $rate['fixed_payment'];
+                              $pisga_value = $rule['value'] * $pisga_cof * $rate['fixed_payment'] / 100;
+                              $geva_value = $rule['value'] * $geva_cof * $rate['fixed_payment'] / 100;
+                              $shefel_value = $rule['value'] * $shefel_cof * $rate['fixed_payment'] / 100;
                               $data[0]->setPisgaFixedRule($pisga_value);
                               $data[0]->setShefelFixedRule($shefel_value);
                               $data[0]->setGevaFixedRule($geva_value);

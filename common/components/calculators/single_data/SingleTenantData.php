@@ -113,7 +113,7 @@ class SingleTenantData extends SingleData
                                         $rule['rate_type_id']
                                     )->one();
                                 $cof = $data[0]->getMultipliedData()[0]->getConsumption() / $reading_summ;
-                                $value = $rule['value'] * $rate->getPrice();
+                                $value = $rule['value'] * $rate->getPrice() / 100;
                                 $data[0]->setFixedRule($value);
                                 $temp = $value;
                                 break;

@@ -291,7 +291,7 @@ if ($is_create) {
                                         <div>
                                             <div ng-repeat="(index, row) in model_data[day_number]">
                                                 <div class="row">
-                                                    <div class="col-sm-3">
+                                                    <div class="col-sm-4">
                                                         <div class="input-group">
                                                             <div class="smart-time form-control time-picker" smart-time
                                                                  smt-value="row.hours_from"></div>
@@ -299,7 +299,7 @@ if ($is_create) {
                                                                         class="glyphicon glyphicon-time"></i></span>
                                                         </div>
                                                     </div>
-                                                    <div class="col-sm-3">
+                                                    <div class="col-sm-4">
                                                         <div class="input-group">
                                                             <div class="smart-time form-control time-picker" smart-time
                                                                  smt-value="row.hours_to"></div>
@@ -308,7 +308,7 @@ if ($is_create) {
                                                         </div>
                                                     </div>
                                                     <input ng-model="row.id" type="hidden">
-                                                    <div class="form-group col-sm-3">
+                                                    <div class="form-group col-sm-4">
                                                         <button type="button" ng-click="deleteHours(index, day_number)"
                                                                 class="btn btn-danger">{{texts.delete_text}}
                                                         </button>
@@ -345,7 +345,7 @@ if ($is_create) {
                                      data-init='<?php echo json_encode($irregular_hour) ?>'>
                                     <hr style="border-color: grey">
                                     <div class="row">
-                                        <div class="col-sm-4">
+                                        <!--<div class="col-sm-4">
                                             <label class="control-label">{{ texts.from_text }}</label>
                                             <div class="input-group">
                                                 <div class="smart-time form-control time-picker ng-isolate-scope" smart-time
@@ -364,11 +364,11 @@ if ($is_create) {
                                                             class="glyphicon glyphicon-time"></i></span>
                                             </div>
                                             <input type="text" ng-model="site_options.site_irregular_hours_to" class="form-control" disabled>
-                                        </div>
-                                        <div class="col-sm-4">
+                                        </div>-->
+                                        <div class="col-lg-12">
                                             <label class="control-label">{{ texts.percent_text }}</label>
                                             <div class="input-group" style="width:100%">
-                                                <input type="text" ng-model="model_data[0].irregular_additional_percent" name="percent" class="form-control">
+                                                <input type="text" ng-model="model_data[0].irregular_additional_percent" name="percent" class="form-control" placeholder="0">
                                             </div>
                                             <input type="text" ng-model="site_options.site_irregular_additional_percent" class="form-control" disabled>
                                         </div>

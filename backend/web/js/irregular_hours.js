@@ -116,13 +116,9 @@ app.controller('irregularHour', function($scope, $attrs, $request_sender, $forma
     var data = JSON.parse($attrs.init);
     $scope.preloader = false;
     $scope.texts = data.language;
-    $scope.site_options = { "site_irregular_hours_from": data.site_irregular_hours_from,
-        "site_irregular_hours_to": data.site_irregular_hours_to ,
-        "site_irregular_additional_percent": data.site_irregular_additional_percent };
+    $scope.site_options = { "site_irregular_additional_percent": data.site_irregular_additional_percent };
     console.log($scope);
     $scope.model_data = data['model-data'];
-    $scope.model_data[0].irregular_hours_from = $format_input.getDate(data['model-data'][0].irregular_hours_from);
-    $scope.model_data[0].irregular_hours_to = $format_input.getDate(data['model-data'][0].irregular_hours_to);
     $scope.model_data[0].irregular_additional_percent = data['model-data'][0].irregular_additional_percent;
 
     $scope.saveHour = function() {
@@ -130,8 +126,6 @@ app.controller('irregularHour', function($scope, $attrs, $request_sender, $forma
         console.log($scope.model_data[0]);
         $request_sender.post('/tenant/save-irregular-hour', {tenant_id: data.tenant_id, data: $format_hours.format($scope.model_data)}, function(response) {
             console.log(response);
-            $scope.model_data[0].irregular_hours_from = $format_input.getDate(response.irregular_hours_from);
-            $scope.model_data[0].irregular_hours_to = $format_input.getDate(response.irregular_hours_to);
             $scope.model_data[0].irregular_additional_percent = response.irregular_additional_percent;
 
             $scope.preloader = false;

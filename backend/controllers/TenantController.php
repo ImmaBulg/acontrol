@@ -182,7 +182,7 @@ class TenantController extends Controller
                 'language' => [
                     'from_text' => Yii::t('backend.tenant', 'Irregular Hours From'),
                     'to_text' => Yii::t('backend.tenant', 'Irregular Hours To'),
-                    'percent_text' => Yii::t('backend.tenant', 'Irregular Additional Percent'),
+                    'percent_text' => Yii::t('backend.tenant', 'Penalty Percent'),
                     'update_text' => Yii::t('backend.tenant', 'Update'),
                     'delete_text' => Yii::t('backend.tenant', 'Delete'),
                     'success_text' => Yii::t('backend.tenant', 'Data was successfully updated')
