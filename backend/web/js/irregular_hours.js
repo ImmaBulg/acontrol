@@ -86,6 +86,8 @@ app.controller('irregularCalendar', function ($scope, $attrs, $format_input, $fo
     $scope.days_of_week = data.days_of_week;
 
     $scope.model_data = $format_input.format(data.model_data);
+    $scope.irregular_additional_percent = data.irregular_additional_percent;
+    $scope.overwrite_site = data.overwrite_site === "1";
 
     $scope.addHours = function (day_number) {
         if (!$scope.model_data[day_number]) {
@@ -100,46 +102,22 @@ app.controller('irregularCalendar', function ($scope, $attrs, $format_input, $fo
         });
     };
 
+    $scope.changeOverwriteSite = function() {
+        if ($scope.overwrite_site) {
+
+        }
+    };
+
     $scope.deleteHours = function (index, day_number) {
         $scope.model_data[day_number].splice(index, 1);
     };
 
     $scope.saveIrregular = function () {
         $scope.preloader = true;
-        $request_sender.post('/tenant/save-irregular-hours', {tenant_id: data.tenant_id, data: $format_output.format($scope.model_data)}, function (response) {
-            $scope.model_data = $format_input.format(response);
-            $scope.preloader = false;
-            angular.element('#success-modal').modal();
-        });
-    };
-});
-
-app.controller('irregularHour', function($scope, $attrs, $request_sender, $format_input, $format_hours, $window) {
-    var data = JSON.parse($attrs.init);
-    $scope.preloader = false;
-    $scope.texts = data.language;
-    $scope.site_options = { "site_irregular_additional_percent": data.site_irregular_additional_percent };
-    console.log($scope);
-    $scope.model_data = data['model-data'];
-    $scope.model_data[0].irregular_additional_percent = data['model-data'][0].irregular_additional_percent;
-
-    $scope.saveHour = function() {
-        $scope.preloader = true;
-        console.log($scope.model_data[0]);
-        $request_sender.post('/tenant/save-irregular-hour', {tenant_id: data.tenant_id, data: $format_hours.format($scope.model_data)}, function(response) {
+        $request_sender.post('/tenant/save-irregular-hours', {tenant_id: data.tenant_id, data: [$format_output.format($scope.model_data), $scope.irregular_additional_percent ]}, function (response) {
             console.log(response);
-            $scope.model_data[0].irregular_additional_percent = response.irregular_additional_percent;
-
-            $scope.preloader = false;
-            angular.element('#success-modal').modal();
-        });
-    };
-
-    $scope.delHour = function() {
-        $scope.preloader = true;
-        $request_sender.post('/tenant/del-irregular-hour', {tenant_id: data.tenant_id, data: $scope.model_data}, function(response) {
-            $scope.model_data = response;
-            $window.location.reload();
+            $scope.model_data = $format_input.format(response.data);
+            $scope.irregular_additional_percent = response.irregular_additional_percent;
             $scope.preloader = false;
             angular.element('#success-modal').modal();
         });

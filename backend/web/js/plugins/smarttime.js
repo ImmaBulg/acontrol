@@ -45,7 +45,8 @@ angular.module('smartTime.directive', [])
                 value: '=smtValue',
                 required: '=?smtRequired',
                 name: '=?smtName',
-                form: '=?smtForm'
+                form: '=?smtForm',
+                edit: '=?smtEdit',
             },
 
             link: function(scope, element, attrs) {
@@ -311,8 +312,8 @@ angular.module('smartTime.directive', [])
                 }
             },
 
-            template: '' +
-                '<input type="text" name="{{name}}" class="smt-input" ng-blur="blur()" ng-change="change()" ng-model="data.raw" ' +
+            template: '' + (scope.edit ?
+                '<input type="text" name="{{name}}"  class="smt-input" ng-blur="blur()" ng-change="change()" ng-model="data.raw" ' +
                     'ng-keydown="keyPress($event)" ng-focus="focus()" ng-trim="" ng-required="required" ' +
                     "ng-model-options=\"{debounce: {'default': 200, 'blur': 0}}\" />" +
                 '<div class="smt-suggestions" ng-show="data.show">' +
@@ -320,7 +321,16 @@ angular.module('smartTime.directive', [])
                         "<li ng-repeat=\"s in suggestions\" ng-class=\"{selected:currentIndex==$index}\" " +
                             'ng-click="select($index)">{{s.val}}</li>' +
                     '</ul>' +
-                '</div>'
+                '</div>' :
+                '<input disabled type="text" name="{{name}}"  class="smt-input" ng-blur="blur()" ng-change="change()" ng-model="data.raw" ' +
+                'ng-keydown="keyPress($event)" ng-focus="focus()" ng-trim="" ng-required="required" ' +
+                "ng-model-options=\"{debounce: {'default': 200, 'blur': 0}}\" />" +
+                '<div class="smt-suggestions" ng-show="data.show">' +
+                '<ul>' +
+                "<li ng-repeat=\"s in suggestions\" ng-class=\"{selected:currentIndex==$index}\" " +
+                'ng-click="select($index)">{{s.val}}</li>' +
+                '</ul>' +
+                '</div>')
         }
     }]);
 angular.module('smartTime', ['smartTime.service', 'smartTime.directive']);

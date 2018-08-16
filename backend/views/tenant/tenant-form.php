@@ -285,7 +285,18 @@ if ($is_create) {
                             <div class="loader-wrap">
                                 <div ng-controller="irregularCalendar"
                                      data-init='<?php echo json_encode($irregular_data); ?>'>
+                                    <div>
+                                        <label class="control-label">{{ texts.overwrite_site }}</label>
+                                        <input type="checkbox" ng-model="overwrite_site" ng-change="changeOverwriteSite()">
+                                    </div>
                                     <hr style="border-color: grey">
+                                    <div>
+                                        <label class="control-label">{{ texts.percent_text }}</label>
+                                        <div class="input-group" style="width:100%">
+                                            <input type="text" ng-model="irregular_additional_percent" name="percent" class="form-control" placeholder="0">
+                                        </div>
+                                        <hr style="border-color: grey">
+                                    </div>
                                     <div ng-repeat="(day_number,day_of_week) in days_of_week">
                                         <h3>{{day_of_week}}</h3>
                                         <div>
@@ -294,7 +305,7 @@ if ($is_create) {
                                                     <div class="col-sm-4">
                                                         <div class="input-group">
                                                             <div class="smart-time form-control time-picker" smart-time
-                                                                 smt-value="row.hours_from"></div>
+                                                                 smt-value="row.hours_from" smt-edit="overwrite_site"></div>
                                                             <span class="input-group-addon"><i
                                                                         class="glyphicon glyphicon-time"></i></span>
                                                         </div>
@@ -302,7 +313,7 @@ if ($is_create) {
                                                     <div class="col-sm-4">
                                                         <div class="input-group">
                                                             <div class="smart-time form-control time-picker" smart-time
-                                                                 smt-value="row.hours_to"></div>
+                                                                 smt-value="row.hours_to" smt-edit="overwrite_site"></div>
                                                             <span class="input-group-addon"><i
                                                                         class="glyphicon glyphicon-time"></i></span>
                                                         </div>
@@ -326,61 +337,6 @@ if ($is_create) {
                                         {{texts.update_text}}
                                     </div>
                                     <div class="modal fade" id="success-modal" role="dialog">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-body text-center">
-                                                    <h3>{{texts.success_text}}</h3>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="loader" ng-show="preloader"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                            <div class="loader-wrap">
-                                <div ng-controller="irregularHour"
-                                     data-init='<?php echo json_encode($irregular_hour) ?>'>
-                                    <hr style="border-color: grey">
-                                    <div class="row">
-                                        <!--<div class="col-sm-4">
-                                            <label class="control-label">{{ texts.from_text }}</label>
-                                            <div class="input-group">
-                                                <div class="smart-time form-control time-picker ng-isolate-scope" smart-time
-                                                     smt-value="model_data[0].irregular_hours_from"></div>
-                                                <span class="input-group-addon"><i
-                                                            class="glyphicon glyphicon-time"></i></span>
-                                            </div>
-                                            <input type="text" ng-model="site_options.site_irregular_hours_from" class="form-control" disabled>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label class="control-label">{{ texts.to_text }}</label>
-                                            <div class="input-group">
-                                                <div class="smart-time form-control time-picker ng-isolate-scope" smart-time
-                                                     smt-value="model_data[0].irregular_hours_to"></div>
-                                                <span class="input-group-addon"><i
-                                                            class="glyphicon glyphicon-time"></i></span>
-                                            </div>
-                                            <input type="text" ng-model="site_options.site_irregular_hours_to" class="form-control" disabled>
-                                        </div>-->
-                                        <div class="col-lg-12">
-                                            <label class="control-label">{{ texts.percent_text }}</label>
-                                            <div class="input-group" style="width:100%">
-                                                <input type="text" ng-model="model_data[0].irregular_additional_percent" name="percent" class="form-control" placeholder="0">
-                                            </div>
-                                            <input type="text" ng-model="site_options.site_irregular_additional_percent" class="form-control" disabled>
-                                        </div>
-                                    </div>
-                                    <br>
-                                    <div class="btn btn-success update-irregular smt-button" ng-click="saveHour()">
-                                        {{texts.update_text}}
-                                    </div>
-                                    <div class="btn btn-danger update-irregular smt-button" ng-click="delHour()" style="margin-top: 10px">
-                                        {{texts.delete_text}}
-                                    </div>
-                                    <div class="modal fade" id="success-modal-tenant" role="dialog">
                                         <div class="modal-dialog modal-lg">
                                             <div class="modal-content">
                                                 <div class="modal-body text-center">

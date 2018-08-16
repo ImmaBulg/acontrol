@@ -165,28 +165,17 @@ class TenantController extends Controller
             'irregular_data' => [
                 'days_of_week' => $model->overwrite_site ? TenantIrregularHours::getDays() : SiteIrregularHours::getDays(),
                 'model_data' => $model->overwrite_site ? TenantIrregularHours::find()->where(['tenant_id' => $id])->asArray()->all() : SiteIrregularHours::find()->where(['site_id' => $form->site_id])->asArray()->all(),
+                'irregular_additional_percent' => $model->overwrite_site ? (TenantBillingSetting::find(['tenant_id' => $id])->one())->irregular_additional_percent : $model->relationSite->relationSiteBillingSetting->irregular_additional_percent,
+                'overwrite_site' => $model->overwrite_site,
                 'language' => [
                     'hours_from_text' => $model->overwrite_site ? (new TenantIrregularHours())->getAttributeLabel('hours_from') : (new SiteIrregularHours())->getAttributeLabel('hours_from'),
                     'hours_to_text' => $model->overwrite_site ? (new TenantIrregularHours())->getAttributeLabel('hours_to') : (new SiteIrregularHours())->getAttributeLabel('hours_to'),
                     'delete_text' => Yii::t('backend.tenant', 'Delete row'),
+                    'percent_text' => Yii::t('backend.tenant', 'Penalty Percent'),
                     'add_text' => Yii::t('backend.tenant', 'Add row'),
                     'update_text' => Yii::t('backend.tenant', 'Update'),
-                    'success_text' => Yii::t('backend.tenant', 'Data was successfully updated')
-                ],
-                'tenant_id' => $id
-            ],
-            'irregular_hour' => [
-                'model-data' => $model->overwrite_site ? TenantBillingSetting::find()->where(['tenant_id' => $id])->asArray()->all() : SiteIrregularHours::find()->where(['site_id' => $form->site_id])->asArray()->all(),
-                'site_irregular_hours_from' => $model->relationSite->relationSiteBillingSetting->irregular_hours_from,
-                'site_irregular_hours_to' => $model->relationSite->relationSiteBillingSetting->irregular_hours_to,
-                'site_irregular_additional_percent' => $model->relationSite->relationSiteBillingSetting->irregular_additional_percent,
-                'language' => [
-                    'from_text' => Yii::t('backend.tenant', 'Irregular Hours From'),
-                    'to_text' => Yii::t('backend.tenant', 'Irregular Hours To'),
-                    'percent_text' => Yii::t('backend.tenant', 'Penalty Percent'),
-                    'update_text' => Yii::t('backend.tenant', 'Update'),
-                    'delete_text' => Yii::t('backend.tenant', 'Delete'),
-                    'success_text' => Yii::t('backend.tenant', 'Data was successfully updated')
+                    'success_text' => Yii::t('backend.tenant', 'Data was successfully updated'),
+                    'overwrite_site' => Yii::t('backend.tenant', 'Overwrite site settings'),
                 ],
                 'tenant_id' => $id
             ],
@@ -196,11 +185,21 @@ class TenantController extends Controller
     public function actionSaveIrregularHours()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
+        $request = Yii::$app->request->post();
+        $irregular_percent = $request['data'][1];
+        unset($request['data'][1]);
+        $request['data'] = $request['data'][0];
 
         $form = new FormIrregularHours();
 
-        if ($form->load(Yii::$app->request->post(),'') && $form->save()) {
-            return TenantIrregularHours::find()->where(['tenant_id' => $form->tenant_id])->all();
+        if ($form->load($request,'') && $form->save()) {
+            $tenantBillingSettings = TenantBillingSetting::find(['tenant_id' => $request['tenant_id']])->one();
+            $tenantBillingSettings->irregular_additional_percent = $irregular_percent;
+            $tenantBillingSettings->save();
+
+            return [
+                'data' => TenantIrregularHours::find()->where(['tenant_id' => $form->tenant_id])->all(),
+                'irregular_additional_percent' => $irregular_percent];
         }
 
         return $form->getFirstErrors();

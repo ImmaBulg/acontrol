@@ -43,8 +43,9 @@ class FormIrregularHours extends Model
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 $irregular_models = TenantIrregularHours::find()->where(['tenant_id' => $this->tenant_id])->indexBy('id')->all();
-
+                $tenant_id = $this->tenant_id;
                 $models_to_insert = [];
+                //return [$irregular_models, $this->_data];
 
                 foreach ($this->_data as $key => $row) {
                     if (array_key_exists($row['id'], $irregular_models)) {
@@ -62,7 +63,7 @@ class FormIrregularHours extends Model
                         unset($row['id']);
                         if ($model->validate()) {
                             $models_to_insert[] = [
-                                'tenant_id' => $row['tenant_id'],
+                                'tenant_id' => $tenant_id,
                                 'day_number' => $row['day_number'],
                                 'hours_from' => $row['hours_from'],
                                 'hours_to' => $row['hours_to']
@@ -72,13 +73,11 @@ class FormIrregularHours extends Model
                         }
                     }
                 }
-
                 $models_to_delete = array_keys($irregular_models);
 
                 if ($models_to_delete) {
                     TenantIrregularHours::deleteAll(['id' => $models_to_delete]);
                 }
-
                 if ($models_to_insert) {
                     Yii::$app->db->createCommand()->batchInsert(
                         TenantIrregularHours::tableName(),
