@@ -60,7 +60,6 @@ class SiteBillingSetting extends ActiveRecord
 			['fixed_addition_type', 'in', 'range' => array_keys(self::getListFixedAdditionTypes()), 'skipOnEmpty' => true],
 			['fixed_addition_load', 'in', 'range' => array_keys(self::getListFixedAdditionLoads()), 'skipOnEmpty' => true],
             ['irregular_additional_percent', 'number'],
-            [['irregular_hours_from', 'irregular_hours_to'], 'string'],
 		];
 	}
 

@@ -82,6 +82,7 @@ class Tenant extends ActiveRecord
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => array_keys(self::getListStatuses()), 'skipOnEmpty' => true],
             ['included_in_cop', 'integer'],
+            ['overwrite_site', 'boolean'],
         ];
     }
 
@@ -114,6 +115,7 @@ class Tenant extends ActiveRecord
             'user_name' => Yii::t('common.tenant', 'Client name'),
             'site_footage' => Yii::t('common.tenant', 'Site footage'),
             'included_in_cop' => Yii::t('common.tenant', 'Do not include this tenant in COP calculation for No main meters method'),
+            'overwrite_site' => Yii::t('common.tenant', 'Overwrite tenant settings'),
         ];
     }
 

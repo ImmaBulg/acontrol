@@ -55,11 +55,11 @@ class CopTenantCalculatorHourly {
     $this->tenant = $tenant;
 
     if ($this->report_type == 2)
-        $this->site_main_meters_data = new SiteMainMetersData( $this->tenant->relationSite->getMainSubChannelsNoMeters( Meter::TYPE_AIR ),
+        $this->site_main_meters_data = new SiteMainMetersData( $this->tenant->relationSite->getAirChannelForNoMainMeters(),
                                                            $this->tenant->relationSite->getMainSubChannels( Meter::TYPE_ELECTRICITY ) );
     else
         $this->site_main_meters_data = new SiteMainMetersData( $this->tenant->relationSite->getMainSubChannels( Meter::TYPE_AIR ),
-            $this->tenant->relationSite->getMainSubChannels( Meter::TYPE_ELECTRICITY ) );
+                                                            $this->tenant->relationSite->getMainSubChannels( Meter::TYPE_ELECTRICITY ) );
 
     $date_range_query_single = new DateRangeQuerySingle(
       ( new Query() )->select( [ 'datetime', 'kilowatt_hour' ] )

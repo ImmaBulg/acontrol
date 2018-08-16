@@ -244,11 +244,11 @@ class FormReport extends Model
                 /**
                  * Is tenant have readings for his rules
                  */
-                /*if($missing_data != null) {
+                if($missing_data != null) {
                     $this->processMissingData($missing_data);
                     $this->sendPushAlerts($push_alerts);
                     return false;
-                }*/
+                }
                 /**
                  * Is tenants list are not empty
                  */
@@ -262,6 +262,7 @@ class FormReport extends Model
             default:
                 break;
         }
+        //VarDumper::dump($this);
         $errors = [];
         $currentLanguage = Yii::$app->language;
         $reportLanguage = Report::getReportLanguage();

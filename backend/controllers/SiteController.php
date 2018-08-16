@@ -1,17 +1,21 @@
 <?php
 namespace backend\controllers;
 
+use backend\models\forms\FormSiteIrregularHours;
+use backend\models\forms\FormSiteIrregulatHours;
 use common\models\Log;
+use common\models\SiteBillingSetting;
+use common\models\SiteIrregularHours;
 use Yii;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\VarDumper;
 use yii\web\NotFoundHttpException;
 use yii\web\BadRequestHttpException;
 use common\models\User;
 use common\models\Site;
-use common\models\SiteBillingSetting;
 use common\models\Tenant;
 use common\models\TenantGroup;
 use common\models\MeterChannelGroup;
@@ -287,8 +291,75 @@ class SiteController extends \backend\components\Controller
         }
         return $this->render('site-form', [
             'form' => $form,
-            'model' => $model
+            'model' => $model,
+            'irregular_data' => [
+                'days_of_week' => SiteIrregularHours::getDays(),
+                'model_data' => SiteIrregularHours::find()->where(['site_id' => $id])->asArray()->all(),
+                'language' => [
+                    'hours_from_text' => (new SiteIrregularHours())->getAttributeLabel('hours_from'),
+                    'hours_to_text' => (new SiteIrregularHours())->getAttributeLabel('hours_to'),
+                    'delete_text' => Yii::t('backend.tenant', 'Delete row'),
+                    'add_text' => Yii::t('backend.tenant', 'Add row'),
+                    'update_text' => Yii::t('backend.tenant', 'Update'),
+                    'success_text' => Yii::t('backend.tenant', 'Data was successfully updated')
+                ],
+                'site_id' => $id
+            ],
+            'irregular_hour' => [
+                'model_data' => SiteBillingSetting::find()->where(['site_id' => $id])->asArray()->one(),
+                'site_irregular_hours_from' => $model->relationSiteBillingSetting->irregular_hours_from,
+                'site_irregular_hours_to' => $model->relationSiteBillingSetting->irregular_hours_to,
+                'site_irregular_additional_percent' => $model->relationSiteBillingSetting->irregular_additional_percent,
+                'language' => [
+                    'from_text' => Yii::t('backend.tenant', 'Irregular Hours From'),
+                    'to_text' => Yii::t('backend.tenant', 'Irregular Hours To'),
+                    'percent_text' => Yii::t('backend.tenant', 'Penalty Percent'),
+                    'update_text' => Yii::t('backend.tenant', 'Update'),
+                    'delete_text' => Yii::t('backend.tenant', 'Delete'),
+                    'success_text' => Yii::t('backend.tenant', 'Data was successfully updated')
+                ],
+                'site_id' => $id
+            ],
         ]);
+    }
+
+    public function actionSaveIrregularHours() {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $form = new FormSiteIrregularHours();
+        $data = Yii::$app->request->post();
+
+        if ($form->load($data, '') && $form->save()) {
+            return SiteIrregularHours::find()->where(['site_id' => $data['site_id']])->asArray()->all();
+        }
+
+        return $form->getFirstErrors();
+    }
+
+    public function actionSaveIrregularHour() {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $data = Yii::$app->request->post();
+
+        $model = SiteBillingSetting::find()->where(['site_id' => $data['site_id']])->one();
+        $model->attributes = $data;
+        if (!$model->save()) {
+        } else {
+            return $data;
+        }
+    }
+
+    public function actionDelIrregularHour() {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $data = Yii::$app->request->post();
+        $model = SiteBillingSetting::find()->where(['site_id' => $data['site_id']])->one();
+        $data['irregular_additional_percent'] = null;
+        $model->attributes = $data;
+        if (!$model->save()) {
+            throw new BadRequestHttpException();
+        } else {
+            return $data;
+        }
     }
 
     public function actionView($id) {

@@ -10,6 +10,7 @@ use yii\filters\ContentNegotiator;
 use yii\data\ArrayDataProvider;
 use yii\base\Exception;
 use yii\base\UserException;
+use yii\helpers\VarDumper;
 use yii\log\Logger;
 use yii\web\Response;
 use yii\web\HttpException;
@@ -485,7 +486,7 @@ class DashboardController extends \frontend\components\Controller
 
     protected function buildMetmonUrl(Site $site, Meter $meter, MeterChannel $channel) {
         $ip = $meter->getIpAddress();
-        $port = '10202';
+        $port = '10203';
         $meter_id = $meter->name;
         $meter_type = $meter->relationMeterType;
         $meter_type_name = strtolower($meter_type->name);
@@ -504,6 +505,7 @@ class DashboardController extends \frontend\components\Controller
         else {
             $channel_id = $channel->channel;
         }
+
         return "http://$ip:$port/rt?" . urldecode(http_build_query([
                                                                        'meter_id' => $meter_id,
                                                                        'channel' => $channel_id,

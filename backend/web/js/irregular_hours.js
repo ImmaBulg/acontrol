@@ -1,3 +1,5 @@
+"use strict";
+
 var app = angular.module('irregularHours', ['smartTime']);
 
 app.service('$format_date', function () {

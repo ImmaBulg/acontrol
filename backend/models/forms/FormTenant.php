@@ -53,6 +53,7 @@ class FormTenant extends Model
     public $included_in_cop;
     public $included_reports;
     public $is_visible_on_dat_file = true;
+    public $overwrite_site;
 
     public $site_rate;
     public $site_fixed_payment;
@@ -111,6 +112,7 @@ class FormTenant extends Model
             ['included_in_cop', 'integer'],
             ['irregular_additional_percent', 'number'],
             [['irregular_hours_from', 'irregular_hours_to'], 'string'],
+            ['overwrite_site', 'boolean'],
         ];
     }
 
@@ -207,6 +209,7 @@ class FormTenant extends Model
             'formatting' => Yii::t('backend.tenant', 'Formatting'),
             'option_visible_barcode' => Yii::t('backend.tenant', 'Display of barcode on the tenant bill'),
             'included_in_cop' => Yii::t('backend.tenant', 'Do not include this tenant in COP calculation for No main meters method'),
+            'overwrite_site' => Yii::t('backend.tenant', 'Overwrite site setting'),
         ];
     }
 
@@ -235,6 +238,7 @@ class FormTenant extends Model
                 $this->formatting = $model->formatting;
                 $this->option_visible_barcode = $model->option_visible_barcode;
                 $this->included_in_cop = $model->included_in_cop;
+                $this->overwrite_site = $model->overwrite_site;
                 if($model_billing instanceof TenantBillingSetting) {
                     $this->rate_type_id = $model_billing->rate_type_id;
                     $this->comment = $model_billing->comment;
@@ -314,6 +318,7 @@ class FormTenant extends Model
         $model->property_id = $this->property_id;
         $model->formatting = $this->formatting;
         $model->option_visible_barcode = $this->option_visible_barcode;
+        $model->overwrite_site = $this->overwrite_site;
         $model->included_in_cop = $this->included_in_cop;
         if($is_create) {
             $event = new EventLogTenant();

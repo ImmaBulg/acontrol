@@ -83,9 +83,9 @@ class RuleCalculator
                 ];
                 break;
             case Report::TENANT_BILL_REPORT_BY_FIRST_RULE:
-                $air_rule_meter_data = new SiteMainMetersData($tenant->relationSite->getRuleSubChannels($this->first_rule), $electricity_main_sub_channels);
+                $air_rule_meter_data = new SiteMainMetersData($tenant->relationSite->getAirChannelForNoMainMeters(), $electricity_main_sub_channels);
                 $cop = (new CopCalculator($air_rule_meter_data, $this->from_date, $this->to_date))->calculate();
-                $consumption_cop = (new CopCalculator($site_main_meters_data, $this->from_date, $this->to_date, CopCalculator::CONSUMPTION_COP, $tenant))->calculate();
+                $consumption_cop = (new CopCalculator($air_rule_meter_data, $this->from_date, $this->to_date, CopCalculator::CONSUMPTION_COP, $tenant))->calculate();
                 break;
             default:
                 $cop = (new CopCalculator($site_main_meters_data, $this->from_date, $this->to_date))->calculate();
@@ -103,9 +103,9 @@ class RuleCalculator
 
             foreach($rates as $rate) {
                 $rate_calculator = new RateCalculator($rate, $weighted_channel, $this->from_date, $this->to_date);
-                $rule_data->addRegularData($rate_calculator->calculate($tenant->getRegularTimeRanges(),$rule_data->getCop()));
+                $rule_data->addRegularData($rate_calculator->calculate($tenant->getRegularTimeRanges(),$consumption_cop));
 //                $rule_data->addIrregularData($rate_calculator->calculate($tenant->getIrregularTimeRanges(),$rule_data->getCop()));
-                $rule_data->addIrregularData($rate_calculator->calculate($tenant->getIrregularHoursTimeRanges(),$rule_data->getCop()));
+                $rule_data->addIrregularData($rate_calculator->calculate($tenant->getIrregularHoursTimeRanges(),$consumption_cop));
                 if ($tenant->getFixedPayment()) {
                     $rule_data->setFixedPrice($tenant->getFixedPayment());
                 } else if ($tenant->relationSite->relationSiteBillingSetting->fixed_payment) {

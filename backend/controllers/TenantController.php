@@ -5,6 +5,7 @@ namespace backend\controllers;
 use backend\components\Controller;
 use backend\filters\BaseLayoutAdmin;
 use backend\models\forms\FormIrregularHours;
+use common\models\SiteIrregularHours;
 use common\models\TenantBillingSetting;
 use common\models\TenantIrregularHours;
 use Yii;
@@ -162,11 +163,11 @@ class TenantController extends Controller
 			'form' => $form,
 			'model' => $model,
             'irregular_data' => [
-                'days_of_week' => TenantIrregularHours::getDays(),
-                'model_data' => TenantIrregularHours::find()->where(['tenant_id' => $id])->asArray()->all(),
+                'days_of_week' => $model->overwrite_site ? TenantIrregularHours::getDays() : SiteIrregularHours::getDays(),
+                'model_data' => $model->overwrite_site ? TenantIrregularHours::find()->where(['tenant_id' => $id])->asArray()->all() : SiteIrregularHours::find()->where(['site_id' => $form->site_id])->asArray()->all(),
                 'language' => [
-                    'hours_from_text' => (new TenantIrregularHours())->getAttributeLabel('hours_from'),
-                    'hours_to_text' => (new TenantIrregularHours())->getAttributeLabel('hours_to'),
+                    'hours_from_text' => $model->overwrite_site ? (new TenantIrregularHours())->getAttributeLabel('hours_from') : (new SiteIrregularHours())->getAttributeLabel('hours_from'),
+                    'hours_to_text' => $model->overwrite_site ? (new TenantIrregularHours())->getAttributeLabel('hours_to') : (new SiteIrregularHours())->getAttributeLabel('hours_to'),
                     'delete_text' => Yii::t('backend.tenant', 'Delete row'),
                     'add_text' => Yii::t('backend.tenant', 'Add row'),
                     'update_text' => Yii::t('backend.tenant', 'Update'),
@@ -175,7 +176,7 @@ class TenantController extends Controller
                 'tenant_id' => $id
             ],
             'irregular_hour' => [
-                'model-data' => TenantBillingSetting::find()->where(['tenant_id' => $id])->asArray()->all(),
+                'model-data' => $model->overwrite_site ? TenantBillingSetting::find()->where(['tenant_id' => $id])->asArray()->all() : SiteIrregularHours::find()->where(['site_id' => $form->site_id])->asArray()->all(),
                 'site_irregular_hours_from' => $model->relationSite->relationSiteBillingSetting->irregular_hours_from,
                 'site_irregular_hours_to' => $model->relationSite->relationSiteBillingSetting->irregular_hours_to,
                 'site_irregular_additional_percent' => $model->relationSite->relationSiteBillingSetting->irregular_additional_percent,

@@ -17,7 +17,8 @@ $this->title = Yii::t('frontend.view', 'Real time');
 		<?php echo $this->render('_header'); ?>
 		<div id="main">
 			<div class="container">
-				<div class="col-lg-12">
+                <div>URL - <?php echo $metmon_url; ?></div>
+                <div class="col-lg-12">
 					<?php echo $this->render('_switch', [
 						'action' => ['index'],
 						'user' => $user,

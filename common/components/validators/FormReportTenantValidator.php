@@ -112,8 +112,9 @@ class FormReportTenantValidator
             throw new FormReportValidationInterruptException($message);
         }
 
+
         if ($this->form_report->level == Report::LEVEL_SITE) {
-            switch($this->form_report->report_calculation_type)
+            switch($this->tenant->relationSite->report_calculation_type)
             {
                 case Report::TENANT_BILL_REPORT_BY_MANUAL_COP:
                     $this->checkManualCop();
@@ -128,7 +129,7 @@ class FormReportTenantValidator
         }
         else {
             if ($this->form_report->type == Report::TYPE_TENANT_BILLS) {
-                switch($this->form_report->report_calculation_type)
+                switch($this->tenant->relationSite->report_calculation_type)
                 {
                     case Report::TENANT_BILL_REPORT_BY_MANUAL_COP:
                         $this->checkManualCop();
@@ -188,7 +189,7 @@ class FormReportTenantValidator
 
     private function checkElectricalMainChannels()
     {
-        $channels = (new Query())
+        /*$channels = (new Query())
             ->select('t.channel_id')
             ->from(RuleSingleChannel::tableName() . ' t')
             ->where(['<=', 't.start_date', strtotime($this->from_date)])
@@ -198,6 +199,14 @@ class FormReportTenantValidator
             ])->column();
         $main_channels = [];
         foreach ($channels as $channel_id) {
+            $channel = MeterChannel::find()
+                ->where(['id' => $channel_id])
+                ->andWhere(['is_main' => (int)true])
+                ->one();
+            if ($channel)
+                if ($channel->relationMeter->type === Meter::TYPE_ELECTRICITY) {
+                    $main_channels[] = $channel;
+                }
             $channel = (new Query())
                 ->select('t.meter_id')
                 ->from(MeterChannel::tableName() . ' t')
@@ -210,11 +219,12 @@ class FormReportTenantValidator
                 ->select('t.id')
                 ->from(Meter::tableName() . ' t')
                 ->where(['=', 'type', 'electricity'])
+                ->and(['id' => $channel])
                 ->column();
-            if ($channel)
-                $main_channels[] = $channel;
-        }
-        if ($main_channels === []) {
+            VarDump::dump($channel, 100, true);
+        }*/
+        //VarDumper::dump($this->tenant->relationSite->getMainChannels('electricity'), 100, true);
+        if ($this->tenant->relationSite->getMainChannels('electricity') === []) {
             $message = Yii::t('backend.report',
                 'You are trying to issue report with COP calculation of type No main air meter which requires at least one IsMain electrical channel.', [
                     'name' => $this->tenant->name,

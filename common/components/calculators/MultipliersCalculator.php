@@ -94,7 +94,7 @@ class MultipliersCalculator
      * @param float|int $cop
      * @return MultipliedData
      */
-    public function calculate(AirRates $rate, array $time_ranges = [], float $cop = 0) {
+    public function calculate(AirRates $rate, array $time_ranges = [], $cop = 0) {
         if ($rate->is_taoz) {
             $multiplied_data = new MultipliedData($this->from_date, $this->to_date, $cop);
         }

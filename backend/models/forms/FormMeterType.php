@@ -30,6 +30,7 @@ class FormMeterType extends \yii\base\Model
 	public $modbus;
 	public $is_divide_by_1000;
 	public $is_summarize_max_demand;
+	public $type;
 
 	public function rules()
 	{
@@ -39,6 +40,7 @@ class FormMeterType extends \yii\base\Model
 			[['name', 'channels', 'phases'], 'required'],
 			[['name'], 'string', 'max' => 255],
 			[['channels'], 'integer', 'min' => 1],
+            [['type'], 'string'],
 			[['modbus'], 'number'],
 			[['is_divide_by_1000','is_summarize_max_demand'], 'safe'],
 			['phases', 'in', 'range' => array_keys(MeterType::getListPhases()), 'skipOnEmpty' => false],
@@ -77,6 +79,7 @@ class FormMeterType extends \yii\base\Model
 			'channels' => Yii::t('backend.meter', 'Channels'),
 			'phases' => Yii::t('backend.meter', 'Phases'),
 			'modbus' => Yii::t('backend.meter', 'MODBUS'),
+            'type' => Yii::t('backend.meter', 'Type'),
 		];
 	}
 
@@ -91,7 +94,8 @@ class FormMeterType extends \yii\base\Model
 				$this->phases = $model->phases;
 				$this->modbus = $model->modbus;
 				$this->is_divide_by_1000 = $model->is_divide_by_1000;
-				$this->is_summarize_max_demand = $model->is_summarize_max_demand;
+                $this->type = $model->type;
+                //$this->is_summarize_max_demand = $model->is_summarize_max_demand;
 				break;
 
 			default:
@@ -109,7 +113,8 @@ class FormMeterType extends \yii\base\Model
 		$model->phases = $this->phases;
 		$model->modbus = $this->modbus;
 		$model->is_divide_by_1000 = $this->is_divide_by_1000;
-		$model->is_summarize_max_demand = $this->is_summarize_max_demand;
+		$model->type = $this->type;
+		//$model->is_summarize_max_demand = $this->is_summarize_max_demand;
 
 		$event = new EventLogMeterType();
 		$event->model = $model;
@@ -137,7 +142,8 @@ class FormMeterType extends \yii\base\Model
 			$model->phases = $this->phases;
 			$model->modbus = $this->modbus;
             $model->is_divide_by_1000 = $this->is_divide_by_1000;
-            $model->is_summarize_max_demand = $this->is_summarize_max_demand;
+            $model->type = $this->type;
+            //$model->is_summarize_max_demand = $this->is_summarize_max_demand;
 			$event = new EventLogMeterType();
 			$event->model = $model;
 			$model->on(EventLogMeterType::EVENT_BEFORE_UPDATE, [$event, EventLogMeterType::METHOD_UPDATE]);

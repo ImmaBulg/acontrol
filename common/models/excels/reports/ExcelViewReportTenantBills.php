@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use common\components\calculators\data\RuleData;
 use common\components\i18n\LanguageSelector;
 use common\helpers\CalculationHelper;
+use common\models\RateName;
 use common\models\Site;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -224,8 +225,8 @@ class ExcelViewReportTenantBills extends ExcelView
                                 $r++;
 
                                 $rows = [];
-
-                                if ($data_block->getRate()->rateType->type == RateType::TYPE_TAOZ)
+                                $rate_name = RateName::find()->where(['name' => $data_block->getRate()->rate_name])->one();
+                                if ($rate_name->is_taoz)
                                 {
                                     $rows[] = null;
                                     $rows[] = Yii::$app->formatter->asRound($multipliedData->getReadingFrom());

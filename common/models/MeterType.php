@@ -50,6 +50,7 @@ class MeterType extends ActiveRecord
             ['phases', 'in', 'range' => array_keys(self::getListPhases()), 'skipOnEmpty' => false],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => array_keys(self::getListStatuses()), 'skipOnEmpty' => true],
+            [['type'], 'string'],
         ];
     }
 

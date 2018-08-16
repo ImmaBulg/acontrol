@@ -32,7 +32,7 @@ class MetmonRealTime
 	{
 		$data = [];
 		$ip = $meter->getIpAddress();
-		$port = '10202';
+		$port = '10203';
 		$meter_id = $meter->name;
 		$meter_type = $meter->relationMeterType;
 		$meter_type_name = strtolower($meter_type->name);

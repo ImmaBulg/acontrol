@@ -55,13 +55,7 @@ class SingleRuleCalculator
         $rule_data = new SingleRuleData($this->from_date, $this->to_date, $this->rule, $tenant->getRegularTimeString(),
             $tenant->getIrregularTimeString());
         $electricity_main_sub_channels = $tenant->relationSite->getMainSubChannels(Meter::TYPE_ELECTRICITY);
-
-        if ($report_type == 2) {
-            $air_main_sub_channels = $tenant->relationSite->getRuleSubChannelsNoMeter($this->first_rule);
-        }
-        else {
-            $air_main_sub_channels = $tenant->relationSite->getMainSubChannels(Meter::TYPE_AIR);
-        }
+        $air_main_sub_channels = $tenant->relationSite->getMainSubChannels(Meter::TYPE_AIR);
 
 
         $site_main_meters_data = new SiteMainMetersData($air_main_sub_channels, $electricity_main_sub_channels);
@@ -78,7 +72,7 @@ class SingleRuleCalculator
                 $cop = $tenant->relationSite->manual_cop;
                 break;
             case Report::TENANT_BILL_REPORT_BY_FIRST_RULE:
-                $air_rule_meter_data = new SiteMainMetersData($tenant->relationSite->getRuleSubChannels($this->first_rule), $electricity_main_sub_channels);
+                $air_rule_meter_data = new SiteMainMetersData($tenant->relationSite->getAirChannelForNoMainMeters(), $electricity_main_sub_channels);
                 $cop = (new CopCalculator($air_rule_meter_data, $this->from_date, $this->to_date))->calculate();
                 break;
             default:

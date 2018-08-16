@@ -278,7 +278,7 @@ if ($is_create) {
             <?php ActiveForm::end(); ?>
         </div>
         <div id="irregular-data" class="tab-pane fade">
-            <div class="row">
+            <div class="row" id="irregular-form">
                 <div class="col-lg-6">
                     <div ng-app="irregularHours" ng-cloak>
                         <div class="col-lg-6">
@@ -380,7 +380,7 @@ if ($is_create) {
                                     <div class="btn btn-danger update-irregular smt-button" ng-click="delHour()" style="margin-top: 10px">
                                         {{texts.delete_text}}
                                     </div>
-                                    <div class="modal fade" id="success-modal" role="dialog">
+                                    <div class="modal fade" id="success-modal-tenant" role="dialog">
                                         <div class="modal-dialog modal-lg">
                                             <div class="modal-content">
                                                 <div class="modal-body text-center">
@@ -473,7 +473,6 @@ $field_included_reports = Html::getInputId($form, 'included_reports');
 AutoRegistrableScriptBlock::begin();
 ?>
 <script>
-
     function getSiteAttributes(element, attributes) {
         $.ajax({
             url: '<?=$site_fixed_payments_url?>',

@@ -454,11 +454,10 @@ class Site extends ActiveRecord
                                     ->from('meter_subchannel')
                                     ->innerJoin('meter_channel', 'meter_subchannel.channel_id = meter_channel.id')
                                     ->innerJoin('meter', 'meter.id = meter_channel.meter_id')
-                                    ->andWhere(['meter_channel.is_main' => (int)true])
-                                    //->andWhere(['meter.is_main' => (int)true])
+                                    //->andWhere(['meter_channel.is_main' => (int)true])
+                                    ->andWhere(['<>', 'meter.is_main', (int)false])
                                     ->andWhere(['meter.type' => $type])
                                     ->andWhere(['meter_subchannel.channel' => 1])
-
                                     ->andWhere(['meter.site_id' => $this->id]);
         $subchannels = Yii::$app->db->cache(function () use ($subchannels) {
             return $subchannels->all();
@@ -466,6 +465,22 @@ class Site extends ActiveRecord
         $main_meter_data = [];
         foreach($subchannels as $subchannel) {
             $main_meter_data[] = new MainMetersData($subchannel['meter_name'], $subchannel['channel']);
+        }
+        return $main_meter_data;
+    }
+
+    public function getMainChannels($type) {
+        $channels = (new Query())->select('meter.name as meter_name, meter_channel.channel as channel')
+            ->from('meter')
+            ->innerJoin('meter_channel', 'meter_channel.meter_id = meter.id')
+            ->andWhere(['meter.type' => $type])
+            ->andWhere(['meter.site_id' => $this->id])
+            ->andWhere(['<>', 'meter_channel.is_main', 0])
+            ->all();
+            //->andWhere(['meter.is_main' => (int)true])
+        $main_meter_data = [];
+        foreach($channels as $channel) {
+            $main_meter_data[] = new MainMetersData($channel['meter_name'], $channel['channel']);
         }
         return $main_meter_data;
     }
@@ -492,14 +507,44 @@ class Site extends ActiveRecord
         return $main_meter_data;
     }
 
+    public function getAirChannelForNoMainMeters() {
+        $tenants = (new Query())->select('id')
+            ->from('tenant')
+            ->andWhere(['site_id' => $this->id])
+            ->andWhere(['included_in_cop' => 0])
+            ->column();
+        $single_rules = RuleSingleChannel::find()
+            ->andWhere(['in', 'tenant_id', $tenants])
+            ->all();
+        $subchannels = [];
+        foreach ($single_rules as $rule) {
+            $temp = (new Query())->select('meter.name as meter_name,meter_subchannel.channel')
+                ->from('meter_subchannel')
+                ->innerJoin('meter_channel', 'meter_subchannel.channel_id = meter_channel.id')
+                ->innerJoin('meter', 'meter.id = meter_channel.meter_id')
+                ->andWhere(['meter.type' => Meter::TYPE_AIR])
+                //->andWhere(['<>', 'meter.is_main', (int)true])
+                ->andWhere(['<>', 'meter_channel.is_main', (int)true])
+                ->andWhere(['meter.id' => $rule->relationMeterChannel->meter_id])
+                ->andWhere(['meter.site_id' => $this->id])
+                ->all();
+            $subchannels = ArrayHelper::merge($subchannels, $temp);
+        }
+        //VarDumper::dump($subchannels);
 
-    public function getRuleSubChannels(RuleSingleChannel $rule) {
+        $main_meter_data = [];
+        foreach($subchannels as $subchannel) {
+            $main_meter_data[] = new MainMetersData($subchannel['meter_name'], $subchannel['channel']);
+        }
+        return $main_meter_data;
+    }
+
+    public function getRuleSubChannels(RuleSingleChannel $rule = null) {
         $subchannels = (new Query())->select('meter.name as meter_name,meter_subchannel.channel')
             ->from('meter_subchannel')
             ->innerJoin('meter_channel', 'meter_subchannel.channel_id = meter_channel.id')
             ->innerJoin('meter', 'meter.id = meter_channel.meter_id')
             ->andWhere(['meter.type' => Meter::TYPE_AIR])
-            ->andWhere(['meter.id' => $rule->relationMeterChannel->relationMeter->id])
             ->andWhere(['meter.site_id' => $this->id]);
         $subchannels = Yii::$app->db->cache(function () use ($subchannels) {
             return $subchannels->all();

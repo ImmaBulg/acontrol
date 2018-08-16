@@ -2,6 +2,7 @@
 
 namespace backend\models\forms;
 
+use api\models\forms\FormMeterRawDataSingle;
 use common\components\i18n\Formatter;
 use DateTime;
 use Yii;
@@ -148,12 +149,12 @@ abstract class FormMeterRawData extends Model
         $direction = $this->_direction;
         $apply_avg = Yii::$app->request->getQueryParam('avg');
         if($direction) {
-            for($i = $from_date; $i <= $to_date; $i = $i + 86400) {
+            for($i = $from_date + FormMeterRawDataSingle::_1_HOUR; $i <= $to_date; $i = $i + FormMeterRawDataSingle::_1_HOUR) {
                 $this->calculateData($i, $rows, $apply_avg, $avg_data, $avg_readings, $data, $sql_date_format, $avg_readings);
             }
         }
         else {
-            for($i = $to_date; $i >= $from_date; $i = $i - 86400) {
+            for($i = $to_date - FormMeterRawDataSingle::_1_HOUR; $i >= $from_date; $i = $i - FormMeterRawDataSingle::_1_HOUR) {
                 $this->calculateData($i, $rows, $apply_avg, $avg_data, $avg_readings, $data, $sql_date_format, -1);
             }
             uasort($data, function ($a, $b) {
@@ -204,7 +205,7 @@ abstract class FormMeterRawData extends Model
 
     protected function getDateToPeriod() {
         if($this->_to_date != null) {
-            $date = new DateTime($this->_to_date);
+            $date = (new DateTime($this->_to_date))->modify('+1 hour');
             return $date;
         }
     }

@@ -17,6 +17,7 @@ use common\models\AirMeterRawData;
 use common\models\AirRates;
 use common\models\ElectricityMeterRawData;
 use common\models\MeterChannelMultiplier;
+use common\models\RateName;
 use common\models\RateType;
 use common\models\Site;
 use common\models\Tenant;
@@ -134,7 +135,7 @@ class CopCalculator
         $sum = 0;
         $channels = $this->site_main_meters_data->getElectricalMainChannels();
         foreach($channels as $electrical_main_channel) {
-            $consumption = $electrical_main_channel->getConsumption($date_range_query_pair);
+            $consumption = $electrical_main_channel->getConsumption($date_range_query_pair) * 16;
             $sum += $consumption;
         }
         if (count($channels) > 0) {
@@ -147,6 +148,7 @@ class CopCalculator
     {
         $this->calculateAirConsumptions();
         $this->calculateElectricalConsumptions();
+        //VarDumper::dump($this, 100, true);
 
         return (object)[
             'shefel' => $this->electrical_cn_shefel/$this->cn_shefel,
@@ -171,21 +173,22 @@ class CopCalculator
         $rates = AirRates::getActiveWithinRangeByTypeId($this->from_date, $this->to_date,
             $this->site->relationSiteBillingSetting->rate_type_id)
             ->all();
-        foreach ($channels as $channel) {
+        foreach($this->site_main_meters_data->getAirMainChannels() as $air_meter_channel) {
             $air_reading_base_query = (new Query())->select('kilowatt_hour')->from(AirMeterRawData::tableName())
-                ->where(['meter_id' => $channel->getMeterName()])
-                ->andWhere(['channel_id' => $channel->getChannel()]);
+                ->where(['meter_id' => $air_meter_channel->getMeterName()])
+                ->andWhere(['channel_id' => $air_meter_channel->getChannel()]);
             foreach ($rates as $rate) {
-                switch ($rate->is_taoz) {
+                switch (RateName::find()->where(['name' => $rate->rate_name])->one()->is_taoz) {
                     case false:
                     case true:
                         $queries_generator = new TaozDataQueryGenerator($this->from_date, $this->to_date, $rate->subAirRatesTaoz, $this->tenant->getRegularTimeRanges());
                         $taoz_queries = $queries_generator->generate('datetime', $air_reading_base_query);
                         $taoz_consumption = (new TaozDataCalculator($this->from_date, $this->to_date, $taoz_queries))->calculate(1, 1, 100)->getData();
+                        //VarDumper::dump($taoz_consumption, 100, true);
                         $this->cn_geva += $taoz_consumption->getGevaConsumption();
                         $this->cn_pisga += $taoz_consumption->getPisgaConsumption();
                         $this->cn_shefel += $taoz_consumption->getShefelConsumption();
-                        break;
+                    break;
                 }
             }
         }

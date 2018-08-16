@@ -81,7 +81,7 @@ class RateCalculator
      * @param float $cop
      * @return RatedData
      */
-    public function calculate(array $time_ranges = [], float $cop = 0) {
+    public function calculate(array $time_ranges = [], $cop = 0) {
         $multipliers = MeterChannelMultiplier::getMultipliers($this->weighted_channel->getChannelId(), $this->from_date,
                                                               $this->to_date);
         $rated_data = new RatedData($this->from_date, $this->to_date, $this->rate);

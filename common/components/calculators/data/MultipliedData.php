@@ -14,8 +14,7 @@ class MultipliedData extends TaozRawData
 {
     private $subchannels_data = [];
 
-
-    public function __construct(Carbon $start_date, Carbon $end_date, float $cop = 0) {
+    public function __construct(Carbon $start_date, Carbon $end_date, $cop = 0) {
         parent::__construct($start_date, $end_date);
         $this->cop = $cop;
     }
@@ -68,9 +67,9 @@ class MultipliedData extends TaozRawData
 
 
     public function applyPrices(float $pisga_price, float $geva_price, float $shefel_price) {
-        $this->pisga_pay = $this->pisga_consumption * $this->cop * $pisga_price;
-        $this->geva_pay = $this->geva_consumption * $this->cop * $geva_price;
-        $this->shefel_pay = $this->shefel_consumption * $this->cop * $shefel_price;
+        $this->pisga_pay = $this->pisga_consumption * $this->cop->pisga * $pisga_price;
+        $this->geva_pay = $this->geva_consumption * $this->cop->geva * $geva_price;
+        $this->shefel_pay = $this->shefel_consumption * $this->cop->shefel * $shefel_price;
     }
 
 
@@ -114,9 +113,9 @@ class MultipliedData extends TaozRawData
       $this->shefel_reading += $subchannel_data->getShefelReading();
         $this->reading_from += $subchannel_data->getReadingFrom();
         $this->reading_to += $subchannel_data->getReadingTo();
-        $this->air_shefel_consumption = $this->shefel_consumption * $this->cop;
-        $this->air_geva_consumption = $this->geva_consumption * $this->cop;
-        $this->air_pisga_consumption = $this->pisga_consumption * $this->cop;
+        $this->air_shefel_consumption = $this->shefel_consumption * $this->cop->shefel;
+        $this->air_geva_consumption = $this->geva_consumption * $this->cop->geva;
+        $this->air_pisga_consumption = $this->pisga_consumption * $this->cop->pisga;
         $this->reading_data = $reading_data;
     }
 }
