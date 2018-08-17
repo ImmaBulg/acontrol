@@ -108,6 +108,9 @@ class MultipliersCalculator
                                                        ->andWhere(['channel_id' => $subchannel]);
                 if ($rate->is_taoz) {
                     //VarDumper::dump('before query generator');
+
+                    /*VarDumper::dump('three');
+                    VarDumper::dump($time_ranges, 100, true);*/
                         $queries_generator =
                             new TaozDataQueryGenerator($this->from_date, $this->to_date, $rate->subAirRatesTaoz,
                                                        $time_ranges);

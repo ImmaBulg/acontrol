@@ -162,11 +162,13 @@ class TenantController extends Controller
 		return $this->render('tenant-form', [
 			'form' => $form,
 			'model' => $model,
+            'usage_types'  => TenantIrregularHours::USAGE_TYPE,
             'irregular_data' => [
                 'days_of_week' => $model->overwrite_site ? TenantIrregularHours::getDays() : SiteIrregularHours::getDays(),
-                'model_data' => $model->overwrite_site ? TenantIrregularHours::find()->where(['tenant_id' => $id])->asArray()->all() : SiteIrregularHours::find()->where(['site_id' => $form->site_id])->asArray()->all(),
-                'irregular_additional_percent' => $model->overwrite_site ? (TenantBillingSetting::find(['tenant_id' => $id])->one())->irregular_additional_percent : $model->relationSite->relationSiteBillingSetting->irregular_additional_percent,
+                'model_data' => $model->overwrite_site || (!$model->overwrite_site && TenantIrregularHours::find()->where(['tenant_id' => $id])->asArray()->all() !== [])? TenantIrregularHours::find()->where(['tenant_id' => $id])->asArray()->all() : SiteIrregularHours::find()->where(['site_id' => $form->site_id])->asArray()->all(),
+                'irregular_additional_percent' => $model->overwrite_site || (!$model->overwrite_site && (TenantBillingSetting::find(['tenant_id' => $id])->one())->irregular_additional_percent) ? (TenantBillingSetting::find(['tenant_id' => $id])->one())->irregular_additional_percent : $model->relationSite->relationSiteBillingSetting->irregular_additional_percent,
                 'overwrite_site' => $model->overwrite_site,
+                'usage_type' => $model->usage_type,
                 'language' => [
                     'hours_from_text' => $model->overwrite_site ? (new TenantIrregularHours())->getAttributeLabel('hours_from') : (new SiteIrregularHours())->getAttributeLabel('hours_from'),
                     'hours_to_text' => $model->overwrite_site ? (new TenantIrregularHours())->getAttributeLabel('hours_to') : (new SiteIrregularHours())->getAttributeLabel('hours_to'),
@@ -176,6 +178,7 @@ class TenantController extends Controller
                     'update_text' => Yii::t('backend.tenant', 'Update'),
                     'success_text' => Yii::t('backend.tenant', 'Data was successfully updated'),
                     'overwrite_site' => Yii::t('backend.tenant', 'Overwrite site settings'),
+                    'usage_type_text' => Yii::t('backend.tenant', 'Usage type'),
                 ],
                 'tenant_id' => $id
             ],
@@ -186,20 +189,27 @@ class TenantController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         $request = Yii::$app->request->post();
-        $irregular_percent = $request['data'][1];
-        unset($request['data'][1]);
-        $request['data'] = $request['data'][0];
+        $irregular_percent = $request['irregular_percent'];
+        $overwrite_site = $request['overwrite_site'];
+        $usage_type = $request['usage_type'];
+        unset($request['irregular_percent'], $request['overwrite_site'], $request['usage_type']);
 
         $form = new FormIrregularHours();
 
         if ($form->load($request,'') && $form->save()) {
-            $tenantBillingSettings = TenantBillingSetting::find(['tenant_id' => $request['tenant_id']])->one();
+            $tenantBillingSettings = TenantBillingSetting::find()->where(['tenant_id' => $request['tenant_id']])->one();
             $tenantBillingSettings->irregular_additional_percent = $irregular_percent;
             $tenantBillingSettings->save();
+            $tenant = Tenant::find()->where(['id' => $request['tenant_id']])->one();
+            $tenant->overwrite_site = $overwrite_site === 'true' ? 1 : 0;
+            $tenant->usage_type = $usage_type;
+            $tenant->save();
 
             return [
                 'data' => TenantIrregularHours::find()->where(['tenant_id' => $form->tenant_id])->all(),
-                'irregular_additional_percent' => $irregular_percent];
+                'irregular_additional_percent' => $irregular_percent,
+                'overwrite_site' => $overwrite_site,
+                'usage_type' => $usage_type];
         }
 
         return $form->getFirstErrors();

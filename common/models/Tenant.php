@@ -83,6 +83,7 @@ class Tenant extends ActiveRecord
             ['status', 'in', 'range' => array_keys(self::getListStatuses()), 'skipOnEmpty' => true],
             ['included_in_cop', 'integer'],
             ['overwrite_site', 'boolean'],
+            ['usage_type', 'string'],
         ];
     }
 
@@ -116,6 +117,7 @@ class Tenant extends ActiveRecord
             'site_footage' => Yii::t('common.tenant', 'Site footage'),
             'included_in_cop' => Yii::t('common.tenant', 'Do not include this tenant in COP calculation for No main meters method'),
             'overwrite_site' => Yii::t('common.tenant', 'Overwrite tenant settings'),
+            'usage_type' => Yii::t('common.tenant', 'Usage type'),
         ];
     }
 
@@ -200,13 +202,25 @@ class Tenant extends ActiveRecord
     {
         $ranges = [];
 
-        foreach ($this->relationIrregularHours as $irregular_hour) {
-            /**
-             * @var TenantIrregularHours $irregular_hour
-             */
-            $ranges[] = new TimeRange($irregular_hour->hours_from, $irregular_hour->hours_to, $irregular_hour->day_number);
-        }
+        if ($this->overwrite_site) {
+            foreach ($this->relationIrregularHours as $irregular_hour) {
+                /**
+                 * @var TenantIrregularHours $irregular_hour
+                 */
+                $end_time = Carbon::today()->setTimeFromTimeString($irregular_hour->hours_to)->subHour()->format('H:i:s');
+                $ranges[] = new TimeRange($irregular_hour->hours_from, $end_time, $irregular_hour->day_number);
+            }
+            //VarDumper::dump($ranges, 3, true);
 
+        } else {
+            foreach ($this->relationSite->relationIrregularHours as $irregular_hour) {
+                /**
+                 * @var TenantIrregularHours $irregular_hour
+                 */
+                $end_time = Carbon::today()->setTimeFromTimeString($irregular_hour->hours_to)->subHour()->format('H:i:s');
+                $ranges[] = new TimeRange($irregular_hour->hours_from, $end_time, $irregular_hour->day_number);
+            }
+        }
         return $ranges;
     }
 
@@ -492,29 +506,38 @@ class Tenant extends ActiveRecord
     public function getRegularTimeRanges()
     {
         $regular_time_ranges = [];
-        $irregular_time_ranges = $this->getIrregularTimeRanges();
-        $irregular_time_range = $irregular_time_ranges[0] ?? null;
-        if ($irregular_time_range instanceof TimeRange) {
+        $irregular_time_ranges = $this->getIrregularHoursTimeRanges();
+        foreach ($irregular_time_ranges as $irregular_time_range) {
             if ($irregular_time_range->isOverlappingMidnight()) {
                 $regular_time_ranges[] = $irregular_time_range->getInverted();
             } else {
                 if ($irregular_time_range->isStartingFromMidnight()) {
-                    $regular_time_ranges[] = new TimeRange($irregular_time_range->getEndTime(), TimeRange::endOfDay());
+                    $regular_time_ranges[] = new TimeRange($irregular_time_range->getEndTime(), TimeRange::endOfDay(), $irregular_time_range->getDayNumber());
                 } else {
                     if ($irregular_time_range->isEndingOnMidnight()) {
                         $regular_time_ranges[] =
-                            new TimeRange(TimeRange::midnight(), $irregular_time_range->getStartTime());
+                            new TimeRange(TimeRange::midnight(), $irregular_time_range->getStartTime(), $irregular_time_range->getDayNumber());
                     } else {
                         $regular_time_ranges[] =
-                            new TimeRange(TimeRange::midnight(), $irregular_time_range->getStartTime());
+                            new TimeRange(TimeRange::midnight(), $irregular_time_range->getStartTime(), $irregular_time_range->getDayNumber());
                         $regular_time_ranges[] =
-                            new TimeRange($irregular_time_range->getEndTime(), TimeRange::endOfDay());
+                            new TimeRange($irregular_time_range->getEndTime(), TimeRange::endOfDay(), $irregular_time_range->getDayNumber());
                     }
                 }
             }
-        } else {
-            $regular_time_ranges[] = new TimeRange();
         }
+        $regular_day_number = [1, 2, 3, 4, 5, 6, 7];
+        foreach ($regular_time_ranges as $range) {
+            if (\in_array($range->getDayNumber(), $regular_day_number, true)) {
+               unset($regular_day_number[$range->getDayNumber() - 1]);
+            }
+        }
+
+        foreach ($regular_day_number as $day) {
+            $regular_time_ranges[] =
+                new TimeRange(TimeRange::midnight(), TimeRange::endOfDay(), $day);
+        }
+        //VarDumper::dump($regular_time_ranges, 100, true);
         return $regular_time_ranges;
     }
 

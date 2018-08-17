@@ -81,7 +81,8 @@ class TaozDataCalculator {
    /* VarDumper::dump('this: ', 100, true);
     VarDumper::dump( $this->data, 100, true);
     VarDumper::dump( "\n", 100, true);*/
-    return $this;
+      //VarDumper::dump('All');
+      return $this;
   }
 
   /**
@@ -114,7 +115,7 @@ class TaozDataCalculator {
             }
           }
         }
-
+        //VarDumper::dump($type . ' = ' . $sum);
         return $sum;
       }
     }

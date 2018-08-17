@@ -25,6 +25,13 @@ class TenantIrregularHours extends ActiveRecord
     const FRIDAY = 6;
     const SATURDAY = 7;
 
+    const USAGE_TYPE = [
+        ['title' => 'Only normal hours', 'value' => 'normal'],
+        ['title' => 'Only irregular hours', 'value' => 'irregular'],
+        ['title' => 'Both normal and irregular hours (with penalty)', 'value' => 'with_penalty'],
+        ['title' => 'Both normal and irregular hours (without penalty)', 'value' => 'without_penalty'],
+    ];
+
     public static function tableName()
     {
         return 'tenant_irregular_hours';

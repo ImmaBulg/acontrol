@@ -83,7 +83,23 @@ $first_tenant_key = key($data->getTenantData());
         </tbody>
     </table>
     <?php foreach($tenant_data->getRuleData() as $rule_data) : ?>
-        <?= $this->render('tenant-bills-rule-view', ['rule' => $rule_data]); ?>
+        <?php
+            $usage_type = 'normal';
+            if($tenant_data->getTenant()->overwrite_site == 1) {
+                $usage_type = $tenant_data->getTenant()->usage_type;
+            } else {
+                $usage_type = $tenant_data->getTenant()->relationSite->relationSiteBillingSetting->usage_type;
+            }
+        ?>
+        <?php if ($usage_type === 'normal'): ?>
+            <?= $this->render('tenant-bills-rule-view-normal', ['rule' => $rule_data, 'tenant' => $tenant_data->getTenant()]); ?>
+        <?php endif; ?>
+        <?php if ($usage_type === 'irregular'): ?>
+            <?= $this->render('tenant-bills-rule-view-irregular', ['rule' => $rule_data, 'tenant' => $tenant_data->getTenant()]); ?>
+        <?php endif; ?>
+        <?php if ($usage_type === 'with_penalty' || $usage_type === 'without_penalty'): ?>
+            <?= $this->render('tenant-bills-rule-view', ['rule' => $rule_data, 'tenant' => $tenant_data->getTenant()]); ?>
+        <?php endif; ?>
     <? endforeach; ?>
     <?php if ($tenant_data->getTenant()->relationRateType->is_taoz): ?>
         <?= $this->render('tenant-bills-total-tenant-view',['tenant_data'=>$tenant_data]) ?>

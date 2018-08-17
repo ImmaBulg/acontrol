@@ -33,6 +33,17 @@ class TaozDataQueryGenerator
         'Saturday' => [],
     ];
 
+
+    private $days = [
+        'Sunday' => 1,
+        'Monday' => 2,
+        'Tuesday' => 3,
+        'Wednesday' => 4,
+        'Thursday' => 5,
+        'Friday' => 6,
+        'Saturday' => 7,
+    ];
+
     /**
      * @var array| \common\models\SubAirRatesTaoz[]
      */
@@ -63,8 +74,18 @@ class TaozDataQueryGenerator
         $day_to_dates_map = $this->day_to_dates_map;
         $temp_date = $start_date->copy();
         while($temp_date <= $end_date->startOfDay()) {
+            $add_day = false;
             $day = $temp_date->format('l');
-            $day_to_dates_map[$day][] = $temp_date->copy();
+            foreach ($this->time_boundaries as $range) {
+                if ($range->getDayNumber() === $this->days[$day]) {
+                    $add_day = true;
+                    break;
+                }
+            }
+            if ($add_day) {
+                $day_to_dates_map[$day][] = $temp_date->copy();
+            }
+
             $temp_date->addDay();
         }
         return $day_to_dates_map;
@@ -112,7 +133,6 @@ class TaozDataQueryGenerator
                      * @var Carbon[] $dates
                      */
                     $dates = $this->day_to_dates_map[$day] ?? [];
-
                     foreach($dates as $date) {
                         foreach($time_ranges as $time_range) {
                             if ($time_range->getDay() && $time_range->getDay() != $day) {
@@ -127,7 +147,7 @@ class TaozDataQueryGenerator
                                 $date_time_to->addDay()->startOfDay();
                             }
                             else {
-                                $date_time_to->setTime($time_range->getEndTime()->hour + 1,
+                                $date_time_to->setTime($time_range->getEndTime()->hour,
                                                        $time_range->getEndTime()->minute);
 
                             }
@@ -156,29 +176,34 @@ class TaozDataQueryGenerator
     public function getTimeRanges(SubAirRatesTaoz $taoz_part) {
         $time_ranges = [];
 
+
         foreach($this->time_boundaries as $time_boundary) {
             foreach($taoz_part->getTimeRanges() as $time_range) {
                 $start_time = $time_range->getStartTime();
                 $end_time = $time_range->getEndTime();
-                if($time_boundary->getEndTime() < $time_range->getStartTime() ||
-                   $time_boundary->getStartTime() > $time_range->getEndTime()
+                $temp_timeboundary = clone $time_range->getStartTime();
+
+                if($time_boundary->getEndTime()->lt($time_range->getStartTime()) ||
+                    $time_boundary->getStartTime()->gt($time_range->getEndTime())
                 ) {
                     continue;
                 }
-                else {
-                    if($time_boundary->getStartTime() > $time_range->getStartTime()) {
-                        $start_time = $time_boundary->getStartTime();
-                    }
-                    if($time_boundary->getEndTime() < $time_range->getEndTime()) {
-                        $end_time = $time_boundary->getEndTime();
-                    }
-                    $time_ranges[] = new TimeRange($start_time, $end_time, $time_boundary->getDayNumber());
+
+                if($time_boundary->getStartTime()->gt($time_range->getStartTime())) {
+                    $start_time = $time_boundary->getStartTime();
                 }
+                if($time_boundary->getEndTime()->lt($time_range->getEndTime())) {
+                    $end_time = $time_boundary->getEndTime();
+                }
+                $temp =  new TimeRange($start_time, $end_time, $time_boundary->getDayNumber());
+                $time_ranges[] = new TimeRange($start_time, $end_time, $time_boundary->getDayNumber());
+
             }
+
         }
-        if(empty($time_ranges)) {
+        /*if(empty($time_ranges)) {
             $time_ranges[] = new TimeRange($taoz_part->getStartTime(), $taoz_part->getEndTime());
-        }
+        }*/
         return $time_ranges;
     }
 

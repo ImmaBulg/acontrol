@@ -103,9 +103,11 @@ class RuleCalculator
 
             foreach($rates as $rate) {
                 $rate_calculator = new RateCalculator($rate, $weighted_channel, $this->from_date, $this->to_date);
+                //VarDumper::dump('Regular');
                 $rule_data->addRegularData($rate_calculator->calculate($tenant->getRegularTimeRanges(),$consumption_cop));
 //                $rule_data->addIrregularData($rate_calculator->calculate($tenant->getIrregularTimeRanges(),$rule_data->getCop()));
-                $rule_data->addIrregularData($rate_calculator->calculate($tenant->getIrregularHoursTimeRanges(),$consumption_cop));
+                $irregular = $tenant->getIrregularHoursTimeRanges();
+                $rule_data->addIrregularData($rate_calculator->calculate($irregular, $consumption_cop));
                 if ($tenant->getFixedPayment()) {
                     $rule_data->setFixedPrice($tenant->getFixedPayment());
                 } else if ($tenant->relationSite->relationSiteBillingSetting->fixed_payment) {
@@ -115,6 +117,7 @@ class RuleCalculator
                 }
             }
         }
+        //VarDumper::dump($rule_data);
         return $rule_data;
     }
 

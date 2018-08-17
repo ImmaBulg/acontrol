@@ -88,6 +88,7 @@ app.controller('irregularCalendar', function ($scope, $attrs, $format_input, $fo
     $scope.model_data = $format_input.format(data.model_data);
     $scope.irregular_additional_percent = data.irregular_additional_percent;
     $scope.overwrite_site = data.overwrite_site === "1";
+    $scope.usage_type = data.usage_type;
 
     $scope.addHours = function (day_number) {
         if (!$scope.model_data[day_number]) {
@@ -114,10 +115,18 @@ app.controller('irregularCalendar', function ($scope, $attrs, $format_input, $fo
 
     $scope.saveIrregular = function () {
         $scope.preloader = true;
-        $request_sender.post('/tenant/save-irregular-hours', {tenant_id: data.tenant_id, data: [$format_output.format($scope.model_data), $scope.irregular_additional_percent ]}, function (response) {
+        $request_sender.post('/tenant/save-irregular-hours', {
+            tenant_id: data.tenant_id,
+            data: $format_output.format($scope.model_data),
+            irregular_percent: $scope.irregular_additional_percent,
+            overwrite_site: $scope.overwrite_site,
+            usage_type: $scope.usage_type,
+        }, function (response) {
             console.log(response);
             $scope.model_data = $format_input.format(response.data);
             $scope.irregular_additional_percent = response.irregular_additional_percent;
+            $scope.overwrite_site = response.overwrite_site === "true";
+            $scope.usage_type = response.usage_type;
             $scope.preloader = false;
             angular.element('#success-modal').modal();
         });

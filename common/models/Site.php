@@ -577,4 +577,9 @@ class Site extends ActiveRecord
 
         return $main_meter_data;
     }
+
+    public function getRelationIrregularHours()
+    {
+        return $this->hasMany(SiteIrregularHours::className(), ['site_id' => 'id']);
+    }
 }

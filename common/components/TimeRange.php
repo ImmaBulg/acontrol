@@ -39,19 +39,19 @@ class TimeRange
 
 
     public function isStartingFromMidnight() {
-        $is_start_on_midnight = $this->getStartTime() === self::midnight();
+        $is_start_on_midnight = $this->getStartTime()->eq(self::midnight());
         return $is_start_on_midnight;
     }
 
 
     public function isEndingOnMidnight() {
-        $is_end_on_midnight = $this->getEndTime() === self::midnight();
+        $is_end_on_midnight = $this->getEndTime()->eq(self::midnight());
         return $is_end_on_midnight;
     }
 
 
     public function getInverted() {
-        return new TimeRange($this->end_time, $this->start_time);
+        return new TimeRange($this->end_time, $this->start_time, $this->getDayNumber());
     }
 
 

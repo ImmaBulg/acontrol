@@ -53,6 +53,7 @@ angular.module('smartTime.directive', [])
                 scope.required = (angular.isDefined(scope.required) ? scope.required : false);
                 scope.name = (angular.isDefined(scope.name) ? scope.name : '');
                 scope.form = (angular.isDefined(scope.form) ? scope.form : null);
+                scope.edit = (angular.isDefined(scope.edit) ? scope.edit : true);
 
                 var ptrn24 = /([01]\d|2[0-3]):([0-5]\d)/;
                 var match = null;
@@ -312,8 +313,8 @@ angular.module('smartTime.directive', [])
                 }
             },
 
-            template: '' + (scope.edit ?
-                '<input type="text" name="{{name}}"  class="smt-input" ng-blur="blur()" ng-change="change()" ng-model="data.raw" ' +
+            template: '' +
+                '<input ng-disabled="!edit" type="text" name="{{name}}"  class="smt-input" ng-blur="blur()" ng-change="change()" ng-model="data.raw" ' +
                     'ng-keydown="keyPress($event)" ng-focus="focus()" ng-trim="" ng-required="required" ' +
                     "ng-model-options=\"{debounce: {'default': 200, 'blur': 0}}\" />" +
                 '<div class="smt-suggestions" ng-show="data.show">' +
@@ -321,16 +322,7 @@ angular.module('smartTime.directive', [])
                         "<li ng-repeat=\"s in suggestions\" ng-class=\"{selected:currentIndex==$index}\" " +
                             'ng-click="select($index)">{{s.val}}</li>' +
                     '</ul>' +
-                '</div>' :
-                '<input disabled type="text" name="{{name}}"  class="smt-input" ng-blur="blur()" ng-change="change()" ng-model="data.raw" ' +
-                'ng-keydown="keyPress($event)" ng-focus="focus()" ng-trim="" ng-required="required" ' +
-                "ng-model-options=\"{debounce: {'default': 200, 'blur': 0}}\" />" +
-                '<div class="smt-suggestions" ng-show="data.show">' +
-                '<ul>' +
-                "<li ng-repeat=\"s in suggestions\" ng-class=\"{selected:currentIndex==$index}\" " +
-                'ng-click="select($index)">{{s.val}}</li>' +
-                '</ul>' +
-                '</div>')
+                '</div>'
         }
     }]);
 angular.module('smartTime', ['smartTime.service', 'smartTime.directive']);

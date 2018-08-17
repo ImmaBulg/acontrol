@@ -82,17 +82,75 @@ $direction = LanguageSelector::getAliasLanguageDirection();
        style="border-left:1px solid #000;border-right:1px solid #000;border-top:1px solid #000;width:100%;font-size:11px;color:#000;vertical-align:top;"
        cellpadding="0" cellspacing="0">
     <tbody>
-    <tr>
-        <td style="padding:5px;width:55%;" rowspan="3">
+    <?php if($tenant_data->getTenant()->overwrite_site): ?>
+        <?php if ($tenant_data->getTenant()->usage_type === 'with_penalty'): ?>
+            <tr>
+                <td style="padding:5px;width:55%;" rowspan="4">
 
-        </td>
-        <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
-            <strong><?php echo Yii::t('common.view', 'Fixed payment'); ?></strong>
-        </td>
-        <td style="width:15%;padding:5px;" align="center" dir="ltr">
-            <?php echo $formatter->asPrice($tenant_data->getFixedPrice()); ?>
-        </td>
-    </tr>
+                </td>
+                <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
+                    <strong><?php echo Yii::t('common.view', 'Fixed payment'); ?></strong>
+                </td>
+                <td style="width:15%;padding:5px;" align="center" dir="ltr">
+                    <?php echo $formatter->asPrice($tenant_data->getFixedPrice()); ?>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
+                    <strong><?php echo Yii::t('common.view', 'Irregular hours penalty'); ?></strong>
+                </td>
+                <td style="width:15%;padding:5px;" align="center" dir="ltr">
+                    <?php echo $formatter->asPrice(); ?>
+                </td>
+            </tr>
+        <?php else: ?>
+            <tr>
+                <td style="padding:5px;width:55%;" rowspan="3">
+
+                </td>
+                <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
+                    <strong><?php echo Yii::t('common.view', 'Fixed payment'); ?></strong>
+                </td>
+                <td style="width:15%;padding:5px;" align="center" dir="ltr">
+                    <?php echo $formatter->asPrice($tenant_data->getFixedPrice()); ?>
+                </td>
+            </tr>
+        <?php endif; ?>
+    <?php else: ?>
+        <?php if ($tenant_data->getTenant()->relationSite->relationSiteBillingSetting->usage_type === 'with_penalty'): ?>
+            <tr>
+                <td style="padding:5px;width:55%;" rowspan="4">
+
+                </td>
+                <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
+                    <strong><?php echo Yii::t('common.view', 'Fixed payment'); ?></strong>
+                </td>
+                <td style="width:15%;padding:5px;" align="center" dir="ltr">
+                    <?php echo $formatter->asPrice($tenant_data->getFixedPrice()); ?>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
+                    <strong><?php echo Yii::t('common.view', 'Irregular hours penalty'); ?></strong>
+                </td>
+                <td style="width:15%;padding:5px;" align="center" dir="ltr">
+                    <?php echo $formatter->asPrice($tenant_data->getFixedPrice()); ?>
+                </td>
+            </tr>
+        <?php else: ?>
+            <tr>
+                <td style="padding:5px;width:55%;" rowspan="3">
+
+                </td>
+                <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
+                    <strong><?php echo Yii::t('common.view', 'Fixed payment'); ?></strong>
+                </td>
+                <td style="width:15%;padding:5px;" align="center" dir="ltr">
+                    <?php echo $formatter->asPrice($tenant_data->getFixedPrice()); ?>
+                </td>
+            </tr>
+        <?php endif; ?>
+    <?php endif; ?>
     <tr>
         <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
             <strong><?php echo Yii::t('common.view', 'Total'); ?></strong>

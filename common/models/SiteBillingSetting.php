@@ -60,6 +60,7 @@ class SiteBillingSetting extends ActiveRecord
 			['fixed_addition_type', 'in', 'range' => array_keys(self::getListFixedAdditionTypes()), 'skipOnEmpty' => true],
 			['fixed_addition_load', 'in', 'range' => array_keys(self::getListFixedAdditionLoads()), 'skipOnEmpty' => true],
             ['irregular_additional_percent', 'number'],
+            ['usage_type', 'string'],
 		];
 	}
 
@@ -80,6 +81,7 @@ class SiteBillingSetting extends ActiveRecord
 			'modified_at' => Yii::t('common.site', 'Modified at'),
 			'created_by' => Yii::t('common.site', 'Created by'),
 			'modified_by' => Yii::t('common.site', 'Modified by'),
+            'usage_type' => Yii::t('common.site', 'Usage type'),
 		];
 	}
 

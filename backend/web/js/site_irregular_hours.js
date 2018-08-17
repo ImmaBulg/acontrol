@@ -100,6 +100,8 @@ app.controller("irregularCalendar", function($scope, $attrs, $format_input, $for
     $scope.texts = data.language;
     $scope.days_of_week = data.days_of_week;
     $scope.model_data = $format_input.format(data.model_data);
+    $scope.irregular_additional_percent = data.irregular_additional_percent;
+    $scope.usage_type = data.usage_type;
 
     $scope.addHours = function(day_number) {
         if (!$scope.model_data[day_number]) {
@@ -123,37 +125,14 @@ app.controller("irregularCalendar", function($scope, $attrs, $format_input, $for
         $request_calendar_sender.post("/site/save-irregular-hours", {
             site_id: data.site_id,
             data: $format_output.format($scope.model_data),
+            irregular_percent: $scope.irregular_additional_percent,
+            usage_type: $scope.usage_type,
         }, function(response) {
-           $scope.model_data = $format_input.format(response);
+           $scope.model_data = $format_input.format(response.data);
+           $scope.irregular_additional_percent = response.irregular_percent;
+           $scope.usage_type = response.usage_type;
            $scope.preloader = false;
            angular.element("#success-modal").modal();
-        });
-    };
-});
-
-app.controller("irregularHour", function($scope, $attrs, $request_sender, $format_input, $format_hours, $window) {
-    let data = JSON.parse($attrs.init);
-    $scope.preloader = false;
-    $scope.texts = data.language;
-    $scope.model_data = data.model_data;
-    $scope.model_data.irregular_additional_percent = data.model_data.irregular_additional_percent;
-
-    $scope.saveHour = function() {
-        $scope.preloader = true;
-        $request_sender.post("/site/save-irregular-hour", $scope.model_data, function(response) {
-            $scope.model_data.irregular_additional_percent = response.irregular_additional_percent;
-            $scope.preloader = false;
-            angular.element("#success-modal").modal();
-        });
-    };
-
-    $scope.delHour = function() {
-        $scope.preloader = true;
-        $request_sender.post("/site/del-irregular-hour", $scope.model_data, function (response) {
-            $scope.model_data = response;
-            $window.location.reload();
-            $scope.preloader = false;
-            angular.element("#success-modal").modal();
         });
     };
 });

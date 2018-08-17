@@ -279,7 +279,7 @@ if ($is_create) {
         </div>
         <div id="irregular-data" class="tab-pane fade">
             <div class="row" id="irregular-form">
-                <div class="col-lg-6">
+                <div class="col-lg-12">
                     <div ng-app="irregularHours" ng-cloak>
                         <div class="col-lg-6">
                             <div class="loader-wrap">
@@ -293,10 +293,21 @@ if ($is_create) {
                                     <div>
                                         <label class="control-label">{{ texts.percent_text }}</label>
                                         <div class="input-group" style="width:100%">
-                                            <input type="text" ng-model="irregular_additional_percent" name="percent" class="form-control" placeholder="0">
+                                            <input ng-disabled="!overwrite_site" type="text" ng-model="irregular_additional_percent" name="percent" class="form-control" placeholder="0">
                                         </div>
                                         <hr style="border-color: grey">
                                     </div>
+                                    <div>
+                                        <label for="" class="control-label">{{ texts.usage_type_text }}</label>
+                                        <div class="input-group" style="width: 100%">
+                                            <select ng-disabled="!overwrite_site" name="usage_type" id="usage_type" ng-model="usage_type" class="form-control">
+                                                <?php foreach($usage_types as $usage_type): ?>
+                                                    <option value="<?= $usage_type['value'] ?>"><?=$usage_type['title']?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <hr style="border-color: grey">
                                     <div ng-repeat="(day_number,day_of_week) in days_of_week">
                                         <h3>{{day_of_week}}</h3>
                                         <div>
@@ -304,7 +315,7 @@ if ($is_create) {
                                                 <div class="row">
                                                     <div class="col-sm-4">
                                                         <div class="input-group">
-                                                            <div class="smart-time form-control time-picker" smart-time
+                                                            <div ng-disabled="!overwrite_site" class="smart-time form-control time-picker" smart-time
                                                                  smt-value="row.hours_from" smt-edit="overwrite_site"></div>
                                                             <span class="input-group-addon"><i
                                                                         class="glyphicon glyphicon-time"></i></span>
@@ -312,7 +323,7 @@ if ($is_create) {
                                                     </div>
                                                     <div class="col-sm-4">
                                                         <div class="input-group">
-                                                            <div class="smart-time form-control time-picker" smart-time
+                                                            <div ng-disabled="!overwrite_site" class="smart-time form-control time-picker" smart-time
                                                                  smt-value="row.hours_to" smt-edit="overwrite_site"></div>
                                                             <span class="input-group-addon"><i
                                                                         class="glyphicon glyphicon-time"></i></span>
@@ -320,14 +331,14 @@ if ($is_create) {
                                                     </div>
                                                     <input ng-model="row.id" type="hidden">
                                                     <div class="form-group col-sm-4">
-                                                        <button type="button" ng-click="deleteHours(index, day_number)"
+                                                        <button ng-disabled="!overwrite_site" type="button" ng-click="deleteHours(index, day_number)"
                                                                 class="btn btn-danger">{{texts.delete_text}}
                                                         </button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <button type="button" ng-click="addHours(day_number)"
+                                        <button ng-disabled="!overwrite_site" type="button" ng-click="addHours(day_number)"
                                                 class="btn btn-success smt-button">{{texts.add_text}}
                                         </button>
                                         <hr style="border-color: grey">
