@@ -130,14 +130,14 @@ class MultipliersCalculator
                         //VarDumper::dump($rate->subAirRatesTaoz, 100, true);
                         $multiplied_data->add($data, $taoz_consumption_calculator->data_by_time);
                 } else {
-                    $queries_generator = new SingleDataQueryGenerator($this->from_date, $this->to_date);
+                    $queries_generator = new SingleDataQueryGenerator($this->from_date, $this->to_date, $time_ranges);
                     $queries = $queries_generator->generate('datetime', $air_reading_base_query);
                     $consumption_calculator = new SingleDataCalculator($this->from_date, $this->to_date, $queries);
                     $data = $consumption_calculator->calculate($this->channel_multiplier->getVoltageMultiplier(),
                         $this->channel_multiplier->getCurrentMultiplier(),
                         $this->weighted_channel->getPercent())
                         ->getData();
-                    $multiplied_data->add($data);
+                    $multiplied_data->add($data, $consumption_calculator->data_by_time);
                 }
             }
         }

@@ -118,24 +118,28 @@ class TenantData extends TaozRawData {
     $this->geva_pay           += $data->getGevaPay();
     $this->shefel_pay         += $data->getShefelPay();
     $this->fixed_price        = $data->getFixedPrice();
+    $this->pisga_consumption_kwh += $data->getPisgaConsumptionKwh();
+    $this->shefel_consumption_kwh += $data->getShefelConsumptionKwh();
+    $this->geva_consumption_kwh += $data->getGevaConsumptionKwh();
     $this->cop = $data->getCop();
     $this->reading_data = $data->reading_data;
   }
 
-  public function getAirPisgaConsumption()
-  {
-    return $this->pisga_consumption * $this->cop;
-  }
+    private $pisga_consumption_kwh = 0;
+    private $geva_consumption_kwh = 0;
+    private $shefel_consumption_kwh = 0;
 
-  public function getAirGevaConsumption()
-  {
-    return $this->geva_consumption * $this->cop;
-  }
+    public function getPisgaConsumptionKwh(): float {
+        return $this->pisga_consumption_kwh;
+    }
 
-  public function getAirShefelConsumption()
-  {
-    return $this->shefel_consumption * $this->cop;
-  }
+    public function getShefelConsumptionKwh(): float {
+        return $this->shefel_consumption_kwh;
+    }
+
+    public function getGevaConsumptionKwh(): float {
+        return $this->geva_consumption_kwh;
+    }
 
   public function getTotalConsumption(): float {
     return $this->pisga_consumption + $this->geva_consumption + $this->shefel_consumption;

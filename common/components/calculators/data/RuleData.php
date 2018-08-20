@@ -210,6 +210,22 @@ class RuleData extends TaozRawData {
 
   public $fixed_rules = 0;
 
+    private $pisga_consumption_kwh = 0;
+    private $geva_consumption_kwh = 0;
+    private $shefel_consumption_kwh = 0;
+
+    public function getPisgaConsumptionKwh(): float {
+        return $this->pisga_consumption_kwh;
+    }
+
+    public function getShefelConsumptionKwh(): float {
+        return $this->shefel_consumption_kwh;
+    }
+
+    public function getGevaConsumptionKwh(): float {
+        return $this->geva_consumption_kwh;
+    }
+
   public function setElectricityData(ElectricalConsumptionCalculator $calculator)
   {
       $this->electricity_geva_readings = $calculator->getGevaConsumption();
@@ -228,6 +244,9 @@ class RuleData extends TaozRawData {
     $this->pisga_pay                    += $data->getPisgaPay();
     $this->geva_pay                     += $data->getGevaPay();
     $this->shefel_pay                   += $data->getShefelPay();
+    $this->pisga_consumption_kwh        += $data->getPisgaConsumptionKwh();
+    $this->geva_consumption_kwh         += $data->getGevaConsumptionKwh();
+    $this->shefel_consumption_kwh       += $data->getShefelConsumptionKwh();
     $this->reading_data                 = $data->reading_data;
   }
 
@@ -240,6 +259,9 @@ class RuleData extends TaozRawData {
     $this->pisga_pay                      += $data->getPisgaPay();
     $this->geva_pay                       += $data->getGevaPay();
     $this->shefel_pay                     += $data->getShefelPay();
+    $this->pisga_consumption_kwh          += $data->getPisgaConsumptionKwh();
+    $this->geva_consumption_kwh           += $data->getGevaConsumptionKwh();
+    $this->shefel_consumption_kwh         += $data->getShefelConsumptionKwh();
   }
 
 

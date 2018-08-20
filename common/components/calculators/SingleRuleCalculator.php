@@ -94,6 +94,7 @@ class SingleRuleCalculator
                 $rule_data->addIrregularData($rate_calculator->calculate($tenant->getIrregularHoursTimeRanges(),$rule_data->getCop()));
                 if ($tenant->getFixedPayment()) {
                     $rule_data->setFixedPrice($tenant->getFixedPayment());
+
                 } else if ($tenant->relationSite->relationSiteBillingSetting->fixed_payment) {
                     $rule_data->setFixedPrice($tenant->relationSite->relationSiteBillingSetting->fixed_payment);
                 } else {
@@ -101,6 +102,7 @@ class SingleRuleCalculator
                 }
             }
         }
+
         return $rule_data;
     }
 }

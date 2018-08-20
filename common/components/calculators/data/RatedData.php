@@ -143,6 +143,22 @@ class RatedData extends TaozRawData
 
     public $reading_data;
 
+    private $pisga_consumption_kwh = 0;
+    private $geva_consumption_kwh = 0;
+    private $shefel_consumption_kwh = 0;
+
+    public function getPisgaConsumptionKwh(): float {
+        return $this->pisga_consumption_kwh;
+    }
+
+    public function getShefelConsumptionKwh(): float {
+        return $this->shefel_consumption_kwh;
+    }
+
+    public function getGevaConsumptionKwh(): float {
+        return $this->geva_consumption_kwh;
+    }
+
     public function add(MultipliedData $data) {
         $this->multiplied_data[] = $data;
         $this->pisga_consumption += $data->getPisgaConsumption();
@@ -152,6 +168,9 @@ class RatedData extends TaozRawData
       $this->geva_reading += $data->getGevaReading();
       $this->shefel_reading += $data->getShefelReading();
         $data->applyPrices($this->pisga_price, $this->geva_price, $this->shefel_price);
+        $this->pisga_consumption_kwh += $data->getAirPisgaConsumption();
+        $this->geva_consumption_kwh += $data->getAirGevaConsumption();
+        $this->shefel_consumption_kwh += $data->getAirShefelConsumption();
         $this->pisga_pay += $data->getPisgaPay();
         $this->geva_pay += $data->getGevaPay();
         $this->shefel_pay += $data->getShefelPay();

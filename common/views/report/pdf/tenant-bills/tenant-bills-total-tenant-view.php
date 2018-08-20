@@ -14,6 +14,7 @@ use common\models\RateType;
 
 $formatter = Yii::$app->formatter;
 $direction = LanguageSelector::getAliasLanguageDirection();
+$penalty = 0;
 ?>
 
 <table dir="<?php echo $direction; ?>"
@@ -61,16 +62,16 @@ $direction = LanguageSelector::getAliasLanguageDirection();
             <th style="padding:5px;"></th>
 
             <td style="padding:5px;border:1px solid #000;" align="center">
-                <?= $formatter->asNumberFormat($tenant_data->getAirPisgaConsumption()); ?>
+                <?= $formatter->asNumberFormat($tenant_data->getPisgaConsumptionKwh()); ?>
             </td>
             <td style="padding:5px;border:1px solid #000;" align="center">
-                <?= $formatter->asNumberFormat($tenant_data->getAirGevaConsumption()); ?>
+                <?= $formatter->asNumberFormat($tenant_data->getGevaConsumptionKwh()); ?>
             </td>
             <td style="padding:5px;border:1px solid #000;" align="center">
-                <?= $formatter->asNumberFormat($tenant_data->getAirShefelConsumption()); ?>
+                <?= $formatter->asNumberFormat($tenant_data->getShefelConsumptionKwh()); ?>
             </td>
             <td style="padding:5px;border:1px solid #000;" align="center">
-                <?= $formatter->asNumberFormat($tenant_data->getAirPisgaConsumption() + $tenant_data->getAirGevaConsumption() + $tenant_data->getAirShefelConsumption()); ?>
+                <?= $formatter->asNumberFormat($tenant_data->getPisgaConsumptionKwh() + $tenant_data->getGevaConsumptionKwh() + $tenant_data->getShefelConsumptionKwh()); ?>
             </td>
             <td style="padding:5px;border:1px solid #000;" align="center">
                 <?= $formatter->asPrice($tenant_data->getTotalPay() + $tenant_data->getMoneyAddition()); ?>
@@ -99,8 +100,9 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                 <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
                     <strong><?php echo Yii::t('common.view', 'Irregular hours penalty'); ?></strong>
                 </td>
+                <?php $penalty = $tenant_data->getTotalPay() * $tenant_data->getTenant()->relationTenantBillingSetting->irregular_additional_percent; ?>
                 <td style="width:15%;padding:5px;" align="center" dir="ltr">
-                    <?php echo $formatter->asPrice(); ?>
+                    <?php echo $formatter->asPrice($penalty); ?>
                 </td>
             </tr>
         <?php else: ?>
@@ -133,8 +135,9 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                 <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
                     <strong><?php echo Yii::t('common.view', 'Irregular hours penalty'); ?></strong>
                 </td>
+                <?php $penalty = $tenant_data->getTotalPay() * $tenant_data->getTenant()->relationSite->relationSiteBillingSetting->irregular_additional_percent; ?>
                 <td style="width:15%;padding:5px;" align="center" dir="ltr">
-                    <?php echo $formatter->asPrice($tenant_data->getFixedPrice()); ?>
+                    <?php echo $formatter->asPrice($penalty); ?>
                 </td>
             </tr>
         <?php else: ?>
@@ -156,7 +159,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
             <strong><?php echo Yii::t('common.view', 'Total'); ?></strong>
         </td>
         <td style="width:15%;padding:5px;" align="center" dir="ltr">
-            <?php echo $formatter->asPrice($tenant_data->getTotalPayWithFixed() + $tenant_data->getMoneyAddition()); ?>
+            <?php echo $formatter->asPrice($tenant_data->getTotalPayWithFixed() + $tenant_data->getMoneyAddition() + $penalty); ?>
         </td>
     </tr>
     <tr>
@@ -177,7 +180,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
         </td>
         <td style="width:15%;border-top:1px solid #000;padding:5px;border-bottom:1px solid #000;"
             align="center" dir="ltr">
-            <?php echo $formatter->asPrice($tenant_data->getTotalPayWithVat() + $tenant_data->getMoneyAddition()); ?>
+            <?php echo $formatter->asPrice($tenant_data->getTotalPayWithVat() + $tenant_data->getMoneyAddition() + $penalty); ?>
         </td>
     </tr>
     </tbody>

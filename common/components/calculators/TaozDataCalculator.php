@@ -110,7 +110,6 @@ class TaozDataCalculator {
 
               if ($type && isset($result)) {
                   $this->data_by_time[$type][strtotime($query->getFromQuery()->where[3]['datetime'])] = $result;
-                  //VarDumper::dump('from ' . $query->getFromQuery()->where[3]['datetime'] . ' to ' . $query->getToQuery()->where[3]['datetime'] . ' = ' . $result . "\n", 100, true);
               }
             }
           }

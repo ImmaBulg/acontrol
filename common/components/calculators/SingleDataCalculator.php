@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use common\components\calculators\single_data\SingleSubchannelData;
 use common\constants\DataCategories;
 use yii\db\Query;
+use yii\helpers\VarDumper;
 
 class SingleDataCalculator
 {
@@ -58,6 +59,7 @@ class SingleDataCalculator
             if ($type) {
                 $this->data_by_time[$type][$queries->where[3]['datetime']->getTimestamp()] = empty($result) ? 0 : $result;
             }
+            VarDumper::dump('from ' . $queries->where[3]['datetime'] . ' to ' . $queries->where[3]['datetime'] . ' = ' . $result . "\n", 100, true);
             return $result;
         } else {
             if ( is_array( $queries ) ) {
