@@ -31,7 +31,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
 
     <? if(!empty($data)): ?>
     <?
-    if($type == 'irregular_data') {
+    /*if($type == 'irregular_data') {
         if (get_class($rule->getData()['irregular_data'][0]->getMultipliedData()[0]) != "common\components\calculators\single_data\SingleMultipliedData") {
             if ( $data[0]->getMultipliedData()[0]->getPisgaConsumption() == 0
                 and
@@ -45,7 +45,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
             if ( $data[0]->getMultipliedData()[0]->getConsumption() == 0) continue;
         }
 
-    }
+    }*/
     if ($type == 'regular_data') continue;
     ?>
         <table dir="<?= $direction; ?>"
@@ -149,14 +149,13 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                             <td style="padding:5px;border:1px solid #000;" align="center">
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $formatter->asNumberFormat($data[0]->getPisgaFixedRule()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($data_block->getPisgaPrice()) ?>
                             </td>
 
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $formatter->asPrice($multiplied_data->getPisgaPay() + $data[0]->getPisgaFixedRule()) ?>
+                                <?= $formatter->asPrice($multiplied_data->getPisgaPay()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;vertical-align: middle" align="center">
                                 <?= $formatter->asNumberFormat($rule->cop_pisga); ?>
@@ -176,13 +175,12 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                             <td style="padding:5px;border:1px solid #000;" align="center">
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $formatter->asNumberFormat($data_block->getGevaFixedRule()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($data_block->getGevaPrice()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $formatter->asPrice($multiplied_data->getGevaPay() + $data[0]->getGevaFixedRule()) ?>
+                                <?= $formatter->asPrice($multiplied_data->getGevaPay()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($rule->cop_geva); ?>
@@ -202,14 +200,13 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                             <td style="padding:5px;border:1px solid #000;" align="center">
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $formatter->asNumberFormat($data_block->getShefelFixedRule()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($data_block->getShefelPrice()) ?>
                             </td>
 
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $formatter->asPrice($multiplied_data->getShefelPay() + $data[0]->getShefelFixedRule()) ?>
+                                <?= $formatter->asPrice($multiplied_data->getShefelPay()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($rule->cop_shefel); ?>
@@ -229,13 +226,12 @@ $direction = LanguageSelector::getAliasLanguageDirection();
 
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $formatter->asNumberFormat($data[0]->getFixedRule()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                             </td>
 
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $formatter->asPrice($multiplied_data->getPisgaPay() + $multiplied_data->getGevaPay() + $multiplied_data->getShefelPay() + $data[0]->getFixedRule()) ?>
+                                <?= $formatter->asPrice($multiplied_data->getPisgaPay() + $multiplied_data->getGevaPay() + $multiplied_data->getShefelPay()) ?>
                             </td>
                         </tr>
                     <?php else: ?>
@@ -259,14 +255,13 @@ $direction = LanguageSelector::getAliasLanguageDirection();
 
                         </td>
                         <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
-                            <?= $formatter->asNumberFormat($data[0]->getFixedRule()) ?>
                         </td>
                         <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
                             <?= $formatter->asNumberFormat($data_block->getPrice()) ?>
                         </td>
 
                         <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
-                            <?= $formatter->asPrice($multiplied_data->getPay() + $data[0]->getFixedRule()) ?>
+                            <?= $formatter->asPrice($multiplied_data->getPay()) ?>
                         </td>
 
                         <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">

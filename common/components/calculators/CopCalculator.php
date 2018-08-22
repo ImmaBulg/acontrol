@@ -148,8 +148,6 @@ class CopCalculator
     {
         $this->calculateAirConsumptions();
         $this->calculateElectricalConsumptions();
-        //VarDumper::dump($this, 100, true);
-
         return (object)[
             'shefel' => $this->electrical_cn_shefel/$this->cn_shefel,
             'pisga' => $this->electrical_cn_pisga/$this->cn_pisga,
@@ -173,6 +171,7 @@ class CopCalculator
         $rates = AirRates::getActiveWithinRangeByTypeId($this->from_date, $this->to_date,
             $this->site->relationSiteBillingSetting->rate_type_id)
             ->all();
+        //VarDumper::dump($this->site_main_meters_data->getAirMainChannels(), 100, true);
         foreach($this->site_main_meters_data->getAirMainChannels() as $air_meter_channel) {
             $air_reading_base_query = (new Query())->select('kilowatt_hour')->from(AirMeterRawData::tableName())
                 ->where(['meter_id' => $air_meter_channel->getMeterName()])

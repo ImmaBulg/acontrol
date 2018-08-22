@@ -77,6 +77,7 @@ class ElectricalConsumptionCalculator
         }
 
         $this->number_of_channels = count($channels) > 0 ? count($channels) : $this->number_of_channels;
+        //VarDumper::dump($this->number_of_channels, 100, true);
     }
 
     private function getDataByType(string $type, $channel)
@@ -106,7 +107,8 @@ class ElectricalConsumptionCalculator
                 (clone $query)->andWhere(['date' => $this->to_date->getTimestamp()])
             );
             $this->{$type . '_consumption'} += $channel->getConsumption($date_range_query_pair) * 16;
+           // VarDumper::dump('from ' . $this->from_date . ' to ' . $this->to_date . ' = ' .  $this->{$type . '_consumption'} . ' type ' . $type, 100, true);
+            //VarDumper::dump('meter ' . $channel->getMeterName() . ' channel ' . $channel->getChannel(), 100, true);
         }
-
     }
 }

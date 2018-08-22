@@ -528,6 +528,7 @@ class Site extends ActiveRecord
                 ->andWhere(['meter.id' => $rule->relationMeterChannel->meter_id])
                 ->andWhere(['meter.site_id' => $this->id])
                 ->all();
+            //VarDumper::dump($temp, 100, true);
             $subchannels = ArrayHelper::merge($subchannels, $temp);
         }
         //VarDumper::dump($subchannels);

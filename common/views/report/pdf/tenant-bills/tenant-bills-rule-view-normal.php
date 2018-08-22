@@ -39,30 +39,30 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                style="border-collapse:collapse;width:100%;font-size:11px;color:#000;vertical-align:top;margin-bottom:15px;"
                cellpadding="0" cellspacing="0">
             <thead>
-            <?php echo get_class($rule->getData()); ?>
-            <?php if(array_key_exists('irregular_data', $rule->getData())): ?>
-                <?php if (get_class($rule->getData()['irregular_data'][0]->getMultipliedData()[0]) != "common\components\calculators\single_data\SingleMultipliedData"): ?>
-                    <?php if ($rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getPisgaConsumption() != 0 || $rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getGevaConsumption() != 0 || $rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getShefelConsumption() != 0): ?>
+            <?php /*echo get_class($rule->getData()); */?><!--
+            <?php /*if(array_key_exists('irregular_data', $rule->getData())): */?>
+                <?php /*if (get_class($rule->getData()['irregular_data'][0]->getMultipliedData()[0]) != "common\components\calculators\single_data\SingleMultipliedData"): */?>
+                    <?php /*if ($rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getPisgaConsumption() != 0 || $rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getGevaConsumption() != 0 || $rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getShefelConsumption() != 0): */?>
                         <tr>
                             <td style="padding:5px;" colspan="7">
                                 <strong>
-                                    <?= RuleData::getDataLabel($type) . ' ' . $rule->getTimeRange($type) . '' ?>
+                                    <?/*= RuleData::getDataLabel($type) . ' ' . $rule->getTimeRange($type) . '' */?>
                                 </strong>
                             </td>
                         </tr>
-                     <?php endif; ?>
-                <?php else: ?>
-                    <?php if ($rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getConsumption() != 0): ?>
+                     <?php /*endif; */?>
+                <?php /*else: */?>
+                    <?php /*if ($rule->getData()['irregular_data'][0]->getMultipliedData()[0]->getConsumption() != 0): */?>
                         <tr>
                             <td style="padding:5px;" colspan="7">
                                 <strong>
-                                    <?= RuleData::getDataLabel($type) . ' ' . $rule->getTimeRange($type) . '' ?>
+                                    <?/*= RuleData::getDataLabel($type) . ' ' . $rule->getTimeRange($type) . '' */?>
                                 </strong>
                             </td>
                         </tr>
-                    <?php endif; ?>
-                 <?php endif; ?>
-            <?php endif; ?>
+                    <?php /*endif; */?>
+                 <?php /*endif; */?>
+            --><?php /*endif; */?>
             <tr bgcolor="#7e7e7e">
                 <th style="width:15%;color:#fff;padding:5px;font-weight:normal;border:1px solid #000;" align="center">
                     <?= Yii::t('common.view', 'Previous reading date'); ?>

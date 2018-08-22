@@ -166,7 +166,7 @@ class TenantController extends Controller
             'irregular_data' => [
                 'days_of_week' => $model->overwrite_site ? TenantIrregularHours::getDays() : SiteIrregularHours::getDays(),
                 'model_data' => $model->overwrite_site || (!$model->overwrite_site && TenantIrregularHours::find()->where(['tenant_id' => $id])->asArray()->all() !== [])? TenantIrregularHours::find()->where(['tenant_id' => $id])->asArray()->all() : SiteIrregularHours::find()->where(['site_id' => $form->site_id])->asArray()->all(),
-                'irregular_additional_percent' => $model->overwrite_site || (!$model->overwrite_site && (TenantBillingSetting::find(['tenant_id' => $id])->one())->irregular_additional_percent) ? (TenantBillingSetting::find(['tenant_id' => $id])->one())->irregular_additional_percent : $model->relationSite->relationSiteBillingSetting->irregular_additional_percent,
+                'irregular_additional_percent' => $model->overwrite_site || (!$model->overwrite_site && $model->relationTenantBillingSetting->irregular_additional_percent) ? $model->relationTenantBillingSetting->irregular_additional_percent : $model->relationSite->relationSiteBillingSetting->irregular_additional_percent,
                 'overwrite_site' => $model->overwrite_site,
                 'usage_type' => $model->usage_type,
                 'language' => [

@@ -207,7 +207,7 @@ class Tenant extends ActiveRecord
                 /**
                  * @var TenantIrregularHours $irregular_hour
                  */
-                $end_time = Carbon::today()->setTimeFromTimeString($irregular_hour->hours_to)->subHour()->format('H:i:s');
+                $end_time = Carbon::today()->setTimeFromTimeString($irregular_hour->hours_to)->addHour()->format('H:i:s');
                 $ranges[] = new TimeRange($irregular_hour->hours_from, $end_time, $irregular_hour->day_number);
             }
             //VarDumper::dump($ranges, 3, true);
@@ -217,7 +217,7 @@ class Tenant extends ActiveRecord
                 /**
                  * @var TenantIrregularHours $irregular_hour
                  */
-                $end_time = Carbon::today()->setTimeFromTimeString($irregular_hour->hours_to)->subHour()->format('H:i:s');
+                $end_time = Carbon::today()->setTimeFromTimeString($irregular_hour->hours_to)->addHour()->format('H:i:s');
                 $ranges[] = new TimeRange($irregular_hour->hours_from, $end_time, $irregular_hour->day_number);
             }
         }

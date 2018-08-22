@@ -124,7 +124,7 @@ class SingleTenantData extends SingleData
 
                         }
                         if (is_nan($temp))
-                            VarDumper::dump($temp . ' = ' . $reading_summ * ((int)$rule['value'] / 100 + 1), 100, true);
+                            //VarDumper::dump($temp . ' = ' . $reading_summ * ((int)$rule['value'] / 100 + 1), 100, true);
                     }
             }
             if (!is_nan($temp))
