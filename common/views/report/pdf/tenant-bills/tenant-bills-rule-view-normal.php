@@ -134,6 +134,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                                 <?= $formatter->asNumberFormat($multiplied_data->getAirPisgaConsumption()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
+                                <?= $formatter->asNumberFormat('0') ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($data[0]->getPisgaFixedRule()) ?>
@@ -161,6 +162,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                                 <?= $formatter->asNumberFormat($multiplied_data->getAirGevaConsumption()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
+                                <?= $formatter->asNumberFormat('0') ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($data_block->getGevaFixedRule()) ?>
@@ -187,6 +189,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                                 <?= $formatter->asNumberFormat($multiplied_data->getAirShefelConsumption()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
+                                <?= $formatter->asNumberFormat('0') ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($data_block->getShefelFixedRule()) ?>
@@ -213,7 +216,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                                 <?= $formatter->asNumberFormat($multiplied_data->getAirPisgaConsumption() + $multiplied_data->getAirGevaConsumption() + $multiplied_data->getAirShefelConsumption()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
-
+                                <?= $formatter->asNumberFormat('0') ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($data[0]->getFixedRule()) ?>
@@ -243,7 +246,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                             <?= $formatter->asNumberFormat($multiplied_data->getAirConsumption()) ?>
                         </td>
                         <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
-
+                            <?= $formatter->asNumberFormat('0') ?>
                         </td>
                         <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
                             <?= $formatter->asNumberFormat($data[0]->getFixedRule()) ?>

@@ -54,7 +54,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
             <tr>
                 <td style="padding:5px;" colspan="7">
                     <strong>
-                        <?= RuleData::getDataLabel($type) . ' ' . $rule->getTimeRange($type) . '' ?>
+                        <?= RuleData::getDataLabel($type) ?>
                     </strong>
                 </td>
             </tr>
@@ -147,9 +147,10 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                                 <?= $formatter->asNumberFormat($multiplied_data->getAirPisgaConsumption()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
+                                <?= $formatter->asNumberFormat('0') ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $type == 'irregular_data' ? '' : $formatter->asNumberFormat($data[0]->getPisgaFixedRule()) ?>
+                                <?= $type == 'irregular_data' ?  $formatter->asNumberFormat('0') : $formatter->asNumberFormat($data[0]->getPisgaFixedRule()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($data_block->getPisgaPrice()) ?>
@@ -174,9 +175,10 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                                 <?= $formatter->asNumberFormat($multiplied_data->getAirGevaConsumption()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
+                                <?= $formatter->asNumberFormat('0') ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $type == 'irregular_data' ? '' : $formatter->asNumberFormat( $data_block->getGevaFixedRule()) ?>
+                                <?= $type == 'irregular_data' ?  $formatter->asNumberFormat('0') : $formatter->asNumberFormat( $data_block->getGevaFixedRule()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($data_block->getGevaPrice()) ?>
@@ -200,9 +202,10 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                                 <?= $formatter->asNumberFormat($multiplied_data->getAirShefelConsumption()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
+                                <?= $formatter->asNumberFormat('0') ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $type == 'irregular_data' ? '' : $formatter->asNumberFormat($data_block->getShefelFixedRule()) ?>
+                                <?= $type == 'irregular_data' ? $formatter->asNumberFormat('0') : $formatter->asNumberFormat($data_block->getShefelFixedRule()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                                 <?= $formatter->asNumberFormat($data_block->getShefelPrice()) ?>
@@ -226,10 +229,10 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                                 <?= $formatter->asNumberFormat($multiplied_data->getAirPisgaConsumption() + $multiplied_data->getAirGevaConsumption() + $multiplied_data->getAirShefelConsumption()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
-
+                                <?= $formatter->asNumberFormat('0') ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
-                                <?= $type == 'irregular_data' ? '' : $formatter->asNumberFormat($data[0]->getFixedRule()) ?>
+                                <?= $type == 'irregular_data' ? $formatter->asNumberFormat('0') : $formatter->asNumberFormat($data[0]->getFixedRule()) ?>
                             </td>
                             <td style="padding:5px;border:1px solid #000;" align="center">
                             </td>
@@ -256,10 +259,10 @@ $direction = LanguageSelector::getAliasLanguageDirection();
                             <?= $formatter->asNumberFormat($multiplied_data->getAirConsumption()) ?>
                         </td>
                         <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
-
+                            <?= $formatter->asNumberFormat('0') ?>
                         </td>
                         <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
-                            <?= $type == 'irregular_data' ? '' : $formatter->asNumberFormat($data[0]->getFixedRule()) ?>
+                            <?= $type == 'irregular_data' ? $formatter->asNumberFormat('0') : $formatter->asNumberFormat($data[0]->getFixedRule()) ?>
                         </td>
                         <td style="padding:5px;border:1px solid #000;" align="center" rowspan="2">
                             <?= $formatter->asNumberFormat($data_block->getPrice()) ?>
