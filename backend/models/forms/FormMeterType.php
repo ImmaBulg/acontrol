@@ -39,12 +39,13 @@ class FormMeterType extends \yii\base\Model
 			[['name'], 'filter', 'filter' => 'trim'],
 			[['name', 'channels', 'phases'], 'required'],
 			[['name'], 'string', 'max' => 255],
-			[['channels'], 'integer', 'min' => 1],
+            ['channels', 'default', 'value' => '1'],
+            [['channels'], 'integer', 'min' => 1],
             [['type'], 'string'],
 			[['modbus'], 'number'],
 			[['is_divide_by_1000','is_summarize_max_demand'], 'safe'],
 			['phases', 'in', 'range' => array_keys(MeterType::getListPhases()), 'skipOnEmpty' => false],
-
+            ['phases', 'default', 'value' => 1],
 			// On scenario create
 			['name', 'unique', 'targetClass' => '\common\models\MeterType', 'filter' => function($model){
 				return $model->where('name = :name COLLATE utf8_bin', ['name' => $this->name])

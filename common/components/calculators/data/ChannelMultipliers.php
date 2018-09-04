@@ -15,16 +15,8 @@ class ChannelMultipliers
     /**
      * @return float|int
      */
-    public function getVoltageMultiplier() {
-        return $this->voltage_multiplier;
-    }
-
-
-    /**
-     * @return float|int
-     */
-    public function getCurrentMultiplier() {
-        return $this->current_multiplier;
+    public function getMeterMultiplier() {
+        return $this->meter_multiplier;
     }
 
 
@@ -44,22 +36,19 @@ class ChannelMultipliers
     }
 
 
-    private $voltage_multiplier = 1;
-    private $current_multiplier = 1;
+    private $meter_multiplier = 1;
     private $start_date = null;
     private $end_date = null;
 
 
     /**
      * ChannelMultipliers constructor.
-     * @param float|int $voltage_multiplier
-     * @param float|int $current_multiplier
+     * @param float|int $meter_multiplier
      * @param Carbon|null|string $start_date
      * @param Carbon|null|string $end_date
      */
-    public function __construct(float $voltage_multiplier, float $current_multiplier, string $start_date = null, string $end_date = null) {
-        $this->voltage_multiplier = $voltage_multiplier;
-        $this->current_multiplier = $current_multiplier;
+    public function __construct(float $meter_multiplier, string $start_date = null, string $end_date = null) {
+        $this->meter_multiplier = $meter_multiplier;
         if($start_date !== null) {
             $this->start_date = Carbon::createFromFormat('Y-m-d', $start_date)->startOfDay();
         }

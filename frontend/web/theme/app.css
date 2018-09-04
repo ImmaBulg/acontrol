@@ -108,7 +108,7 @@ img {
 
 .decorated-text .icon, .decorated-text .text {
     position: relative;
-    background: #d85322;
+    background: #2e85e4;
     box-shadow: -1px 1px 0 0 #dfe9ea
 }
 
@@ -138,8 +138,7 @@ img {
 
 .decorated-text.has-icon .text {
     float: left;
-    margin-top: 13px;
-    border-style: solid;
+    margin-top: 17px;
     border-width: 3px 0 3px 3px
 }
 
@@ -236,6 +235,29 @@ img {
 
 #footer .contact-info .text-container p {
     margin-bottom: 3px
+}
+
+.air-logo {
+    display: inline-block;
+    position: relative;
+    background-color: #2e85e4;
+    z-index: 1;
+    float: right;
+    margin-left: -11px;
+    width: 72px;
+    height: 72px;
+    border-style: solid;
+    border-width: 3px;
+    font-size: 40px;
+    border-radius: 50%;
+}
+
+.logo-img-air {
+    z-index: 1;
+    float: right;
+    margin-right: 10px;
+    margin-top: 8px;
+    border-radius: 50%;
 }
 
 /*# sourceMappingURL=app.css.map */

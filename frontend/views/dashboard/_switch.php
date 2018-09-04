@@ -80,11 +80,10 @@ use frontend\models\User;
 					'type' => DepDrop::TYPE_SELECT2,
 					'data' => [-1 => 'Not set'] + ArrayHelper::map($user->getChannelsByTenantIdAndMeterId($form->tenant_id, $form->meter_id), 'id', function($item) use($form){
 					    $tenant = \backend\models\searches\models\Tenant::findOne($form->tenant_id);
-						$result =  Yii::t('frontend.view', '{tenant} - {name} - (V={v}, C={c})', [
+						$result =  Yii::t('frontend.view', '{tenant} - {name} - (M={m})', [
                             'tenant' => $tenant->name,
 							'name' => $item->channel,
-							'v' => $item->voltage_multiplier,
-							'c' => $item->current_multiplier,
+							'm' => $item->meter_multiplier,
 						]);
 						return $result;
 					}),

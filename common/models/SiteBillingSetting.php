@@ -54,8 +54,8 @@ class SiteBillingSetting extends ActiveRecord
 			[['fixed_payment'], 'number', 'min' => 0],
 			[['fixed_payment'], 'compare', 'compareValue' => 0, 'operator' => '>='],
 			[['fixed_addition_value'], 'number'],
-			[['include_vat'], 'default', 'value' => self::NO],
-			[['include_vat'], 'boolean'],
+			/*[['include_vat'], 'default', 'value' => self::NO],
+			[['include_vat'], 'boolean'],*/
 			[['comment', 'fixed_addition_comment'], 'string'],
 			['fixed_addition_type', 'in', 'range' => array_keys(self::getListFixedAdditionTypes()), 'skipOnEmpty' => true],
 			['fixed_addition_load', 'in', 'range' => array_keys(self::getListFixedAdditionLoads()), 'skipOnEmpty' => true],
@@ -71,7 +71,7 @@ class SiteBillingSetting extends ActiveRecord
 			'rate_type_id' => Yii::t('common.site', 'Rate type'),
 			'fixed_payment' => Yii::t('common.site', 'Fixed payment'),
 			'billing_day' => Yii::t('common.site', 'Day of billing'),
-			'include_vat' => Yii::t('common.site', 'Include VAT'),
+			/*'include_vat' => Yii::t('common.site', 'Include VAT'),*/
 			'comment' => Yii::t('common.site', 'Comment'),
 			'fixed_addition_type' => Yii::t('common.site', 'Fixed addition of'),
 			'fixed_addition_load' => Yii::t('common.site', 'Load as'),

@@ -34,6 +34,8 @@ class MeterType extends ActiveRecord
             [['name'], 'filter', 'filter' => 'trim'],
             [['name', 'channels', 'phases'], 'required'],
             [['name'], 'string', 'max' => 255],
+            ['channels', 'default', 'value' => 1],
+            ['phases', 'default', 'value' => 1],
             [['channels', 'serie_number'], 'integer', 'min' => 1],
             [['modbus'], 'number'],
             [['is_divide_by_1000'], 'safe'],

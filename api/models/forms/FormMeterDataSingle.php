@@ -28,6 +28,7 @@ class FormMeterDataSingle extends \yii\base\Model
 	public $physical_location;
 	public $start_date;
 	public $status;
+	public $is_main;
 
 	public function rules()
 	{
@@ -64,6 +65,7 @@ class FormMeterDataSingle extends \yii\base\Model
 			['data_usage_method', 'in', 'range' => array_keys(Meter::getListDataUsageMethods()), 'skipOnEmpty' => true],
 			['start_date', 'date', 'format' => Formatter::PHP_DATE_FORMAT],
 			['status', 'in', 'range' => array_keys(Meter::getListStatuses())],
+            ['is_main', 'boolean'],
 		];
 	}
 
@@ -80,6 +82,7 @@ class FormMeterDataSingle extends \yii\base\Model
 			'physical_location' => Yii::t('api.meter', 'Phisical location on site'),
 			'start_date' => Yii::t('api.meter', 'Start date'),
 			'status' => Yii::t('api.meter', 'Status'),
+            'is_main' => Yii::t('api.meter', 'Is main'),
 		];
 	}
 }

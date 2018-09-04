@@ -47,6 +47,9 @@ class FormMeterData extends \yii\base\Model
 				]));
 			}
 
+			$is_main = $data['isMain'];
+			unset($data['isMain']);
+			$data['is_main'] = $is_main;
 			$form = new FormMeterDataSingle();
 			$form->attributes = $data;
 			if (!$form->validate()) {
@@ -74,11 +77,10 @@ class FormMeterData extends \yii\base\Model
 			$models = [];
 
 			foreach ($this->data as $data) {
-				$model = new Meter();
+                $model = new Meter();
 				$model->start_date = strtotime('midnight');
 				$model->attributes = $data;
 				$model->name = $data['meter_id'];
-
 				if (!$model->save()) {
 					throw new BadRequestHttpException(implode(' ', $model->getFirstErrors()));
 				}
@@ -92,8 +94,10 @@ class FormMeterData extends \yii\base\Model
 					$model_channel = new MeterChannel();
 					$model_channel->meter_id = $model->id;
 					$model_channel->channel = $i;
-					$model_channel->current_multiplier = MeterChannelMultiplier::DEFAULT_CURRENT_MULTIPLIER;
-					$model_channel->voltage_multiplier = MeterChannelMultiplier::DEFAULT_VOLTAGE_MULTIPLIER;
+					$model_channel->meter_multiplier = MeterChannelMultiplier::DEFAULT_METER_MULTIPLIER;
+                    if ($model_type->type === 'air') {
+                        $model_channel->is_main = $data['is_main'];
+                    }
 
 					if (!$model_channel->save()) {
 						throw new BadRequestHttpException(implode(' ', $model_channel->getFirstErrors()));

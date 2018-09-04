@@ -67,10 +67,7 @@ $direction = LanguageSelector::getAliasLanguageDirection();
 						<?php echo $row['rule_name']; ?>
 					</td>
 					<td style="padding:5px;border:1px solid #000;" align="center" dir="ltr">
-						<?php echo $row['current_multiplier'];?>
-					</td>
-					<td style="padding:5px;border:1px solid #000;" align="center" dir="ltr">
-						<?php echo $row['voltage_multiplier'];?>
+						<?php echo $row['meter_multiplier'];?>
 					</td>
 					<td style="padding:5px;border:1px solid #000;" align="center">
 						<?php echo $row['tenant']->name;?>

@@ -201,9 +201,8 @@ class RuleSingleChannel extends ActiveRecord
         if($model_channels != null) {
             foreach($model_channels as $model_channel) {
                 $name = $model_channel->channel . ' - '
-                        . Yii::t('common.rule', '(V={v}, C={c})', [
-                        'v' => $model_channel->voltage_multiplier,
-                        'c' => $model_channel->current_multiplier,
+                        . Yii::t('common.rule', '(M={m})', [
+                        'm' => $model_channel->meter_multiplier,
                     ]);
                 $rules_query = $model_channel->getRelationRuleSingleChannels()
                                              ->joinWith(['relationTenant'])

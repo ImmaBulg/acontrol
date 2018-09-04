@@ -76,7 +76,7 @@ class Site extends ActiveRecord
             ['status', 'in', 'range' => array_keys(self::getListStatuses()), 'skipOnEmpty' => true],
             ['power_factor_visibility', 'in', 'range' => array_keys(Site::getListPowerFactors())],
             [['manual_cop', 'manual_cop_geva', 'manual_cop_pisga', 'manual_cop_shefel'], 'number'],
-            ['report_calculation_type', 'number']
+            ['report_calculation_type', 'number'],
         ];
     }
 

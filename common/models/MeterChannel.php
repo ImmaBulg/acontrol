@@ -14,8 +14,7 @@ use common\components\behaviors\UserIdBehavior;
  * @property Meter $relationMeter
  * @property int $id
  * @property int $meter_id
- * @property int $current_multiplier
- * @property int $voltage_multiplier
+ * @property int $meter_multiplier
  * @property int $created_at [int(11)]
  * @property int $modified_at [int(11)]
  * @property int $created_by [int(11)]
@@ -41,8 +40,8 @@ class MeterChannel extends ActiveRecord
         return [
             [['meter_id', 'channel'], 'required'],
             [['meter_id', 'channel'], 'integer'],
-            [['current_multiplier', 'voltage_multiplier'], 'default', 'value' => 0],
-            [['current_multiplier', 'voltage_multiplier'], 'number', 'min' => 0],
+            ['meter_multiplier', 'default', 'value' => 0],
+            ['meter_multiplier', 'number', 'min' => 0],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => array_keys(self::getListStatuses()), 'skipOnEmpty' => true],
             ['is_main', 'safe'],
@@ -55,14 +54,14 @@ class MeterChannel extends ActiveRecord
             'id' => Yii::t('common.meter', 'ID'),
             'meter_id' => Yii::t('common.meter', 'Meter ID'),
             'channel' => Yii::t('common.meter', 'Channel'),
-            'current_multiplier' => Yii::t('common.meter', 'Current multiplier'),
-            'voltage_multiplier' => Yii::t('common.meter', 'Voltage multiplier'),
+            'meter_multiplier' => Yii::t('common.meter', 'Meter multiplier'),
             'old_id' => Yii::t('common.meter', 'Old ID'),
             'status' => Yii::t('common.meter', 'Status'),
             'created_at' => Yii::t('common.meter', 'Created at'),
             'modified_at' => Yii::t('common.meter', 'Modified at'),
             'created_by' => Yii::t('common.meter', 'Created by'),
             'modified_by' => Yii::t('common.meter', 'Modified by'),
+            'is_main' => Yii::t('common.meter', 'Is main'),
         ];
     }
 

@@ -55,4 +55,5 @@ return [
     'You are trying to issue report using COP calculation that requires at leat one Electric IsMain channel and at least one Air IsMain channel. Currently there are no Electric / Air channels marked IsMain to tenant {name}' => 'שגיאה: נסיון הפקת דוח תוך שימוש בשיטת חישוב COP ממונים ראשיים. חסר לפחות מונה ראשי אחד חשמל או מיזוג אויר. {name}',
     'You are trying to issue report with COP calculation of type No main air meter which requires at least one IsMain electrical channel.' => 'שגיאה: נסיון הפקת דוח תוך שימוש בשיטת חישוב COP בהעדר מונה מיזוג אויר ראשי. חסר לפחות מונה חשמל אחד ראשי.',
     'You are trying to issue report using Manual COP. Please make sure to enter the manual COP on Site.' => 'שגיאה: נסיון הפקת דוח תוך שימוש בשיטת חישוב COP ידני. אנא וודא להזין נתוני COP ברמת אתר.',
+    'There are no Irregular hours.' => '',
 ];

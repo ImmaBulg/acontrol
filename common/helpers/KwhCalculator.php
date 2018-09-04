@@ -23,6 +23,7 @@ use Exception;
 use Yii;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
+use yii\helpers\VarDumper;
 
 class KwhCalculator
 {
@@ -179,6 +180,7 @@ class KwhCalculator
         $rules = Yii::$app->db->cache(function () use ($rules_query) {
             return $rules_query->all();
         }, ReportGenerator::CACHE_DURATION);
+
         if(!empty($rules)) {
             foreach($rules as $rule) {
                 $channels = [];
@@ -317,8 +319,7 @@ class KwhCalculator
                                                                                       $multiplier_range_to_date,
                                                                                       $channel['meter_id'],
                                                                                       $subchannels);
-                        $max_consumption += $multiplier_max_consumption * $multiplier->getCurrentMultiplier() *
-                                            $multiplier->getVoltageMultiplier();
+                        $max_consumption += $multiplier_max_consumption * $multiplier->getMeterMultiplier();
                         $multiplier_reading_from = [
                             'shefel' => 0,
                             'geva' => 0,
@@ -386,63 +387,51 @@ class KwhCalculator
                         }
                         $reading_from['shefel'] +=
                             $multiplier_reading_from['shefel'] *
-                            $multiplier->getCurrentMultiplier() *
-                            $multiplier->getVoltageMultiplier() *
+                            $multiplier->getMeterMultiplier() *
                             $percent_shefel;
                         $reading_from['geva'] +=
                             $multiplier_reading_from['geva'] *
-                            $multiplier->getCurrentMultiplier() *
-                            $multiplier->getVoltageMultiplier() *
+                            $multiplier->getMeterMultiplier() *
                             $percent_geva;
                         $reading_from['pisga'] +=
                             $multiplier_reading_from['pisga'] *
-                            $multiplier->getCurrentMultiplier() *
-                            $multiplier->getVoltageMultiplier() *
+                            $multiplier->getMeterMultiplier() *
                             $percent_pisga;
                         $reading_from['kvar_shefel'] +=
                             $multiplier_reading_from['kvar_shefel'] *
-                            $multiplier->getCurrentMultiplier() *
-                            $multiplier->getVoltageMultiplier() *
+                            $multiplier->getMeterMultiplier() *
                             $percent_shefel;
                         $reading_from['kvar_geva'] +=
                             $multiplier_reading_from['kvar_geva'] *
-                            $multiplier->getCurrentMultiplier() *
-                            $multiplier->getVoltageMultiplier() *
+                            $multiplier->getMeterMultiplier() *
                             $percent_geva;
                         $reading_from['kvar_pisga'] +=
                             $multiplier_reading_from['kvar_pisga'] *
-                            $multiplier->getCurrentMultiplier() *
-                            $multiplier->getVoltageMultiplier() *
+                            $multiplier->getMeterMultiplier() *
                             $percent_pisga;
                         $reading_to['shefel'] +=
                             $multiplier_reading_to['shefel'] *
-                            $multiplier->getCurrentMultiplier() *
-                            $multiplier->getVoltageMultiplier() *
+                            $multiplier->getMeterMultiplier() *
                             $percent_shefel;
                         $reading_to['geva'] +=
                             $multiplier_reading_to['geva'] *
-                            $multiplier->getCurrentMultiplier() *
-                            $multiplier->getVoltageMultiplier() *
+                            $multiplier->getMeterMultiplier() *
                             $percent_geva;
                         $reading_to['pisga'] +=
                             $multiplier_reading_to['pisga'] *
-                            $multiplier->getCurrentMultiplier() *
-                            $multiplier->getVoltageMultiplier() *
+                            $multiplier->getMeterMultiplier() *
                             $percent_pisga;
                         $reading_to['kvar_shefel'] +=
                             $multiplier_reading_to['kvar_shefel'] *
-                            $multiplier->getCurrentMultiplier() *
-                            $multiplier->getVoltageMultiplier() *
+                            $multiplier->getMeterMultiplier() *
                             $percent_shefel;
                         $reading_to['kvar_geva'] +=
                             $multiplier_reading_to['kvar_geva'] *
-                            $multiplier->getCurrentMultiplier() *
-                            $multiplier->getVoltageMultiplier() *
+                            $multiplier->getMeterMultiplier() *
                             $percent_geva;
                         $reading_to['kvar_pisga'] +=
                             $multiplier_reading_to['kvar_pisga'] *
-                            $multiplier->getCurrentMultiplier() *
-                            $multiplier->getVoltageMultiplier() *
+                            $multiplier->getMeterMultiplier() *
                             $percent_pisga;
                     }
                     $kvar = ($reading_to['kvar_shefel'] + $reading_to['kvar_geva'] + $reading_to['kvar_pisga']) -

@@ -43,7 +43,7 @@ class DashboardController extends \frontend\components\Controller
         return array_merge(parent::behaviors(), [
             'contentNegotiator' => [
                 'class' => ContentNegotiator::className(),
-                'only' => ['metmon'],
+                'only' => ['metmon', 'canvas'],
                 'formats' => [
                     'application/json' => Response::FORMAT_JSON,
                 ],
@@ -167,6 +167,20 @@ class DashboardController extends \frontend\components\Controller
             $realtime = $this->buildRealTime($site, $meter, $channel, $metmon);
         }
         return $metmon;
+    }
+
+    public function actionCanvas() {
+        $metmon = [];
+        $realtime = [];
+        $user = Yii::$app->user->identity;
+        $site = $user->getSelectedSite();
+        $meter = $user->getSelectedMeter();
+        $channel = $user->getSelectedChannel();
+        if($site != null && $meter != null && $channel != null) {
+            $metmon = MetmonRealTime::generate($site, $meter, $channel);
+            $realtime = $this->buildRealTime($site, $meter, $channel, $metmon);
+        }
+        return $realtime;
     }
 
 
@@ -437,49 +451,140 @@ class DashboardController extends \frontend\components\Controller
      * @return array
      */
     protected function buildRealTime(Site $site, Meter $meter, MeterChannel $channel, $metmon = []) {
-        $interval = 1800; // 30 min.
+        $interval = 5; // 30 min.
         $realtime = [];
         $cache = Yii::$app->cache;
-        $Iv = ArrayHelper::getValue($metmon, 'Iv');
-        $KW = ArrayHelper::getValue($metmon, 'KW');
-        if($Iv != null || $KW != null) {
+        $incoming_temp = ArrayHelper::getValue($metmon, 'incoming_temp');
+        $outgoing_temp = ArrayHelper::getValue($metmon, 'outgoing_temp');
+        $cubic_meter = ArrayHelper::getValue($metmon, 'cubic_meter');
+        $cubic_meter_hour = ArrayHelper::getValue($metmon, 'cubic_meter_hour');
+        $kilowatt = ArrayHelper::getValue($metmon, 'kilowatt');
+        $kilowatt_hour = ArrayHelper::getValue($metmon, 'kilowatt_hour');
+        if($incoming_temp != null || $outgoing_temp != null || $cubic_meter != null || $cubic_meter_hour != null || $kilowatt != null || $kilowatt_hour != null) {
             $suffix = "{$site->id}-{$meter->name}-{$channel->channel}";
-            $data = $cache->get('realtime', []);
-            $IvDate = ArrayHelper::getValue($Iv, 'date.t');
-            $KWDate = ArrayHelper::getValue($KW, 'date.t');
-            if($Iv != null && $IvDate != null) {
-                if(ArrayHelper::getValue($data, "$suffix.Iv.{$Iv['date']['t']}") == null) {
-                    if(!empty($data[$suffix]['Iv'])) {
-                        $data[$suffix]['Iv'] =
-                            array_filter($data[$suffix]['Iv'], function ($item) use ($Iv, $interval) {
-                                return ($Iv['date']['t'] - $item['date']['t'] <= $interval);
+            $data = $cache->get('realtime_' . Yii::$app->user->id, []);
+            $incoming_temp_date = ArrayHelper::getValue($incoming_temp, 'date');
+            $outgoing_temp_date = ArrayHelper::getValue($outgoing_temp, 'date');
+            $cubic_meter_date = ArrayHelper::getValue($cubic_meter, 'date');
+            $cubic_meter_hour_date = ArrayHelper::getValue($cubic_meter_hour, 'date');
+            $kilowatt_date = ArrayHelper::getValue($kilowatt, 'date');
+            $kilowatt_hour_date = ArrayHelper::getValue($kilowatt_hour, 'date');
+
+            if($incoming_temp != null && $incoming_temp_date != null) {
+
+                if(ArrayHelper::getValue($data, "incoming_temp.{$incoming_temp['date']}") == null) {
+
+                    if(!empty($data['incoming_temp'])) {
+                        $data['incoming_temp'] =
+                            array_filter($data['incoming_temp'], function ($item) use ($incoming_temp, $interval) {
+                                return ($incoming_temp['date'] - $item['date'] <= $interval);
                             });
                     }
-                    $data["$suffix"]['Iv'][$Iv['date']['t']] = $Iv;
+                    if (count($data['incoming_temp']) >= 23) {
+                        array_shift($data['incoming_temp']);
+                    }
+
+                    $data['incoming_temp'][$incoming_temp['date']] = $incoming_temp;
                 }
             }
-            if($KW != null && $KWDate != null) {
-                if(ArrayHelper::getValue($data, "$suffix.KW.{$KW['date']['t']}") == null) {
-                    if(!empty($data[$suffix]['KW'])) {
-                        $data[$suffix]['KW'] =
-                            array_filter($data[$suffix]['KW'], function ($item) use ($KW, $interval) {
-                                return ($KW['date']['t'] - $item['date']['t'] <= $interval);
+            if($outgoing_temp != null && $outgoing_temp_date != null) {
+                if(ArrayHelper::getValue($data, "outgoing_temp.{$outgoing_temp['date']}") == null) {
+                    if(!empty($data['outgoing_temp'])) {
+                        $data['outgoing_temp'] =
+                            array_filter($data['outgoing_temp'], function ($item) use ($outgoing_temp, $interval) {
+                                return ($outgoing_temp['date'] - $item['date'] <= $interval);
                             });
                     }
-                    $data["$suffix"]['KW'][$KW['date']['t']] = $KW;
+                    /*while (count($data['outgoing_temp']) > 3) {
+                        $data['outgoing_temp'] = array_shift($data['outgoing_temp']);
+                    }
+                    */
+                    if (count($data['outgoing_temp']) >= 23) {
+                        array_shift($data['outgoing_temp']);
+                    }
+                    $data['outgoing_temp'][$outgoing_temp['date']] = $outgoing_temp;
                 }
             }
-            $cache->set('realtime', $data);
-            if(!empty($data["$suffix"])) {
-                if(!empty($data["$suffix"]['Iv'])) {
-                    $data["$suffix"]['Iv'] = array_values($data["$suffix"]['Iv']);
+            if($cubic_meter != null && $cubic_meter_date != null) {
+                if(ArrayHelper::getValue($data, "cubic_meter.{$cubic_meter['date']}") == null) {
+                    if(!empty($data['cubic_meter'])) {
+                        $data['cubic_meter'] =
+                            array_filter($data['cubic_meter'], function ($item) use ($cubic_meter, $interval) {
+                                return ($cubic_meter['date'] - $item['date'] <= $interval);
+                            });
+                    }
+                    if (count($data['cubic_meter']) >= 23) {
+                        array_shift($data['cubic_meter']);
+                    }
+                    $data['cubic_meter'][$cubic_meter['date']] = $cubic_meter;
                 }
-                if(!empty($data["$suffix"]['KW'])) {
-                    $data["$suffix"]['KW'] = array_values($data["$suffix"]['KW']);
+            }
+            if($cubic_meter_hour != null && $cubic_meter_hour_date != null) {
+                if(ArrayHelper::getValue($data, "cubic_meter_hour.{$cubic_meter_hour['date']}") == null) {
+                    if(!empty($data['cubic_meter_hour'])) {
+                        $data['cubic_meter_hour'] =
+                            array_filter($data['cubic_meter_hour'], function ($item) use ($cubic_meter_hour, $interval) {
+                                return ($cubic_meter_hour['date'] - $item['date'] <= $interval);
+                            });
+                    }
+                    if (count($data['cubic_meter_hour']) >= 23) {
+                        array_shift($data['cubic_meter_hour']);
+                    }
+                    $data['cubic_meter_hour'][$cubic_meter_hour['date']] = $cubic_meter_hour;
                 }
-                $realtime = $data["$suffix"];
+            }
+            if($kilowatt != null && $kilowatt_date != null) {
+                if(ArrayHelper::getValue($data, "kilowatt.{$kilowatt['date']}") == null) {
+                    if(!empty($data['kilowatt'])) {
+                        $data['kilowatt'] =
+                            array_filter($data['kilowatt'], function ($item) use ($kilowatt, $interval) {
+                                return ($kilowatt['date'] - $item['date'] <= $interval);
+                            });
+                    }
+                    if (count($data['kilowatt']) >= 23) {
+                        array_shift($data['kilowatt']);
+                    }
+                    $data['kilowatt'][$kilowatt['date']] = $kilowatt;
+                }
+            }
+            if($kilowatt_hour != null && $kilowatt_hour_date != null) {
+                if(ArrayHelper::getValue($data, "kilowatt_hour.{$kilowatt_hour['date']}") == null) {
+                    if(!empty($data['kilowatt_hour'])) {
+                        $data['kilowatt_hour'] =
+                            array_filter($data['kilowatt_hour'], function ($item) use ($kilowatt_hour, $interval) {
+                                return ($kilowatt_hour['date'] - $item['date'] <= $interval);
+                            });
+                    }
+                    if (count($data['kilowatt_hour']) >= 23) {
+                        array_shift($data['kilowatt_hour']);
+                    }
+                    $data['kilowatt_hour'][$kilowatt_hour['date']] = $kilowatt_hour;
+                }
+            }
+            $cache->set('realtime_' . Yii::$app->user->id, $data, 2 * 60 * 60);
+            if(!empty($data)) {
+                if(!empty($data['incoming_temp'])) {
+                    $data['incoming_temp'] = array_values($data['incoming_temp']);
+                }
+                if(!empty($data['outgoing_temp'])) {
+                    $data['outgoing_temp'] = array_values($data['outgoing_temp']);
+                }
+                if(!empty($data['cubic_meter'])) {
+                    $data['cubic_meter'] = array_values($data['cubic_meter']);
+                }
+                if(!empty($data['cubic_meter_hour'])) {
+                    $data['cubic_meter_hour'] = array_values($data['cubic_meter_hour']);
+                }
+                if(!empty($data['kilowatt'])) {
+                    $data['kilowatt'] = array_values($data['kilowatt']);
+                }
+                if(!empty($data['kilowatt_hour'])) {
+                    $data['kilowatt_hour'] = array_values($data['kilowatt_hour']);
+                }
+                $realtime = $data;
             }
         }
+
         return $realtime;
     }
 

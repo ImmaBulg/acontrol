@@ -143,9 +143,33 @@ class FormReportTenantValidator
                 }
             }
         }
-
+        $this->checkIrregularHour();
 
         return ['missing_date' => $this->missing_data, 'push_alerts' => $this->push_alerts];
+    }
+
+    private function checkIrregularHour() {
+        if ($this->tenant->overwrite_site) {
+            if ($this->tenant->getIrregularHoursTimeRanges() === [] && in_array($this->tenant->usage_type, ['irregular', 'with_penalty', 'without_penalty'])) {
+                $message = Yii::t('backend.report',
+                    'You tried to issue  irregular hours report, please set irregular hours for site or tenant. Tenant: <a href="http://admin.silver-gate.co.il/tenant/view?id={id}">{name}</a>', [
+                        'name' => $this->tenant->name,
+                        'id' => $this->tenant->id,
+                    ]);
+                $this->form_report->addError('type', $message);
+                throw new FormReportValidationInterruptException($message);
+            }
+        } else {
+            if ($this->tenant->getIrregularHoursTimeRanges() === [] && in_array($this->tenant->relationSite->relationSiteBillingSetting->usage_type, ['irregular', 'with_penalty', 'without_penalty'])) {
+                $message = Yii::t('backend.report',
+                    'You tried to issue  irregular hours report, please set irregular hours for site or tenant. Tenant: <a href="http://admin.silver-gate.co.il/tenant/view?id={id}">{name}</a>', [
+                        'name' => $this->tenant->name,
+                        'id' => $this->tenant->id,
+                    ]);
+                $this->form_report->addError('type', $message);
+                throw new FormReportValidationInterruptException($message);
+            }
+        }
     }
 
     private function checkManualCop()

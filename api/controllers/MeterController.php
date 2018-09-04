@@ -76,9 +76,9 @@ class MeterController extends Controller
 	public function actionCreate()
 	{
 		$request = Yii::$app->request;
+        file_put_contents(Yii::getAlias('@static/test.txt'), json_encode($request->bodyParams));
 		$form = new FormMeterData();
 		$form->attributes = $request->bodyParams;
-		
 		if ($models = $form->save()) {
 			return $models;
 		} else {
@@ -134,6 +134,7 @@ class MeterController extends Controller
 
 	public function actionUpdate()
     {
+        file_put_contents(Yii::getAlias('@static/update.txt'), json_encode(Yii::$app->request->bodyParams));
         $form = new FormUpdateMeterData();
 
         $form->load(Yii::$app->request->bodyParams,'');
@@ -143,5 +144,9 @@ class MeterController extends Controller
         } else {
             throw new BadRequestHttpException(implode(' ', $form->getFirstErrors()));
         }
+    }
+
+    public function actionRealTime() {
+	    return json_encode(Yii::$app->request->bodyParams);
     }
 }

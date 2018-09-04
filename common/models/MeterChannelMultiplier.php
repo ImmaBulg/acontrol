@@ -20,8 +20,7 @@ class MeterChannelMultiplier extends ActiveRecord
     const STATUS_ACTIVE = 1;
     const STATUS_DELETED = 2;
 
-    const DEFAULT_CURRENT_MULTIPLIER = 1;
-    const DEFAULT_VOLTAGE_MULTIPLIER = 1;
+    const DEFAULT_METER_MULTIPLIER = 1;
 
 
     public static function tableName() {
@@ -33,8 +32,8 @@ class MeterChannelMultiplier extends ActiveRecord
         return [
             [['meter_id', 'channel_id'], 'required'],
             [['meter_id', 'channel_id'], 'integer'],
-            [['current_multiplier', 'voltage_multiplier'], 'default', 'value' => 0],
-            [['current_multiplier', 'voltage_multiplier'], 'number', 'min' => 0],
+            ['meter_multiplier', 'default', 'value' => 0],
+            ['meter_multiplier', 'number', 'min' => 0],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => array_keys(self::getListStatuses()), 'skipOnEmpty' => true],
         ];
@@ -46,8 +45,7 @@ class MeterChannelMultiplier extends ActiveRecord
             'id' => Yii::t('common.meter', 'ID'),
             'meter_id' => Yii::t('common.meter', 'Meter ID'),
             'channel_id' => Yii::t('common.meter', 'Channel ID'),
-            'current_multiplier' => Yii::t('common.meter', 'Current multiplier'),
-            'voltage_multiplier' => Yii::t('common.meter', 'Voltage multiplier'),
+            'meter_multiplier' => Yii::t('common.meter', 'Meter multiplier'),
             'start_date' => Yii::t('common.meter', 'Start date'),
             'end_date' => Yii::t('common.meter', 'End date'),
             'status' => Yii::t('common.meter', 'Status'),
@@ -115,7 +113,7 @@ class MeterChannelMultiplier extends ActiveRecord
      */
     public static function getMultipliers($channel_id, $start_date, $end_date, $is_single = false) {
         $query = (new Query())
-            ->select(['t.current_multiplier', 't.voltage_multiplier', 'start_date', 'end_date'])
+            ->select(['t.meter_multiplier', 'start_date', 'end_date'])
             ->from(static::tableName() . ' t')
             ->andWhere(['t.channel_id' => $channel_id])
             ->andWhere([
@@ -140,16 +138,16 @@ class MeterChannelMultiplier extends ActiveRecord
             if(!$is_single) {
                 $multipliers = $query->all();
                 foreach($multipliers as &$multiplier) {
-                    $multiplier = new ChannelMultipliers($multiplier['current_multiplier'],
-                                                         $multiplier['voltage_multiplier'], $multiplier['start_date'],
+                    $multiplier = new ChannelMultipliers($multiplier['meter_multiplier'],
+                                                         $multiplier['start_date'],
                                                          $multiplier['end_date']);
                 }
                 return $multipliers;
             }
             else {
                 $multiplier = $query->one();
-                $multiplier = new ChannelMultipliers($multiplier['current_multiplier'],
-                                                     $multiplier['voltage_multiplier'], $multiplier['start_date'],
+                $multiplier = new ChannelMultipliers($multiplier['meter_multiplier'],
+                                                     $multiplier['start_date'],
                                                      $multiplier['end_date']);
                 return $multiplier;
             }
@@ -157,27 +155,26 @@ class MeterChannelMultiplier extends ActiveRecord
         if($multipliers == null) {
             if(!$is_single) {
                 $multipliers = [];
-                $multipliers[] = self::getCurrentMultiplier($channel_id);
+                $multipliers[] = self::getMeterMultiplier($channel_id);
             }
             else {
-                $multipliers = self::getCurrentMultiplier($channel_id);
+                $multipliers = self::getMeterMultiplier($channel_id);
             }
         }
         return $multipliers;
     }
 
 
-    public static function getCurrentMultiplier($channel_id) {
+    public static function getMeterMultiplier($channel_id) {
         $query = (new Query())
-            ->select(['t.current_multiplier', 't.voltage_multiplier'])
+            ->select(['t.meter_multiplier'])
             ->from(MeterChannel::tableName() . ' t')
             ->andWhere(['t.id' => $channel_id]);
         $current_multiplier = Yii::$app->db->cache(function ($db) use ($query) {
             return $query->createCommand($db)->queryOne();
         }, static::CACHE_DURATION);
         $multiplier =
-            new ChannelMultipliers($current_multiplier['current_multiplier'],
-                                   $current_multiplier['voltage_multiplier']);
+            new ChannelMultipliers($current_multiplier['meter_multiplier']);
         return $multiplier;
     }
 }

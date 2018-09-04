@@ -18,7 +18,6 @@ common\models\events\logs\EventLogMeter; /**
     public $physical_location;
     public $start_date;
     public $status;
-    public $is_main = 0;
     public function rules() {
         return [
             [['breaker_name', 'physical_location'], 'filter', 'filter' => 'strip_tags'],
@@ -30,7 +29,6 @@ common\models\events\logs\EventLogMeter; /**
             [['ip_address'], 'ip'],
             [['name', 'breaker_name', 'ip_address', 'type'], 'string', 'max' => 255],
             [['physical_location'], 'string'],
-            ['is_main','safe'],
             ['communication_type', 'default', 'value' => Meter::COMMUNICATION_TYPE_PLC],
             ['communication_type', 'in', 'range' => array_keys(Meter::getListCommunicationTypes()),
              'skipOnEmpty' => true],
@@ -62,8 +60,7 @@ common\models\events\logs\EventLogMeter; /**
         return [
             'name' => Yii::t('backend.meter', 'Meter ID'),
             'breaker_name' => Yii::t('backend.meter', 'Breaker name'),
-            'type_id' => Yii::t('backend.meter', 'Type'),
-            'type' => 'Type Category',
+            'type' => Yii::t('backend.meter', 'Type category'),
             'communication_type' => Yii::t('backend.meter', 'Communication type'),
             'data_usage_method' => Yii::t('backend.meter', 'Data usage method'),
             'physical_location' => Yii::t('backend.meter', 'Phisical location on site'),
@@ -78,17 +75,14 @@ common\models\events\logs\EventLogMeter; /**
             case self::SCENARIO_EDIT:
                 $this->_id = $model->id;
                 $this->name = $model->name;
-                $this->breaker_name = $model->breaker_name;
                 $this->type_id = $model->type_id;
                 $this->communication_type = $model->communication_type;
-                $this->data_usage_method = $model->data_usage_method;
                 $this->physical_location = $model->physical_location;
                 $this->start_date = $model->start_date;
                 $this->status = $model->status;
                 $this->site_id = $model->site_id;
                 $this->ip_address = $model->ip_address;
                 $this->type = $model->type;
-                $this->is_main = $model->is_main;
                 break;
             default:
                 break;
@@ -100,16 +94,13 @@ common\models\events\logs\EventLogMeter; /**
         try {
             $model = new Meter();
             $model->name = $this->name;
-            $model->breaker_name = $this->breaker_name;
             $model->type_id = $this->type_id;
             $model->communication_type = $this->communication_type;
-            $model->data_usage_method = $this->data_usage_method;
             $model->physical_location = $this->physical_location;
             $model->start_date = $this->start_date;
             $model->status = $this->status;
             $model->site_id = $this->site_id;
             $model->ip_address = $this->ip_address;
-            $model->is_main = $this->is_main;
             $model->type = $this->type;
             $event = new EventLogMeter();
             $event->model = $model;
@@ -157,17 +148,14 @@ common\models\events\logs\EventLogMeter; /**
             $updated_type = ($model->type_id != $this->type_id);
             $updated_site_id = ($model->site_id != $this->site_id);
             $model->name = $this->name;
-            $model->breaker_name = $this->breaker_name;
             $model->type_id = $this->type_id;
             $model->communication_type = $this->communication_type;
-            $model->data_usage_method = $this->data_usage_method;
             $model->physical_location = $this->physical_location;
             $model->start_date = $this->start_date;
             $model->status = $this->status;
             $model->site_id = $this->site_id;
             $model->ip_address = $this->ip_address;
             $model->type = $this->type;
-            $model->is_main = $this->is_main;
             $event = new EventLogMeter();
             $event->model = $model;
             $model->on(EventLogMeter::EVENT_BEFORE_UPDATE, [$event, EventLogMeter::METHOD_UPDATE]);

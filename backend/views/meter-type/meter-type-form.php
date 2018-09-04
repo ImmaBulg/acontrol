@@ -3,6 +3,7 @@ use common\helpers\Html;
 use common\widgets\ActiveForm;
 use common\models\MeterType;
 use common\widgets\Select2;
+use yii\helpers\Json;
 
 $this->title = $this->title =
     $form->scenario == \backend\models\forms\FormMeterType::SCENARIO_CREATE ?
@@ -23,10 +24,12 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row">
             <div class="col-lg-6">
                 <?php echo $form_active->field($form, 'name')->textInput(); ?>
-                <?php echo $form_active->field($form, 'channels')->textInput(['allow_only' => Html::TYPE_NUMBER]); ?>
-                <?php echo $form_active->field($form, 'phases')->widget(Select2::classname(), [
-                    'data' => MeterType::getListPhases(),
-                ]); ?>
+                <div style="display:none;" data-type=<?=Json::encode([MeterType::TYPE_ELECTRICITY]); ?>>
+                    <?php echo $form_active->field($form, 'channels')->textInput(['allow_only' => Html::TYPE_NUMBER, 'value' => 1]); ?>
+                    <?php echo $form_active->field($form, 'phases')->widget(Select2::classname(), [
+                        'data' => MeterType::getListPhases(),
+                    ]); ?>
+                </div>
                 <?php echo $form_active->field($form, 'type')->widget(Select2::classname(), [
                     'data' => MeterType::getMeterCategories(),
                 ]); ?>
@@ -43,3 +46,38 @@ $this->params['breadcrumbs'][] = $this->title;
     </fieldset>
     <?php ActiveForm::end(); ?>
 </div>
+
+<?php
+$field_type = Html::getInputId($form, 'type');
+
+$script = <<< JS
+$('#formmetertype-type').on('change', function(){
+	var value = this.value;
+	var form = $(this).parents('form');
+	var fields = form.find('div[data-type]');
+
+	fields.hide();
+	fields.each(function(){
+		var field = jQuery(this);
+		console.log(fields.data('type'));
+		if (jQuery.inArray(value, field.data('type')) > -1) {
+			field.show();
+		}
+	});
+});
+$('#formmetertype-type').each(function(){
+	var value = this.value;
+	var form = $(this).parents('form');
+	var fields = form.find('div[data-type]');
+
+	fields.hide();
+	fields.each(function(){
+		var field = jQuery(this);
+		if (jQuery.inArray(value, field.data('type')) > -1) {
+			field.show();
+		}
+	});
+});
+JS;
+$this->registerJs($script);
+?>

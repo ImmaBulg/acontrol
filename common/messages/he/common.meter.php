@@ -79,6 +79,9 @@ return [
     'Status' => 'סטטוס',
     'Tenants' => 'דיירים',
     'Type' => 'סוג',
+    'Type category ' => 'סוג מונה',
     'Voltage multiplier' => 'מכפיל מתח',
     '{name} - total {n, plural, =0{are no channels} =1{# channel} other{# channels}}' => '{n, plural, =0{אין ערוצים} =1{# ערוץ} other{# ערוצים}} - סה"כ - {name}',
+    'Air' => 'מיזוג אויר',
+    'Electricity' => 'חשמל'
 ];

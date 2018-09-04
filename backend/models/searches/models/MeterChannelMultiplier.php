@@ -13,7 +13,7 @@ class MeterChannelMultiplier extends \common\models\MeterChannelMultiplier
 	{
 		return [
 			[['id'], 'integer'],
-			[['current_multiplier', 'voltage_multiplier'], 'number'],
+			['meter_multiplier', 'number'],
 			[['start_date', 'end_date'], 'date', 'format' => Formatter::PHP_DATE_FORMAT],
 		];
 	}

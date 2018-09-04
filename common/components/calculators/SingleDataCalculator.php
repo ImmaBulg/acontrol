@@ -45,10 +45,10 @@ class SingleDataCalculator
         $this->queries_by_type = $queries_by_type;
     }
 
-    public function calculate( float $voltage_multiplier, float $current_multiplier, $channel_percent ) {
+    public function calculate( float $meter_multiplier, $channel_percent ) {
         foreach ( $this->queries_by_type as $type => $queries ) {
             $result = $this->calculateQueries( $queries, $type );
-            $this->data[ $type ] = $result;
+            $this->data[ $type ] = $result * $meter_multiplier;
         }
         return $this;
     }

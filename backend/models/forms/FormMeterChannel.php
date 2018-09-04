@@ -23,16 +23,15 @@ class FormMeterChannel extends \yii\base\Model
 	private $_id;
 
 	public $channel;
-	public $current_multiplier;
-	public $voltage_multiplier;
+	public $meter_multiplier;
     public $is_main = 0;
 
 	public function rules()
 	{
 		return [
-			[['current_multiplier', 'voltage_multiplier'], 'required'],
+			['meter_multiplier', 'required'],
 			[['channel', 'is_main'], 'integer'],
-			[['current_multiplier', 'voltage_multiplier'], 'number', 'min' => 0],
+			['meter_multiplier', 'number', 'min' => 0],
 		];
 	}
 
@@ -40,8 +39,8 @@ class FormMeterChannel extends \yii\base\Model
 	{
 		return [
 			'channel' => Yii::t('backend.meter', 'Channel'),
-			'current_multiplier' => Yii::t('backend.meter', 'Current multiplier'),
-			'voltage_multiplier' => Yii::t('backend.meter', 'Voltage multiplier'),
+			'meter_multiplier' => Yii::t('backend.meter', 'Meter multiplier'),
+            'is_main' => Yii::t('backend.meter', 'Is main'),
 		];
 	}
 
@@ -52,8 +51,7 @@ class FormMeterChannel extends \yii\base\Model
 				$this->_id = $model->id;
 
 				$this->channel = $model->channel;
-				$this->current_multiplier = $model->current_multiplier;
-				$this->voltage_multiplier = $model->voltage_multiplier;
+				$this->meter_multiplier = $model->meter_multiplier;
                 $this->is_main = $model->is_main;
 				break;
 
@@ -72,17 +70,15 @@ class FormMeterChannel extends \yii\base\Model
 			$sql_date_format = Formatter::SQL_DATE_FORMAT;
 
 			$model = MeterChannel::findOne($this->_id);
-			$model->current_multiplier = $this->current_multiplier;
-			$model->voltage_multiplier = $this->voltage_multiplier;
+			$model->meter_multiplier = $this->meter_multiplier;
             $model->is_main = $this->is_main;
 			$event = new EventLogMeterChannel();
 			$event->model = $model;
 			$model->on(EventLogMeterChannel::EVENT_BEFORE_UPDATE, [$event, EventLogMeterChannel::METHOD_UPDATE]);
 
-			$old_current_multiplier = ArrayHelper::getValue($model->getOldAttributes(), 'current_multiplier');
-			$old_voltage_multiplier = ArrayHelper::getValue($model->getOldAttributes(), 'voltage_multiplier');
+			$old_meter_multiplier = ArrayHelper::getValue($model->getOldAttributes(), 'meter_multiplier');
 
-			if ($old_current_multiplier != $model->current_multiplier || $old_voltage_multiplier != $model->voltage_multiplier) {
+			if ($old_meter_multiplier != $model->meter_multiplier) {
 				$model_multiplier = MeterChannelMultiplier::find()
 				->andWhere([
 					'meter_id' => $model->meter_id,
@@ -106,8 +102,7 @@ class FormMeterChannel extends \yii\base\Model
 					$model_multiplier->start_date = $model->created_at;
 				}
 
-				$model_multiplier->current_multiplier = $old_current_multiplier;
-				$model_multiplier->voltage_multiplier = $old_voltage_multiplier;
+				$model_multiplier->meter_multiplier = $old_meter_multiplier;
 				$model_multiplier->end_date = strtotime('today') - 1;
 
 				if (!$model_multiplier->save()) {

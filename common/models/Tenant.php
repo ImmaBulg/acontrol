@@ -9,6 +9,7 @@ use common\components\calculators\data\SiteMainMetersData;
 use common\components\calculators\data\WeightedChannel;
 use common\components\db\ActiveRecord;
 use common\components\TimeRange;
+use common\models\pdfs\reports\PdfViewReportNisKwhPerSite;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -201,26 +202,89 @@ class Tenant extends ActiveRecord
     public function getIrregularHoursTimeRanges()
     {
         $ranges = [];
+        $tmp_irregular_hour = $this->overwrite_site ? $this->relationIrregularHours : $this->relationSite->relationIrregularHours;
 
-        if ($this->overwrite_site) {
-            foreach ($this->relationIrregularHours as $irregular_hour) {
-                /**
-                 * @var TenantIrregularHours $irregular_hour
-                 */
+        foreach ($tmp_irregular_hour as $irregular_hour ) {
+            if ($irregular_hour->hours_to <= $irregular_hour->hours_from && $irregular_hour->hours_to !== '00:00:00') {
+                $ranges[] = new TimeRange($irregular_hour->hours_from, '23:59:59', $irregular_hour->day_number);
                 $end_time = Carbon::today()->setTimeFromTimeString($irregular_hour->hours_to)->addHour()->format('H:i:s');
-                $ranges[] = new TimeRange($irregular_hour->hours_from, $end_time, $irregular_hour->day_number);
-            }
-            //VarDumper::dump($ranges, 3, true);
+                $ranges[] = new TimeRange('00:00:00', $end_time, $irregular_hour->day_number + 1 < 8 ? $irregular_hour->day_number + 1 : 1);
+            } else if ($irregular_hour->hours_to === '23:00:00') {
+                $ranges[] = new TimeRange($irregular_hour->hours_from, '23:59:59', $irregular_hour->day_number);
 
-        } else {
-            foreach ($this->relationSite->relationIrregularHours as $irregular_hour) {
-                /**
-                 * @var TenantIrregularHours $irregular_hour
-                 */
+            } else if ($irregular_hour->hours_to === '00:00:00') {
+                $ranges[] = new TimeRange($irregular_hour->hours_from, '23:59:59', $irregular_hour->day_number);
+            } else {
                 $end_time = Carbon::today()->setTimeFromTimeString($irregular_hour->hours_to)->addHour()->format('H:i:s');
                 $ranges[] = new TimeRange($irregular_hour->hours_from, $end_time, $irregular_hour->day_number);
             }
         }
+/*
+        VarDumper::dump("for calculate consumption: \n", 100, true);
+        VarDumper::dump($ranges, 3, true);*/
+        return $ranges;
+    }
+
+    public static function filterTimeRange($timeranges, $day) {
+        $hours = [];
+        $result = [];
+
+        foreach ($timeranges as $timerange) {
+            $hours = ArrayHelper::merge($hours, $timerange->getHours());
+        }
+
+        $counts = array_count_values($hours);
+        $hours = array_values(array_filter($hours, function($e) use (&$counts) {
+            if ($counts[$e] > 1) {
+                unset($counts[$e]);
+                return true;
+            }
+            return $counts[$e] === 1;
+        }));
+        asort($hours);
+        //VarDumper::dump($hours, 100, true);
+        $start_time = $hours[0];
+        for ($i = 1, $iMax = \count($hours); $i < $iMax - 1; $i++) {
+            if ($hours[$i + 1] - $hours[$i] > 1) {
+                $result[] = new TimeRange($start_time . ':00:00', $hours[$i] === 23 ? '23:59:59' : $hours[$i] . ':00:00', $day);
+                $start_time = $hours[$i + 1];
+                $i++;
+            }
+        }
+        $result[] = new TimeRange($start_time . ':00:00', $hours[count($hours) - 1] === 23 ? '23:59:59' : $hours[count($hours) - 1] . ':00:00', $day);
+        //VarDumper::dump($result, 100, true);
+        return $result;
+    }
+
+    public function getIrregularTimeRangesForRegular() {
+        $ranges = [];
+        $tmp_irregular_hour = $this->overwrite_site ? $this->relationIrregularHours : $this->relationSite->relationIrregularHours;
+
+        foreach ($tmp_irregular_hour as $irregular_hour) {
+            if ($irregular_hour->hours_to <= $irregular_hour->hours_from && $irregular_hour->hours_to !== '00:00:00') {
+                $ranges[] = new TimeRange($irregular_hour->hours_from, '23:59:59', $irregular_hour->day_number);
+                $end_time = Carbon::today()->setTimeFromTimeString($irregular_hour->hours_to)->format('H:i:s');
+                $ranges[] = new TimeRange('00:00:00', $end_time, $irregular_hour->day_number + 1 < 8 ? $irregular_hour->day_number + 1 : 1);
+            } else if ($irregular_hour->hours_to === '00:00:00') {
+                $ranges[] = new TimeRange($irregular_hour->hours_from, '23:59:59', $irregular_hour->day_number);
+            } else {
+                $end_time = Carbon::today()->setTimeFromTimeString($irregular_hour->hours_to)->format('H:i:s');
+                $ranges[] = new TimeRange($irregular_hour->hours_from, $end_time, $irregular_hour->day_number);
+            }
+        }
+        $result = [];
+        foreach ([1, 2, 3, 4, 5, 6, 7] as $day) {
+            $tmp = array_filter($ranges, function($e) use ($day) {
+                return $e->getDayNumber() == $day;
+            });
+            //VarDumper::dump('day = ' . $day, 3, true);
+            //VarDumper::dump($tmp, 3, true);
+            if (count($tmp) > 0) {
+                $result = ArrayHelper::merge($result, self::filterTimeRange(array_values($tmp), $day));
+            }
+        }
+        //VarDumper::dump("for calculate regular time range: \n", 100, true);
+        //VarDumper::dump($result, 3, true);
         return $ranges;
     }
 
@@ -503,10 +567,45 @@ class Tenant extends ActiveRecord
     /**
      * @return TimeRange[]
      */
-    public function getRegularTimeRanges()
+    public function getRegularTimeRanges() {
+        $result = [];
+        $regular_time_ranges = [
+            1 => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+            2 => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+            3 => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+            4 => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+            5 => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+            6 => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+            7 => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+        ];
+
+        $irregular_time_ranges = $this->getIrregularTimeRangesForRegular();
+        foreach ($irregular_time_ranges as $irregular_time_range) {
+            //VarDumper::dump(array_diff($regular_time_ranges[$irregular_time_range->getDayNumber()], $irregular_time_range->getHours()), 100, true);
+            $regular_time_ranges[$irregular_time_range->getDayNumber()] = array_diff($regular_time_ranges[$irregular_time_range->getDayNumber()], $irregular_time_range->getHours());
+        }
+
+        foreach ($regular_time_ranges as $day => $range) {
+            $range = array_values($range);
+            $start_time = $range[0];
+            for ($i = 1, $iMax = \count($range); $i < $iMax - 1; $i++) {
+                if ($range[$i + 1] - $range[$i] > 1) {
+                    $result[] = new TimeRange($start_time . ':00:00', $range[$i] === 23 ? '23:59:59' : $range[$i] + 1 . ':00:00', $day);
+                    $start_time = $range[$i + 1];
+                    $i++;
+                }
+            }
+            $result[] = new TimeRange($start_time . ':00:00', $range[count($range) - 1] === 23 ? '23:59:59' : $range[count($range) - 1] + 1 . ':00:00', $day);
+        }
+
+        //VarDumper::dump($regular_time_ranges, 100, true);
+        return $result;
+    }
+
+    public function getRegularTimeRanges2()
     {
         $regular_time_ranges = [];
-        $irregular_time_ranges = $this->getIrregularHoursTimeRanges();
+        $irregular_time_ranges = $this->getIrregularTimeRangesForRegular();
         foreach ($irregular_time_ranges as $irregular_time_range) {
             if ($irregular_time_range->isOverlappingMidnight()) {
                 $regular_time_ranges[] = $irregular_time_range->getInverted();
@@ -527,8 +626,10 @@ class Tenant extends ActiveRecord
             }
         }
         $regular_day_number = [1, 2, 3, 4, 5, 6, 7];
+        $regular_days = [];
         foreach ($regular_time_ranges as $range) {
             if (\in_array($range->getDayNumber(), $regular_day_number, true)) {
+                $regular_days[] = $range->getDayNumber();
                unset($regular_day_number[$range->getDayNumber() - 1]);
             }
         }
@@ -537,8 +638,65 @@ class Tenant extends ActiveRecord
             $regular_time_ranges[] =
                 new TimeRange(TimeRange::midnight(), TimeRange::endOfDay(), $day);
         }
-        //VarDumper::dump($regular_time_ranges, 100, true);
-        return $regular_time_ranges;
+        //VarDumper::dump("regular time range: \n", 100, true);
+        $regular_day_number = [1, 2, 3, 4, 5, 6, 7];
+        $result = [];
+        foreach ($regular_day_number as $day) {
+            $tmp = array_filter($regular_time_ranges, function($e) use ($day) {
+                return $e->getDayNumber() == $day;
+            });
+            if (count($tmp) > 0) {
+                $result = ArrayHelper::merge($result, self::filterRegularTimeRange(array_values($tmp), $day));
+            }
+        }
+        //VarDumper::dump($result, 100, true);
+        return $result;
+    }
+
+    public static function filterRegularTimeRange($timeranges, $day) {
+        $hours = [];
+        $result = [];
+
+        foreach ($timeranges as $timerange) {
+            $hours = ArrayHelper::merge($hours, $timerange->getHours());
+        }
+
+        $counts = array_count_values($hours);
+        $tmp = false;
+        array_filter($counts, function($e) use (&$tmp) {
+            if ($e > 1) {
+                $tmp = true;
+            }
+        });
+        if ($tmp) {
+            $hours = array_values(array_filter($hours, function($e) use (&$counts) {
+                if ($counts[$e] > 1) {
+                    unset($counts[$e]);
+                    return true;
+                }
+            }));
+        } else {
+            $hours = array_values(array_filter($hours, function($e) use (&$counts) {
+                if ($counts[$e] > 1) {
+                    unset($counts[$e]);
+                    return true;
+                }
+                return $counts[$e] === 1;
+            }));
+        }
+
+        asort($hours);
+        $start_time = $hours[0];
+        for ($i = 1, $iMax = \count($hours); $i < $iMax - 1; $i++) {
+            if ($hours[$i + 1] - $hours[$i] > 1) {
+                $result[] = new TimeRange($start_time . ':00:00', $hours[$i] === 23 ? '23:59:59' : $hours[$i] . ':00:00', $day);
+                $start_time = $hours[$i + 1];
+                $i++;
+            }
+        }
+        $result[] = new TimeRange($start_time . ':00:00', $hours[count($hours) - 1] === 23 ? '23:59:59' : $hours[count($hours) - 1] . ':00:00', $day);
+        //VarDumper::dump($result, 100, true);
+        return $result;
     }
 
 

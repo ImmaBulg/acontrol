@@ -346,7 +346,7 @@ class FormReport extends Model
                 return false;
             }
         }
-        //VarDumper::dump($this->_data, 100, true);
+        Yii::$app->params['is_vat_included'] = $this->is_vat_included === '1';
         return true;
     }
 

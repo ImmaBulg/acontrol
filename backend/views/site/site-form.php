@@ -122,8 +122,8 @@ endif;
                             <?php echo $form_active->field($form, 'fixed_addition_comment')->textArea(); ?>
                             <?php echo $form_active->field($form, 'auto_issue_reports')
                                 ->checkboxList(Report::getAutoIssueListTypes()); ?>
-                            <?php echo $form_active->field($form, 'power_factor_visibility')->inline()
-                                ->radioList(Site::getListPowerFactors())->error(false); ?>
+                           <!-- --><?php /*echo $form_active->field($form, 'power_factor_visibility')->inline()
+                                ->radioList(Site::getListPowerFactors())->error(false); */?>
                           <!--  <?php /*echo $form_active->field($form, 'irregular_hours_from')->widget(TimePicker::classname(), [
                                 'pluginOptions' => [
                                     'showSeconds' => false,

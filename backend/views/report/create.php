@@ -66,7 +66,7 @@ $this->params['breadcrumbs'][] = Yii::t('backend.view', 'Create a report');
 					<div style="display:none;" data-type="<?php echo Json::encode([Report::TYPE_NIS_KWH]); ?>">
 						<?php echo $form_active->field($form, 'electric_company_price')->textInput()->error(false); ?>
 						<?php echo $form_active->field($form, 'column_fixed_payment')->checkbox()->error(false); ?>
-						<?php echo $form_active->field($form, 'is_vat_included')->checkbox()->error(false); ?>
+						<?php /*echo $form_active->field($form, 'is_vat_included')->checkbox()->error(false); */?>
 						<div style="display:none;" data-type="<?php echo Json::encode([Report::TYPE_NIS]); ?>">
 							<?php echo $form_active->field($form, 'column_total_pay_single_channel_rules')->checkbox()->error(false); ?>
 							<?php echo $form_active->field($form, 'column_total_pay_group_load_rules')->checkbox()->error(false); ?>

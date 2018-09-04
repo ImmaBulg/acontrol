@@ -86,7 +86,7 @@ $penalty = 0;
     <?php if($tenant_data->getTenant()->overwrite_site): ?>
         <?php if ($tenant_data->getTenant()->usage_type === 'with_penalty'): ?>
             <tr>
-                <td style="padding:5px;width:55%;" rowspan="4">
+                <td style="padding:5px;width:55%;" rowspan="<?=$tenant_data->getTenant()->relationSite->getIncludeVat() ? 4 : 3 ?>">
 
                 </td>
                 <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
@@ -107,7 +107,7 @@ $penalty = 0;
             </tr>
         <?php else: ?>
             <tr>
-                <td style="padding:5px;width:55%;" rowspan="3">
+                <td style="padding:5px;width:55%;" rowspan="<?=$tenant_data->getTenant()->relationSite->getIncludeVat() ? 3 : 2 ?>">
 
                 </td>
                 <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
@@ -121,7 +121,7 @@ $penalty = 0;
     <?php else: ?>
         <?php if ($tenant_data->getTenant()->relationSite->relationSiteBillingSetting->usage_type === 'with_penalty'): ?>
             <tr>
-                <td style="padding:5px;width:55%;" rowspan="4">
+                <td style="padding:5px;width:55%;" rowspan="<?=$tenant_data->getTenant()->relationSite->getIncludeVat() ? 4 : 3 ?>">
 
                 </td>
                 <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
@@ -142,7 +142,7 @@ $penalty = 0;
             </tr>
         <?php else: ?>
             <tr>
-                <td style="padding:5px;width:55%;" rowspan="3">
+                <td style="padding:5px;width:55%;" rowspan="<?=$tenant_data->getTenant()->relationSite->getIncludeVat() ? 3 : 2 ?>">
 
                 </td>
                 <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
@@ -162,6 +162,7 @@ $penalty = 0;
             <?php echo $formatter->asPrice($tenant_data->getTotalPayWithFixed() + $tenant_data->getMoneyAddition() + $penalty); ?>
         </td>
     </tr>
+    <?php if ($tenant_data->getTenant()->relationSite->getIncludeVat()): ?>
     <tr>
         <td style="width:30%;border-left:1px solid #000;border-right:1px solid #000;padding:5px;">
             <strong><?php echo Yii::t('common.view', 'VAT'); ?> <span
@@ -183,6 +184,20 @@ $penalty = 0;
             <?php echo $formatter->asPrice($tenant_data->getTotalPayWithVat() + $tenant_data->getMoneyAddition() + $penalty); ?>
         </td>
     </tr>
+    <?php else: ?>
+        <tr>
+            <td style="padding:5px;width:55%;border-top:1px solid #000;border-bottom:1px solid #000;">
+                <strong><?= Yii::t('common.view', 'Doesn\'t include VAT'); ?></strong>
+            </td>
+            <td style="width:30%;padding:5px;border: 1px solid #000;">
+                <strong><?php echo Yii::t('common.view', 'Total to pay'); ?></strong>
+            </td>
+            <td style="width:15%;border-top:1px solid #000;padding:5px;border-bottom:1px solid #000;"
+                align="center" dir="ltr">
+                <?php echo $formatter->asPrice($tenant_data->getTotalPayWithFixed() + $tenant_data->getMoneyAddition() + $penalty); ?>
+            </td>
+        </tr>
+    <?php endif; ?>
     </tbody>
 </table>
 <?php if(Yii::$app->params['is_add_graph']): ?>

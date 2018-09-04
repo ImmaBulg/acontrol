@@ -124,6 +124,8 @@ class TaozDataQueryGenerator
         if($query === null) {
             $query = new Query();
         }
+        //VarDumper::dump($this->time_boundaries, 100, true);
+
         foreach($this->taoz_parts as $taoz_part) {
             if($taoz_part instanceof SubAirRatesTaoz) {
                 $time_ranges = $this->getTimeRanges($taoz_part);
@@ -155,8 +157,10 @@ class TaozDataQueryGenerator
                             $date_time_to = $date_time_to->format(self::DATE_TIME_FORMAT);
                             $query_from = (clone $query)->andWhere([$attribute => $date_time_from]);
                             $query_to = (clone $query)->andWhere([$attribute => $date_time_to]);
-                            $this->queries[$taoz_part->type][] = new DateRangeQueryPair($query_from, $query_to);
-                            $this->queries[$taoz_part->type.'_reading'][] = new DateRangeQueryPair($query_from, $query_to);
+                            if (!in_array(new DateRangeQueryPair($query_from, $query_to), $this->queries[$taoz_part->type])) {
+                                $this->queries[$taoz_part->type][] = new DateRangeQueryPair($query_from, $query_to);
+                                $this->queries[$taoz_part->type.'_reading'][] = new DateRangeQueryPair($query_from, $query_to);
+                            }
                         }
                     }
                 }
@@ -165,6 +169,22 @@ class TaozDataQueryGenerator
         $this->queries[DataCategories::READING_FROM] = (clone $query)->andWhere([$attribute => $this->from_date]);
         $this->queries[DataCategories::READING_TO] =
             (clone $query)->andWhere([$attribute => $this->to_date->copy()->addDay(1)->startOfDay()->subHour(1)]);
+        $counts = [];
+        array_filter($this->queries, function($e) use (&$counts) {
+            if ($counts[$e] > 1) {
+                unset($counts[$e]);
+                return true;
+            }
+            return $counts[$e] === 1;
+        });
+        $result = array_values(array_filter($this->queries, function($e) use (&$counts) {
+            if ($counts[$e] > 1) {
+                unset($counts[$e]);
+                return true;
+            }
+            return $counts[$e] === 1;
+        }));
+        //VarDumper::dump($this->queries[DataCategories::PISGA][1] === $this->queries[DataCategories::PISGA][2], 2, true);
         return $this->queries;
     }
 
@@ -175,7 +195,6 @@ class TaozDataQueryGenerator
      */
     public function getTimeRanges(SubAirRatesTaoz $taoz_part) {
         $time_ranges = [];
-
 
         foreach($this->time_boundaries as $time_boundary) {
             foreach($taoz_part->getTimeRanges() as $time_range) {

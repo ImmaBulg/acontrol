@@ -248,10 +248,10 @@ angular.module('smartTime.directive', [])
                                 } else {
                                     timeHelper.setHours(dataHInt, 0);
                                 }
-                                for (i=0; i<10; i++) {
+                                for (i=0; i<24; i++) {
                                     if (hasMins) {
                                         if (dataMInt<6) {
-                                            minutesHelper = dataMInt*10 + i*suggestionInterval;
+                                            minutesHelper = dataMInt*10 + suggestionInterval;
                                             if (minutesHelper < dataMInt*10+10) {
                                                 timeHelper.setMinutes(minutesHelper);
                                                 hasSuggestion = true;
@@ -260,7 +260,7 @@ angular.module('smartTime.directive', [])
                                             }
                                         }
                                     } else {
-                                        timeHelper.setMinutes(i*suggestionInterval);
+                                        timeHelper.setMinutes(suggestionInterval);
                                         hasSuggestion = true;
                                     }
                                     if (hasSuggestion) {
@@ -314,7 +314,7 @@ angular.module('smartTime.directive', [])
             },
 
             template: '' +
-                '<input ng-disabled="!edit" type="text" name="{{name}}"  class="smt-input" ng-blur="blur()" ng-change="change()" ng-model="data.raw" ' +
+                '<input readonly ng-disabled="!edit" type="text" name="{{name}}"  class="smt-input" ng-blur="blur()" ng-change="change()" ng-model="data.raw" ' +
                     'ng-keydown="keyPress($event)" ng-focus="focus()" ng-trim="" ng-required="required" ' +
                     "ng-model-options=\"{debounce: {'default': 200, 'blur': 0}}\" />" +
                 '<div class="smt-suggestions" ng-show="data.show">' +

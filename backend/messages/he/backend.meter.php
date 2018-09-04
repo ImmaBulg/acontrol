@@ -56,7 +56,9 @@ return [
     'To' => 'עד תאריך',
     'Tree' => 'עץ מונים',
     'Type' => 'סוג',
+    'Type category' => 'סוג מונה',
     'Voltage multiplier' => 'מכפיל מתח',
     '{attribute} for {date} must be a number.' => 'חייב להיות מספר {date} עבור {attribute}',
     '{attribute} for {date} must be no less than 0.' => 'חייב להיות גבוה מאפס {date} עבור {attribute}',
+    'Is main' => 'ראשי',
 ];

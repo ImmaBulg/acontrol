@@ -98,7 +98,7 @@ $this->params['breadcrumbs'][] = Yii::t('backend.view', 'Reports');
                         <div class="row" style="display:none;" data-type="<?php echo Json::encode([Report::TYPE_NIS]); ?>">
                             <div class="col-lg-3">
                                 <?php echo $form_active->field($form, 'column_fixed_payment')->checkbox()->error(false); ?>
-                                <?php echo $form_active->field($form, 'is_vat_included')->checkbox()->error(false); ?>
+                               <!-- --><?php /*echo $form_active->field($form, 'is_vat_included')->checkbox()->error(false); */?>
                                 <div style="display:none;" data-type="<?php echo Json::encode([Report::TYPE_NIS]); ?>">
                                     <?php echo $form_active->field($form, 'column_total_pay_single_channel_rules')->checkbox()->error(false); ?>
                                 </div>
@@ -122,7 +122,7 @@ $this->params['breadcrumbs'][] = Yii::t('backend.view', 'Reports');
 						<div class="row" style="display:none;" data-type="<?php echo Json::encode([Report::TYPE_NIS_KWH]); ?>">
 							<div class="col-lg-3">
 								<?php echo $form_active->field($form, 'column_fixed_payment')->checkbox()->error(false); ?>
-								<?php echo $form_active->field($form, 'is_vat_included')->checkbox()->error(false); ?>
+								<?php /*echo $form_active->field($form, 'is_vat_included')->checkbox()->error(false); */?>
 								<div style="display:none;" data-type="<?php echo Json::encode([Report::TYPE_NIS]); ?>">
 									<?php echo $form_active->field($form, 'column_total_pay_single_channel_rules')->checkbox()->error(false); ?>
 								</div>

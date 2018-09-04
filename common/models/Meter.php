@@ -78,8 +78,7 @@ class Meter extends ActiveRecord
             ['communication_type', 'default', 'value' => self::COMMUNICATION_NOT_AVAILABLE],
             ['communication_type', 'in', 'range' => array_keys(self::getListCommunicationTypes()),
              'skipOnEmpty' => true],
-            ['data_usage_method', 'default', 'value' => self::DATA_USAGE_METHOD_IMPORT_PLUS_EXPORT],
-            ['data_usage_method', 'in', 'range' => array_keys(self::getListDataUsageMethods()), 'skipOnEmpty' => true],
+            ['data_usage_method', 'default', 'value' => self::DATA_USAGE_METHOD_IMPORT],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => array_keys(self::getListStatuses()), 'skipOnEmpty' => true],
             [['start_date'], 'safe'],
@@ -110,7 +109,7 @@ class Meter extends ActiveRecord
             'type_name' => Yii::t('common.meter', 'Type'),
             'site_name' => Yii::t('common.meter', 'Site'),
             'tenants' => Yii::t('common.meter', 'Tenants'),
-            'type' => Yii::t('common.meter', 'Type'),
+            'type' => Yii::t('common.meter', 'Type category'),
         ];
     }
 
@@ -213,8 +212,8 @@ class Meter extends ActiveRecord
 
     public static function getMeterCategories() {
         return [
-            self::TYPE_ELECTRICITY => 'Electricity',
-            self::TYPE_AIR => 'Air',
+            self::TYPE_ELECTRICITY => Yii::t('common.meter', 'Electricity'),
+            self::TYPE_AIR => Yii::t('common.meter', 'Air'),
         ];
     }
 
@@ -327,7 +326,6 @@ class Meter extends ActiveRecord
         if(($ip_address = $this->ip_address) == null) {
             $ip_address = (new Query())->select(['ip_address'])->from(SiteIpAddress::tableName())->where([
                  'site_id' => $this->site_id,
-                 'is_main' => true,
                  'status' => SiteIpAddress::STATUS_ACTIVE,
             ])->scalar();
         }
@@ -354,7 +352,6 @@ class Meter extends ActiveRecord
 
     public function getMainChannels() {
         $meter_channels = $this->getRelationMeterChannels()
-                               ->andWhere(['is_main' => (int)true])
                                ->with('relationMeterSubchannels')
                                ->all();
         return $meter_channels;

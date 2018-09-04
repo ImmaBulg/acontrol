@@ -32,10 +32,7 @@ $this->params['breadcrumbs'][] = Yii::t('backend.view', 'Meter channels');
 		<?php echo $form_active->errorSummary($form_channels); ?>
 		<div class="row">
 			<div class="col-lg-3">
-				<?php echo $form_active->field($form_channels, 'current_multiplier')->textInput(['allow_only' => Html::TYPE_NUMBER]); ?>
-			</div>
-			<div class="col-lg-3">
-				<?php echo $form_active->field($form_channels, 'voltage_multiplier')->textInput(['allow_only' => Html::TYPE_NUMBER]); ?>
+				<?php echo $form_active->field($form_channels, 'meter_multiplier')->textInput(['allow_only' => Html::TYPE_NUMBER]); ?>
 			</div>
 			<div class="col-lg-3">
 				<?php echo Html::submitInput(Yii::t('backend.view', 'Update'), ['class' => 'btn btn-primary control-label-offset']); ?>
@@ -73,8 +70,14 @@ $this->params['breadcrumbs'][] = Yii::t('backend.view', 'Meter channels');
 				'format' => 'raw',
 				'value' => 'channelName',
 			],
-			'current_multiplier:round',
-			'voltage_multiplier:round',
+			[
+                'class' => 'common\widgets\CheckboxColumn',
+                'header' => 'Is main',
+                'checkboxOptions' => function($data) {
+	                return ['value' => $data->is_main, 'checked' => $data->is_main, 'disabled' => true];
+                }
+            ],
+			'meter_multiplier:round',
 			[
 				'format' => 'raw',
 				'value' => function ($model){				

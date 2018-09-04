@@ -7113,3 +7113,7 @@ a.list-group-item-danger.active:focus {
 #body-top {
 	
 }
+
+.canvasjs-chart-credit {
+	display: none;
+}

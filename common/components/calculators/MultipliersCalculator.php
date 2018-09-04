@@ -118,8 +118,7 @@ class MultipliersCalculator
                         $taoz_consumption_calculator =
                             new TaozDataCalculator($this->from_date, $this->to_date, $taoz_queries);
                         $data =
-                            $taoz_consumption_calculator->calculate($this->channel_multiplier->getVoltageMultiplier(),
-                                                                    $this->channel_multiplier->getCurrentMultiplier(),
+                            $taoz_consumption_calculator->calculate($this->channel_multiplier->getMeterMultiplier(),
                                                                     $this->weighted_channel->getPercent())
                                                         ->getData();
 
@@ -133,8 +132,7 @@ class MultipliersCalculator
                     $queries_generator = new SingleDataQueryGenerator($this->from_date, $this->to_date, $time_ranges);
                     $queries = $queries_generator->generate('datetime', $air_reading_base_query);
                     $consumption_calculator = new SingleDataCalculator($this->from_date, $this->to_date, $queries);
-                    $data = $consumption_calculator->calculate($this->channel_multiplier->getVoltageMultiplier(),
-                        $this->channel_multiplier->getCurrentMultiplier(),
+                    $data = $consumption_calculator->calculate($this->channel_multiplier->getMeterMultiplier(),
                         $this->weighted_channel->getPercent())
                         ->getData();
                     $multiplied_data->add($data, $consumption_calculator->data_by_time);

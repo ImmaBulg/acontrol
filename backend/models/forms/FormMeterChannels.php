@@ -19,21 +19,19 @@ class FormMeterChannels extends \yii\base\Model
 
 	const METER_CHANNELS_FIELD_NAME = 'meter_channels';
 
-	public $current_multiplier;
-	public $voltage_multiplier;
+	public $meter_multiplier;
 
 	public function rules()
 	{
 		return [
-			[['current_multiplier', 'voltage_multiplier'], 'number', 'min' => 0],
+			['meter_multiplier', 'number', 'min' => 0],
 		];
 	}
 
 	public function attributeLabels()
 	{
 		return [
-			'current_multiplier' => Yii::t('backend.meter', 'Current multiplier'),
-			'voltage_multiplier' => Yii::t('backend.meter', 'Voltage multiplier'),
+			'meter_multiplier' => Yii::t('backend.meter', 'Meter multiplier'),
 		];
 	}
 
@@ -41,7 +39,7 @@ class FormMeterChannels extends \yii\base\Model
 	{
 		if (!$this->validate()) return false;
 		$channels = Yii::$app->request->getQueryParam(self::METER_CHANNELS_FIELD_NAME);
-		if ($channels == null || ($this->current_multiplier == null && $this->voltage_multiplier == null)) return false;
+		if ($channels == null || ($this->meter_multiplier == null)) return false;
 
 		$transaction = Yii::$app->db->beginTransaction();
 
@@ -50,13 +48,10 @@ class FormMeterChannels extends \yii\base\Model
 
 			if ($models != null) {
 				foreach ($models as $model) {
-					if ($this->current_multiplier != null) {
-						$model->current_multiplier = $this->current_multiplier;
+					if ($this->meter_multiplier != null) {
+						$model->meter_multiplier = $this->meter_multiplier;
 					}
 
-					if ($this->voltage_multiplier != null) {
-						$model->voltage_multiplier = $this->voltage_multiplier;
-					}
 
 					$event = new EventLogMeterChannel();
 					$event->model = $model;

@@ -63,7 +63,7 @@ if($model->isNewRecord) : ?>
                         'loadingText' => Yii::t('backend.view', 'Loading'),
                     ],
                 ]); ?>
-                <?php echo $form_active->field($form, 'breaker_name'); ?>
+                <?php /*echo $form_active->field($form, 'breaker_name'); */?>
                 <?php echo $form_active->field($form, 'status')->widget(Select2::classname(), [
                     'data' => Meter::getListStatuses(),
                 ]); ?>
@@ -72,12 +72,12 @@ if($model->isNewRecord) : ?>
                 <?php echo $form_active->field($form, 'communication_type')->widget(Select2::classname(), [
                     'data' => Meter::getListCommunicationTypes(),
                 ]); ?>
-                <?php echo $form_active->field($form, 'data_usage_method')->widget(Select2::classname(), [
+               <!-- --><?php /*echo $form_active->field($form, 'data_usage_method')->widget(Select2::classname(), [
                     'data' => Meter::getListDataUsageMethods(),
-                ]); ?>
+                ]); */?>
                 <?php echo $form_active->field($form, 'physical_location')->textInput(); ?>
                 <?php echo $form_active->field($form, 'start_date')->dateInput(); ?>
-                <?php echo $form_active->field($form, 'is_main')->checkbox();?>
+               <!-- --><?php /*echo $form_active->field($form, 'is_main')->checkbox();*/?>
             </div>
         </div>
         <div class="form-group">

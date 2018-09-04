@@ -63,7 +63,7 @@ class TaozDataCalculator {
   }
 
 
-  public function calculate( float $voltage_multiplier, float $current_multiplier, $channel_percent ) {
+  public function calculate(float $meter_multiplier, $channel_percent ) {
     foreach ( $this->queries_by_type as $type => $queries ) {
       switch ( $type ) {
       /*  case DataCategories::SHEFEL_READING:
@@ -75,7 +75,7 @@ class TaozDataCalculator {
         default:
             //VarDumper::dump('type: ' . $type . "\n", 100, true);
             $result = $this->calculateQueries( $queries, $type );
-            $this->data[ $type ] = $result;
+            $this->data[ $type ] = $result * $meter_multiplier;
       }
     }
    /* VarDumper::dump('this: ', 100, true);
@@ -110,6 +110,7 @@ class TaozDataCalculator {
 
               if ($type && isset($result)) {
                   $this->data_by_time[$type][strtotime($query->getFromQuery()->where[3]['datetime'])] = $result;
+                  //VarDumper::dump($query->getFromQuery()->where[3]['datetime'] . ' to ' . $query->getToQuery()->where[3]['datetime'] . ' = ' . $result . "\n", 3 , true);
               }
             }
           }

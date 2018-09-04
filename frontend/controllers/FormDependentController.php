@@ -93,11 +93,10 @@ class FormDependentController extends \frontend\components\Controller
             $output = ArrayHelper::map($channels, 'id', function ($item) use ($parents) {
                     $tenant = Tenant::findOne(ArrayHelper::getValue($parents, '0'));
                     $result =
-                        ['id' => $item->id, 'name' => Yii::t('frontend.view', '{tenant} - {name} - (V={v}, C={c})', [
+                        ['id' => $item->id, 'name' => Yii::t('frontend.view', '{tenant} - {name} - (M={v})', [
                             'tenant' => $tenant->name,
                             'name' => $item->channel,
-                            'v' => $item->voltage_multiplier,
-                            'c' => $item->current_multiplier,
+                            'v' => $item->meter_multiplier,
                         ])];
                     return $result;
                 });

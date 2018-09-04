@@ -31,8 +31,7 @@ $this->params['breadcrumbs'][] = $model->channel;
 		<fieldset>
 			<div class="row">
 				<div class="col-lg-6">
-					<?php echo $form_active->field($form, 'current_multiplier')->textInput(['allow_only' => Html::TYPE_NUMBER]); ?>
-					<?php echo $form_active->field($form, 'voltage_multiplier')->textInput(['allow_only' => Html::TYPE_NUMBER]); ?>
+					<?php echo $form_active->field($form, 'meter_multiplier')->textInput(['allow_only' => Html::TYPE_NUMBER]); ?>
 					<?php echo $form_active->field($form, 'is_main')->checkbox(); ?>
 				</div>
 			</div>
@@ -57,8 +56,7 @@ $this->params['breadcrumbs'][] = $model->channel;
 			'format' => 'date',
 			'filterType' => DataColumn::FILTER_CELL_TYPE_DATE,
 		],
-		'current_multiplier:round',
-		'voltage_multiplier:round',
+		'meter_multiplier:round',
 		[
 			'format' => 'raw',
 			'value' => function ($model){

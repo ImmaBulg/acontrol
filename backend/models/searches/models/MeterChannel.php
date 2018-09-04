@@ -14,7 +14,7 @@ class MeterChannel extends \common\models\MeterChannel
 			[['id'], 'integer'],
 			[['old_id'], 'string'],
 			[['channel'], 'integer'],
-			[['current_multiplier', 'voltage_multiplier'], 'number'],
+			['meter_multiplier', 'number'],
 		];
 	}
 }

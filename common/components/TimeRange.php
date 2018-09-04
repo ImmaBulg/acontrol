@@ -15,6 +15,7 @@ class TimeRange
 {
 
 
+
     /**
      * @return Carbon
      */
@@ -45,7 +46,7 @@ class TimeRange
 
 
     public function isEndingOnMidnight() {
-        $is_end_on_midnight = $this->getEndTime()->eq(self::midnight());
+        $is_end_on_midnight = $this->getEndTime()->eq(self::endOfDay());
         return $is_end_on_midnight;
     }
 
@@ -94,6 +95,16 @@ class TimeRange
         return $this->day_number;
     }
 
+    public function getHours(): array
+    {
+        $start_hour = Carbon::today()->setTimeFromTimeString($this->start_time);
+        $end_hour = Carbon::today()->setTimeFromTimeString($this->end_time);
+        $result = [];
+        for ($i = $start_hour->hour; $i <= $end_hour->hour; $i++) {
+            $result[] = $i;
+        }
+        return $result;
+    }
 
     private $start_time = '00:00:00';
     private $end_time = '23:59:59';

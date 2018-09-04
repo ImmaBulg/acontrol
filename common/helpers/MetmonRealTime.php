@@ -10,6 +10,7 @@ use common\models\Site;
 use common\models\Meter;
 use common\models\MeterChannel;
 use common\models\MeterChannelMultiplier;
+use yii\helpers\VarDumper;
 
 class MetmonRealTime
 {
@@ -28,7 +29,111 @@ class MetmonRealTime
 	 * @param \common\models\MeterChannel $channel
 	 * @return array
 	 */
-	public static function generate(Site $site, Meter $meter, MeterChannel $channel)
+    public static function generate(Site $site, Meter $meter, MeterChannel $channel)
+    {
+        $data = [];
+        $ip = $meter->getIpAddress();
+        $port = '10203';
+        $meter_id = $meter->name;
+        $meter_type = $meter->relationMeterType;
+        $meter_type_name = strtolower($meter_type->name);
+        $phases = $meter_type->phases;
+        $auth = '';
+
+        if ($phases > 1) {
+            $channel_id = implode(',', ArrayHelper::map($channel->relationMeterSubchannels, 'id', 'channel'));
+            $criteria_meter_types = ['qng3', 'mc4', 'mc5', 'rsm4', 'rsm5'];
+
+            foreach ($criteria_meter_types as $criteria_meter_type) {
+                if (strpos($meter_type_name, $criteria_meter_type) !== false) {
+                    $channel_id = $channel->channel;
+                    break;
+                }
+            }
+        } else {
+            $channel_id = $channel->channel;
+        }
+
+        $url = "http://$ip:$port/rt?" . urldecode(http_build_query([
+                'meter_id' => $meter_id,
+                'channel' => $channel_id,
+                'auth' => $auth,
+            ], '', '&', PHP_QUERY_RFC3986));
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HEADER, false);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+        $response = curl_exec($curl);
+        $headers = curl_getinfo($curl);
+        curl_close($curl);
+        if (strncmp($headers['http_code'], '20', 2) === 0 && $response != null) {
+            $xml = new \SimpleXMLElement($response);
+            if (!empty($xml)) {
+                $data = [
+                    'channel_id' => [
+                        'name' => 'channel_id',
+                        'value' => 0,
+                        'date' => null,
+                    ],
+                    'cubic_meter' => [
+                        'name' => 'cubic_meter',
+                        'value' => 0,
+                        'date' => null,
+                    ],
+                    'cubic_meter_hour' => [
+                        'name' => 'cubic_meter_hour',
+                        'value' => 0,
+                        'date' => null,
+                    ],
+                    'incoming_temp' => [
+                        'name' => 'incoming_temp',
+                        'value' => 0,
+                        'date' => null,
+                    ],
+                    'is_main' => [
+                        'name' => 'is_main',
+                        'value' => 0,
+                        'date' => null,
+                    ],
+                    'kilowatt' => [
+                        'name' => 'kilowatt',
+                        'value' => 0,
+                        'date' => null,
+                    ],
+                    'kilowatt_hour' => [
+                        'name' => 'kilowatt_hour',
+                        'value' => 0,
+                        'date' => null,
+                    ],
+                    'meter_id' => [
+                        'name' => 'meter_id',
+                        'value' => 0,
+                        'date' => null,
+                    ],
+                    'outgoing_temp' => [
+                        'name' => 'outgoing_temp',
+                        'value' => 0,
+                        'date' => null,
+                    ],
+                ];
+                $date = null;
+                foreach ($xml->tag as $tag) {
+                    if ((string)$tag->attributes()->name === 'datetime')
+                        $date =(string)$tag->attributes()->value;
+                    $data[(string)$tag->attributes()->name]['value'] = (float)$tag->attributes()->value;
+                }
+                foreach ($data as $key => $value) {
+                    $data[$key]['date'] = $date;
+                }
+            }
+        }
+
+        return $data;
+    }
+	/*public static function generate(Site $site, Meter $meter, MeterChannel $channel)
 	{
 		$data = [];
 		$ip = $meter->getIpAddress();
@@ -68,7 +173,7 @@ class MetmonRealTime
 		$response = curl_exec($curl);
 		$headers = curl_getinfo($curl);
 		curl_close($curl);
-
+        VarDumper::dump($response, 100, true);
 		if (strncmp($headers['http_code'], '20', 2) === 0 && $response != null) {
 			$xml = (new \SimpleXMLElement($response));
 
@@ -78,12 +183,7 @@ class MetmonRealTime
 				$PFLength = 0;
 
 				$data = [
-					/**
-					 * Va
-					 * Vb
-					 * Vc
-					 * Vv
-					 */
+
 					'Va' => [
 						'name' => 'Va',
 						'value' => 0,
@@ -104,12 +204,7 @@ class MetmonRealTime
 						'value' => 0,
 						'date' => NULL,
 					],
-					/**
-					 * Ia
-					 * Ib
-					 * Ic
-					 * Iv
-					 */
+
 					'Ia' => [
 						'name' => 'Ia',
 						'value' => 0,
@@ -134,12 +229,7 @@ class MetmonRealTime
 						'name' => 'IvLimit',
 						'value' => (strpos($meter_type_name, 'qng3') !== false) ? 3000 : $channel->current_multiplier * 100,
 					],
-					/**
-					 * KWa
-					 * KWb
-					 * KWc
-					 * KW
-					 */
+
 					'KWa' => [
 						'name' => 'KWa',
 						'value' => 0,
@@ -160,12 +250,7 @@ class MetmonRealTime
 						'value' => 0,
 						'date' => NULL,
 					],
-					/**
-					 * PFa
-					 * PFb
-					 * PFc
-					 * PF
-					 */
+
 					'PFa' => [
 						'name' => 'PFa',
 						'value' => 0,
@@ -186,12 +271,7 @@ class MetmonRealTime
 						'value' => 0,
 						'date' => NULL,
 					],
-					/**
-					 * Tf1TotImpKWh
-					 * Tf2TotImpKWh
-					 * Tf3TotImpKWh
-					 * TfTotImpKWh
-					 */
+
 					'Tf1TotImpKWh' => [
 						'name' => 'Tf1TotImpKWh',
 						'value' => 0,
@@ -212,12 +292,7 @@ class MetmonRealTime
 						'value' => 0,
 						'date' => NULL,
 					],
-					/**
-					 * Tf1TotExpKWh
-					 * Tf2TotExpKWh
-					 * Tf3TotExpKWh
-					 * TfTotExpKWh
-					 */
+
 					'Tf1TotExpKWh' => [
 						'name' => 'Tf1TotExpKWh',
 						'value' => 0,
@@ -271,9 +346,7 @@ class MetmonRealTime
 					$xmlChannelPhases = (int) $xmlChannel->attributes()->phases;
 
 					if (!empty($xmlChannel->tags)) {
-						/**
-						 * Phase 3
-						 */
+
 						if ($xmlChannelPhases > 1) {
 							foreach ($xmlChannel->tags[0] as $xmlChannelTag) {
 								$xmlChannelTagName = (string) $xmlChannelTag->attributes()->name;
@@ -293,13 +366,7 @@ class MetmonRealTime
 									];
 
 									switch ($xmlChannelTagName) {
-										/**
-										 * Va
-										 * Vb
-										 * Vc
-										 * Vv
-										 */
-										case "Va":
+										Va":
 										case "Vb":
 										case "Vc":
 											$data[$xmlChannelTagName]['value'] = $xmlChannelTagValue * $channel->voltage_multiplier;
@@ -308,12 +375,7 @@ class MetmonRealTime
 											$VvLength++;
 											break;
 
-										/**
-										 * Ia
-										 * Ib
-										 * Ic
-										 * Iv
-										 */
+
 										case "Ia{$xmlChannelId}":
 											$data['Ia']['value'] += $xmlChannelTagValue * $channel->current_multiplier * $channel->voltage_multiplier;
 											$data['Ia']['date'] = $date;
@@ -346,12 +408,7 @@ class MetmonRealTime
 											}
 											break;
 
-										/**
-										 * KWa
-										 * KWb
-										 * KWc
-										 * KW
-										 */
+
 										case "KWa{$xmlChannelId}":
 											if (strpos($meter_type_name, 'qng3') !== false) {
 												$data['KWa']['value'] += ($xmlChannelTagValue * $channel->current_multiplier * $channel->voltage_multiplier) / 1000;
@@ -394,12 +451,7 @@ class MetmonRealTime
 											}
 											break;
 
-										/**
-										 * PFa
-										 * PFb
-										 * PFc
-										 * PF
-										 */
+
 										case "PFa{$xmlChannelId}":
 											$data['PFa']['value'] += $xmlChannelTagValue;
 											$data['PFa']['date'] = $date;
@@ -424,12 +476,7 @@ class MetmonRealTime
 											$PFLength++;
 											break;
 
-										/**
-										 * Tf1TotImpKWh
-										 * Tf2TotImpKWh
-										 * Tf3TotImpKWh
-										 * TfTotImpKWh
-										 */
+
 										case "Tf1TotImpKWh{$xmlChannelId}":
 											$data['Tf1TotImpKWh']['value'] += $xmlChannelTagValue * $channel->current_multiplier * $channel->voltage_multiplier;
 											$data['Tf1TotImpKWh']['date'] = $date;
@@ -451,12 +498,7 @@ class MetmonRealTime
 											$data['TfTotImpKWh']['date'] = $date;
 											break;
 
-										/**
-										 * Tf1TotExpKWh
-										 * Tf2TotExpKWh
-										 * Tf3TotExpKWh
-										 * TfTotExpKWh
-										 */
+
 										case "Tf1TotExpKWh{$xmlChannelId}":
 											$data['Tf1TotExpKWh']['value'] += $xmlChannelTagValue * $channel->current_multiplier * $channel->voltage_multiplier;
 											$data['Tf1TotExpKWh']['date'] = $date;
@@ -484,9 +526,7 @@ class MetmonRealTime
 								}
 							}
 						}
-						/**
-						 * Phase 1
-						 */
+
 						else {
 							foreach ($xmlChannel->tags[0] as $xmlChannelTag) {
 								$xmlChannelTagName = (string) $xmlChannelTag->attributes()->name;
@@ -506,12 +546,7 @@ class MetmonRealTime
 									];
 
 									switch ($xmlChannelTagName) {
-										/**
-										 * Va
-										 * Vb
-										 * Vc
-										 * Vv
-										 */
+
 										case "Va":
 										case "Vb":
 										case "Vc":
@@ -521,12 +556,7 @@ class MetmonRealTime
 											$VvLength++;
 											break;
 
-										/**
-										 * Ia
-										 * Ib
-										 * Ic
-										 * Iv
-										 */
+
 										case "I{$xmlChannelId}":
 											$alphabetIndex = $alphabetRange[$xmlChannelIndex - 1];
 											$data["I{$alphabetIndex}"]['value'] += $xmlChannelTagValue * $channel->current_multiplier * $channel->voltage_multiplier;
@@ -544,12 +574,7 @@ class MetmonRealTime
 											}
 											break;
 
-										/**
-										 * KWa
-										 * KWb
-										 * KWc
-										 * KW
-										 */
+
 										case "KW{$xmlChannelId}":
 											$alphabetIndex = $alphabetRange[$xmlChannelIndex - 1];
 
@@ -566,12 +591,7 @@ class MetmonRealTime
 											}
 											break;
 
-										/**
-										 * PFa
-										 * PFb
-										 * PFc
-										 * PF
-										 */
+
 										case "PF{$xmlChannelId}":
 											$alphabetIndex = $alphabetRange[$xmlChannelIndex - 1];
 											$data["PF{$alphabetIndex}"]['value'] += $xmlChannelTagValue;
@@ -581,12 +601,7 @@ class MetmonRealTime
 											$PFLength++;
 											break;
 
-										/**
-										 * Tf1TotImpKWh
-										 * Tf2TotImpKWh
-										 * Tf3TotImpKWh
-										 * TfTotImpKWh
-										 */
+
 										case "Tf1TotImpKWh{$xmlChannelId}":
 											$data['Tf1TotImpKWh']['value'] += $xmlChannelTagValue * $channel->current_multiplier * $channel->voltage_multiplier;
 											$data['Tf1TotImpKWh']['date'] = $date;
@@ -608,12 +623,7 @@ class MetmonRealTime
 											$data['TfTotImpKWh']['date'] = $date;
 											break;
 
-										/**
-										 * Tf1TotExpKWh
-										 * Tf2TotExpKWh
-										 * Tf3TotExpKWh
-										 * TfTotExpKWh
-										 */
+
 										case "Tf1TotExpKWh{$xmlChannelId}":
 											$data['Tf1TotExpKWh']['value'] += $xmlChannelTagValue * $channel->current_multiplier * $channel->voltage_multiplier;
 											$data['Tf1TotExpKWh']['date'] = $date;
@@ -646,12 +656,7 @@ class MetmonRealTime
 
 				foreach ($data as &$item) {
 					switch ($item['name']) {
-						/**
-						 * Ia
-						 * Ib
-						 * Ic
-						 * Iv
-						 */
+
 						case 'Ia':
 						case 'Ib':
 						case 'Ic':
@@ -659,12 +664,7 @@ class MetmonRealTime
 							$item['value'] = $item['value'] * $multiplierIa;
 							break;
 						
-						/**
-						 * KWa
-						 * KWb
-						 * KWc
-						 * KW
-						 */
+
 						case 'KWa':
 						case 'KWb':
 						case 'KWc':
@@ -672,12 +672,7 @@ class MetmonRealTime
 							$item['value'] = $item['value'] * $multiplierKW;
 							break;
 
-						/**
-						 * Tf1TotImpKWh
-						 * Tf2TotImpKWh
-						 * Tf3TotImpKWh
-						 * TfTotImpKWh
-						 */
+
 						case 'Tf1TotImpKWh':
 						case 'Tf2TotImpKWh':
 						case 'Tf3TotImpKWh':
@@ -685,12 +680,7 @@ class MetmonRealTime
 							$item['value'] = $item['value'] * $multiplierTotImpKWh;
 							break;
 
-						/**
-						 * Tf1TotExpKWh
-						 * Tf2TotExpKWh
-						 * Tf3TotExpKWh
-						 * TfTotExpKWh
-						 */
+
 						case 'Tf1TotExpKWh':
 						case 'Tf2TotExpKWh':
 						case 'Tf3TotExpKWh':
@@ -718,5 +708,5 @@ class MetmonRealTime
 		}
 
 		return $data;
-	}
+	}*/
 }

@@ -34,8 +34,8 @@ AppAsset::register($this);
 				'class' => 'logo',
 			]); ?>
 			<span class="decorated-text has-icon">
-				<span class="text"><?php echo Yii::t('frontend.view', 'Electricity'); ?></span>
-				<i class="icon icon-electricity"></i>
+				<span class="text"><?php echo Yii::t('frontend.view', 'Air'); ?></span>
+                <div class="air-logo"><?php echo Html::img('@web/theme/images/air.jpg', ['class' => 'logo-img-air', 'width' => 45, 'height' => 45]); ?></div>
 			</span>
 		</div>
 	</header>
@@ -47,7 +47,7 @@ AppAsset::register($this);
 	]); ?>
 		<?php echo $content; ?>
 	<?php Pjax::end(); ?>
-	<?php $this->registerJs('
+<!--	--><?php /*$this->registerJs('
 		var areaChartInterval;
 
 		function initAreaChartInterval() {
@@ -95,7 +95,7 @@ AppAsset::register($this);
 		if (jQuery("#realtime-enabled").length) {
 			initAreaChartInterval();
 		}
-	'); ?>
+	'); */?>
 	<?php $this->registerJs('
 		jQuery(document).on("pjax:send", function() {
 			clearInterval(areaChartInterval);
