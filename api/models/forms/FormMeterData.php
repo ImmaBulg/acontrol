@@ -47,8 +47,9 @@ class FormMeterData extends \yii\base\Model
 				]));
 			}
 
-			$is_main = $data['isMain'];
-			unset($data['isMain']);
+			$is_main = isset($data['isMain']) ? isset($data['isMain']) : false;
+            if (isset($data['isMain']))
+                unset($data['isMain']);
 			$data['is_main'] = $is_main;
 			$form = new FormMeterDataSingle();
 			$form->attributes = $data;

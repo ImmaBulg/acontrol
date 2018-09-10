@@ -103,6 +103,11 @@ use backend\widgets\i18n\LanguageNav;
                                              'visible' => (Yii::$app->user->can('RateViewManager')),
                                          ],
                                          [
+                                             'label' => Yii::t('backend.view', 'Holidays'),
+                                             'url' => ['/holiday/list'],
+                                             'visible' => (Yii::$app->user->can('HolidayViewManager')),
+                                         ],
+                                         [
                                              'label' => Yii::t('backend.view', 'Tenant groups'),
                                              'url' => ['/tenant-group/list'],
                                              'visible' => (Yii::$app->user->can('TenantGroupViewManager')),

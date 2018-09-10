@@ -161,7 +161,14 @@ return ArrayHelper::merge($siteRole, $tenantRole, $clientRole, [
 	'RateController.actionDelete' => ['type' => Item::TYPE_PERMISSION],
 	'RateController.actionList' => ['type' => Item::TYPE_PERMISSION],
 
-	// RateTypeController
+    //Holiday
+    'HolidayController.actionCreate' => ['type' => Item::TYPE_PERMISSION],
+    'HolidayController.actionEdit' => ['type' => Item::TYPE_PERMISSION],
+    'HolidayController.actionDelete' => ['type' => Item::TYPE_PERMISSION],
+    'HolidayController.actionList' => ['type' => Item::TYPE_PERMISSION],
+
+
+    // RateTypeController
 	'RateTypeController.actionCreate' => ['type' => Item::TYPE_PERMISSION],
 	'RateTypeController.actionEdit' => ['type' => Item::TYPE_PERMISSION],
 	'RateTypeController.actionDelete' => ['type' => Item::TYPE_PERMISSION],
@@ -556,6 +563,23 @@ return ArrayHelper::merge($siteRole, $tenantRole, $clientRole, [
 		],
 	],
 
+    'HolidayViewManager' => [
+        'type' => Item::TYPE_PERMISSION,
+        'children' => [
+            'HolidayController.actionList',
+        ],
+    ],
+    'HolidayManager' => [
+        'type' => Item::TYPE_PERMISSION,
+        'children' => [
+            'HolidayViewManager',
+
+            'HolidayController.actionCreate',
+            'HolidayController.actionEdit',
+            'HolidayController.actionDelete',
+        ],
+    ],
+
 	/**
 	 * ApiKeyManager
 	 */
@@ -653,6 +677,7 @@ return ArrayHelper::merge($siteRole, $tenantRole, $clientRole, [
 			'TenantViewManager',
 			'MeterViewManager',
 			'MeterTypeViewManager',
+            'HolidayViewManager',
 		],
 	],
 	
@@ -683,6 +708,7 @@ return ArrayHelper::merge($siteRole, $tenantRole, $clientRole, [
 			'ApiKeyManager',
 			'TaskManager',
 			'TaskCommentManager',
+			'HolidayManager',
 
 			'ReportManager',
 		],
