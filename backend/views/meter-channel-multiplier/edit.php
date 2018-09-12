@@ -33,8 +33,7 @@ $this->params['breadcrumbs'][] = Yii::t('backend.view', 'Multiplier - {value}', 
 				<div class="col-lg-6">
 					<?php echo $form_active->field($form, 'start_date')->dateInput(); ?>
 					<?php echo $form_active->field($form, 'end_date')->dateInput(); ?>
-					<?php echo $form_active->field($form, 'current_multiplier')->textInput(['allow_only' => Html::TYPE_NUMBER]); ?>
-					<?php echo $form_active->field($form, 'voltage_multiplier')->textInput(['allow_only' => Html::TYPE_NUMBER]); ?>
+					<?php echo $form_active->field($form, 'meter_multiplier')->textInput(['allow_only' => Html::TYPE_NUMBER]); ?>
 				</div>
 			</div>
 			<div class="form-group">
